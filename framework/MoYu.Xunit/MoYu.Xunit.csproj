@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Description>MoYu | 规范化接口Xunit 单元测试拓展插件。</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="xunit.extensibility.execution" Version="2.7.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MoYu\MoYu.csproj" />
+	</ItemGroup>
+
+</Project>

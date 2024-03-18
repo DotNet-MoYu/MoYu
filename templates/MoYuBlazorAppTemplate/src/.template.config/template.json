@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "少林寺驻北固山办事处大神父王喇嘛",
+  "classifications": ["MoYu", "Blazor", "BlazorApp"],
+  "name": "MoYu | 规范化接口Blazor App",
+  "identity": "MoYu.Template.Blazor.App",
+  "shortName": "moyublazorapp",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "MoYuBlazorApp",
+  "preferNameDirectory": true,
+  "symbols": {
+    "framework": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net8",
+          "description": ".NET8 脚手架"
+        },
+        {
+          "choice": "net9",
+          "description": ".NET9 脚手架"
+        }
+      ],
+      "defaultValue": "net8",
+      "description": "选择要创建的 .NET8-9 脚手架"
+    },
+    "net8": {
+      "type": "computed",
+      "value": "(framework == \"net8\")"
+    },
+    "net9": {
+      "type": "computed",
+      "value": "(framework == \"net9\")"
+    }
+  }
+}

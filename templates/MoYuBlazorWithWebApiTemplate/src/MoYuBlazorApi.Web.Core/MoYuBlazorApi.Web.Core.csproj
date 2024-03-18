@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup Condition="'$(net5)' == 'True' ">
+		<TargetFramework>net5.0</TargetFramework>
+		<LangVersion>10.0</LangVersion>
+		<NoWarn>1701;1702;1591</NoWarn>
+		<DocumentationFile>MoYuBlazorApi.Web.Core.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(net6)' == 'True' ">
+		<TargetFramework>net6.0</TargetFramework>
+		<NoWarn>1701;1702;1591</NoWarn>
+		<DocumentationFile>MoYuBlazorApi.Web.Core.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(net7)' == 'True' ">
+		<TargetFramework>net7.0</TargetFramework>
+		<NoWarn>1701;1702;1591</NoWarn>
+		<DocumentationFile>MoYuBlazorApi.Web.Core.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(net8)' == 'True' ">
+		<TargetFramework>net8.0</TargetFramework>
+		<NoWarn>1701;1702;1591</NoWarn>
+		<DocumentationFile>MoYuBlazorApi.Web.Core.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(net9)' == 'True' ">
+		<TargetFramework>net9.0</TargetFramework>
+		<NoWarn>1701;1702;1591</NoWarn>
+		<DocumentationFile>MoYuBlazorApi.Web.Core.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="MoYuBlazorApi.Web.Core.xml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MoYuBlazorApi.Application\MoYuBlazorApi.Application.csproj" />
+		<ProjectReference Include="..\MoYuBlazorApi.Database.Migrations\MoYuBlazorApi.Database.Migrations.csproj" />
+	</ItemGroup>
+
+</Project>

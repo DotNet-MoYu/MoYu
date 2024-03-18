@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MoYuRazor.Core</name>
+    </assembly>
+    <members>
+        <member name="T:MoYuRazor.Core.DbContext">
+            <summary>
+            数据库上下文对象
+            </summary>
+        </member>
+        <member name="F:MoYuRazor.Core.DbContext.Instance">
+            <summary>
+            SqlSugar 数据库实�?
+            </summary>
+        </member>
+    </members>
+</doc>

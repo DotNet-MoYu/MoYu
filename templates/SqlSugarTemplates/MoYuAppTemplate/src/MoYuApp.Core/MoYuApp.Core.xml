@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MoYuApp.Core</name>
+    </assembly>
+    <members>
+        <member name="T:MoYuApp.Core.DbContext">
+            <summary>
+            数据库上下文对象
+            </summary>
+        </member>
+        <member name="F:MoYuApp.Core.DbContext.Instance">
+            <summary>
+            SqlSugar 数据库实�?
+            </summary>
+        </member>
+    </members>
+</doc>

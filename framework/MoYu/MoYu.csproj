@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Description>写代码,用MoYu,摸不完的鱼。</Description>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="FriendlyException\Assets\error.html" />
+		<None Remove="Schedule\Dashboard\frontend\**\*" />
+		<None Remove="SpecificationDocument\Assets\index-mini-profiler.html" />
+		<None Remove="SpecificationDocument\Assets\index.html" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="FriendlyException\Assets\error.html" />
+		<EmbeddedResource Include="Schedule\Dashboard\frontend\**\*" />
+		<EmbeddedResource Include="SpecificationDocument\Assets\index-mini-profiler.html" />
+		<EmbeddedResource Include="SpecificationDocument\Assets\index.html" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
+		<PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.22" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' != 'net5.0' ">
+		<PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.3.8" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MoYu.Extras.DependencyModel.CodeAnalysis\MoYu.Extras.DependencyModel.CodeAnalysis.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<ToolCommandName>MoYu</ToolCommandName>
+		<Description>MoYu | 规范化接口工具链</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MoYu.Tools.CommandLine" Version="0.0.0.2" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://gitee.com/dotnetchina/MoYu/raw/master/schemas/v4/moyu-schema.json",
+  "SpecificationDocumentSettings": {
+    "DocumentTitle": "MoYu | 规范化接口| �淶���ӿ�",
+    "GroupOpenApiInfos": [
+      {
+        "Group": "Default",
+        "Title": "�淶���ӿ���ʾ",
+        "Description": "�� .NET �������򵥣���ͨ�ã������С�",
+        "Version": "1.0.0",
+        "TermsOfService": "https://52moyu.net",
+        "Contact": {
+          "Name": "��Сɮ",
+          "Url": "https://gitee.com/huguodong520",
+          "Email": "531035580@52moyu.net"
+        },
+        "License": {
+          "Name": "Apache-2.0",
+          "Url": "https://gitee.com/dotnetchina/MoYu/blob/rc1/LICENSE"
+        }
+      }
+    ]
+  },
+  "CorsAccessorSettings": {
+    "WithExposedHeaders": ["access-token", "x-access-token", "environment"]
+  }
+}

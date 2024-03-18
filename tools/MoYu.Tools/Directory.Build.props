@@ -1,0 +1,42 @@
+﻿<Project>
+	<PropertyGroup>
+		<TargetFrameworks>net5.0;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
+		<Version>0.0.0.2</Version>
+		<Authors>少林寺驻北固山办事处大神父王喇嘛</Authors>
+		<Company>.NET 摸鱼社区</Company>
+		<Product>MoYu</Product>
+		<Copyright>© 2024 少林寺驻北固山办事处大神父王喇嘛</Copyright>
+        <RepositoryUrl>https://gitee.com/dotnetmoyu/MoYu</RepositoryUrl>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSource>true</EmbedUntrackedSource>
+		<EmbedAllSources>true</EmbedAllSources>
+		<RepositoryType>Gitee</RepositoryType>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://52MoYu.net</PackageProjectUrl>
+		<PackAsTool>true</PackAsTool>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageTags>MoYu;ASP.NET;ASP.NET Core;.NET;.NET Core;.NET5;.NET6;Framework;Web;Cross Platform</PackageTags>
+		<PackageOutputPath>../nupkgs</PackageOutputPath>
+		<SignAssembly>True</SignAssembly>
+		<DelaySign>False</DelaySign>
+		<AssemblyOriginatorKeyFile>..\..\..\snks\MoYu.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="icon.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\..\README.md" Pack="true" PackagePath="\"/>
+	</ItemGroup>
+
+</Project>

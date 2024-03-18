@@ -1,0 +1,11 @@
+@page "/"
+@inject ISystemService systemService
+
+<div style="text-align:center;margin-top:50px;">
+    <img src="images/logo.png" style="height:100px;margin-bottom:15px;" />
+    <div align="center">
+        <p><a href="https://gitee.com/dotnetchina/MoYu/stargazers"><img src="https://gitee.com/dotnetchina/MoYu/badge/star.svg?theme=gvp" alt="star"></a> <a href="https://gitee.com/dotnetchina/MoYu/members"><img src="https://gitee.com/dotnetchina/MoYu/badge/fork.svg?theme=gvp" alt="fork"></a> <a href="https://github.com/MonkSoul/MoYu/stargazers"><img src="https://img.shields.io/github/stars/MonkSoul/MoYu?logo=github" alt="GitHub stars"></a> <a href="https://github.com/MonkSoul/MoYu/network"><img src="https://img.shields.io/github/forks/MonkSoul/MoYu?logo=github" alt="GitHub forks"></a> <a href="https://github.com/MonkSoul/MoYu/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-orange" alt="GitHub license"></a> <a href="https://www.nuget.org/packages/MoYu"><img src="https://img.shields.io/nuget/v/MoYu.svg?cacheSeconds=10800" alt="nuget"></a></p>
+    </div>
+    <p>@systemService.GetDescription()</p>
+    <p><a href="https://gitee.com/dotnetchina/MoYu" target="_blank">ิดย๋ตุึท</a></p>
+</div>
