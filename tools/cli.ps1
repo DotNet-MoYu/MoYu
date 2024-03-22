@@ -24,7 +24,7 @@ Param(
     #[string]$UseDatabaseNames
 )
 
-$FurTools = "MoYu | 规范化接口Tools v0.0.0.2";
+$FurTools = "MoYu | 规范化接口Tools v1.0.0";
 
 # 输出信息
 $copyright = @"

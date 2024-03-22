@@ -1,38 +1,38 @@
-# è·å–æ‰€æœ‰ MoYu + EFCore æ¨¡æ¿ç›®å½•
+# »ñÈ¡ËùÓĞ MoYu + EFCore Ä£°åÄ¿Â¼
 $efcore_path = pwd;
 $efcore_templates = Get-ChildItem -Directory $efcore_path -Exclude SqlSugarTemplates;
 
-# è·å–æ‰€æœ‰ MoYu + SqlSugar æ¨¡æ¿ç›®å½•
+# »ñÈ¡ËùÓĞ MoYu + SqlSugar Ä£°åÄ¿Â¼
 cd .\SqlSugarTemplates;
 $sqlsugar_path = pwd;
 $sqlsugar_templates = Get-ChildItem -Directory $sqlsugar_path;
 cd ..;
 
-# å®šä¹‰ç”Ÿæˆ Nupkg åŒ…
+# ¶¨ÒåÉú³É Nupkg °ü
 function generate($path, $templates){
     $dir = $path.Path;
-    Write-Warning "æ­£åœ¨ç”Ÿæˆ [$dir] Nupkg åŒ…......";
+    Write-Warning "ÕıÔÚÉú³É [$dir] Nupkg °ü......";
 
-    # éå†æ‰€æœ‰æ¨¡æ¿
+    # ±éÀúËùÓĞÄ£°å
     for ($i = 0; $i -le $templates.Length - 1; $i++){
         $item = $templates[$i];
 
-        # è·å–å®Œæ•´è·¯å¾„
+        # »ñÈ¡ÍêÕûÂ·¾¶
         $fullName = $item.FullName;
 
         Write-Output "-----------------";
         $fullName
         Write-Output "-----------------";
 
-        # ç”Ÿæˆ .nupkg åŒ…
+        # Éú³É .nupkg °ü
         .\nuget.exe pack $fullName;
     }
 
-    Write-Output "ç”ŸæˆæˆåŠŸ";
+    Write-Output "Éú³É³É¹¦";
 }
 
-# ç”Ÿæˆ EFCore Nupkg åŒ…
+# Éú³É EFCore Nupkg °ü
 generate -path $efcore_path -templates $efcore_templates
 
-# ç”Ÿæˆ SqlSugar Nupkg åŒ…
+# Éú³É SqlSugar Nupkg °ü
 generate -path $sqlsugar_path -templates $sqlsugar_templates
