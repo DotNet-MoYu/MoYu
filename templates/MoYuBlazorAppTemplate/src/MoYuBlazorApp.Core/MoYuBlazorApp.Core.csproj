@@ -11,8 +11,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MoYu" Version="1.0.0" />
-		<PackageReference Include="MoYu.Extras.ObjectMapper.Mapster" Version="1.0.0" />
+		<PackageReference Include="MoYu" Version="1.0.1" />
+		<PackageReference Include="MoYu.Extras.ObjectMapper.Mapster" Version="1.0.1" />
 	</ItemGroup>
 
 </Project>

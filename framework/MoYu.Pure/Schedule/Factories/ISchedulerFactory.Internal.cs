@@ -1,4 +1,4 @@
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
@@ -17,7 +17,9 @@ public partial interface ISchedulerFactory
     /// <summary>
     /// 作业调度器初始化
     /// </summary>
-    void Preload();
+    /// <param name="stoppingToken">取消任务 Token</param>
+    /// <returns><see cref="Task"/></returns>
+    Task PreloadAsync(CancellationToken stoppingToken);
 
     /// <summary>
     /// 查找即将触发的作业

@@ -1,4 +1,4 @@
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
@@ -28,5 +28,5 @@ public sealed class TaskWrapper
     /// <summary>
     /// 是否采用并行执行
     /// </summary>
-    public object Concurrent { get; internal set; } = null;
+    public bool? Concurrent { get; internal set; }
 }

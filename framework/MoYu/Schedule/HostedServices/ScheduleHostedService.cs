@@ -1,4 +1,4 @@
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
@@ -122,7 +122,7 @@ internal sealed class ScheduleHostedService : BackgroundService
         await WaitingClusterAsync();
 
         // 作业调度器初始化
-        _schedulerFactory.Preload();
+        await _schedulerFactory.PreloadAsync(stoppingToken);
 
         // 监听服务是否取消
         while (!stoppingToken.IsCancellationRequested)
@@ -352,7 +352,7 @@ internal sealed class ScheduleHostedService : BackgroundService
                             }
 
                             // 记录作业触发器运行信息
-                            trigger.RecordTimeline(_schedulerFactory, jobId);
+                            await trigger.RecordTimelineAsync(_schedulerFactory, jobId);
 
                             // 释放服务作用域
                             jobHandler = null;

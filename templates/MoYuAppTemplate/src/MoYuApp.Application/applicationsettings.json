@@ -1,16 +1,16 @@
 {
   "$schema": "https://gitee.com/dotnetchina/MoYu/raw/master/schemas/v4/moyu-schema.json",
   "SpecificationDocumentSettings": {
-    "DocumentTitle": "MoYu | �淶���ӿ�",
+    "DocumentTitle": "MoYu | 规范化接口",
     "GroupOpenApiInfos": [
       {
         "Group": "Default",
-        "Title": "�淶���ӿ���ʾ",
-        "Description": "д���룬�����㣬��������㡣",
-        "Version": "1.0.0",
+        "Title": "规范化接口演示",
+        "Description": "写代码，用摸鱼，摸不完的鱼。",
+        "Version": "1.0.1",
         "TermsOfService": "https://52moyu.net",
         "Contact": {
-          "Name": "������פ����ɽ���´�����������",
+          "Name": "少林寺驻北固山办事处大神父王喇嘛",
           "Url": "https://gitee.com/huguodong520",
           "Email": "531035580@52moyu.net"
         },

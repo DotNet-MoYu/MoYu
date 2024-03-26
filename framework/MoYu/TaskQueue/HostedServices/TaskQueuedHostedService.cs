@@ -1,4 +1,4 @@
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
@@ -60,7 +60,7 @@ internal sealed class TaskQueueHostedService : BackgroundService
     /// <summary>
     /// 同步任务队列（线程安全）
     /// </summary>
-    private readonly BlockingCollection<TaskWrapper> _syncTaskWrapperQueue = new(3000);
+    private readonly BlockingCollection<TaskWrapper> _syncTaskWrapperQueue = new(12000);
 
     /// <summary>
     /// 构造函数
@@ -131,7 +131,7 @@ internal sealed class TaskQueueHostedService : BackgroundService
         // 获取任务执行策略
         var concurrent = taskWrapper.Concurrent == null
             ? _concurrent
-            : (bool)taskWrapper.Concurrent;
+            : taskWrapper.Concurrent.Value;
 
         // 并行执行
         if (concurrent)

@@ -24,7 +24,7 @@ Param(
     #[string]$UseDatabaseNames
 )
 
-$FurTools = "MoYu | 规范化接口Tools v1.0.0";
+$MoYuTools = "MoYu | 规范化接口Tools v1.0.0";
 
 # 输出信息
 $copyright = @"
@@ -91,8 +91,8 @@ if($args.Contains("-UseDatabaseNames")){
 # 输出工具广告
 $copyright;
 
-Write-Output "$FurTools 启动中......";
-Write-Output "$FurTools 启动成功！";
+Write-Output "$MoYuTools 启动中......";
+Write-Output "$MoYuTools 启动成功！";
 
 # 获取程序包设置的默认项目
 $DefaultProject = Project;
@@ -102,15 +102,15 @@ $ProjectName = $DefaultProject.ProjectName;
 
 # 判断项目是否设置为 MoYu.Core
 if ($ProjectName -ne $CoreProject){
-    Write-Warning "$FurTools 请将默认项目设置为：$CoreProject";
+    Write-Warning "$MoYuTools 请将默认项目设置为：$CoreProject";
     return;
 }
 
 # 定义临时目录
 $TempOutputDir = "$rootPath\$CoreProject\TempEntities";
 
-Write-Warning "$FurTools 请键入操作类型：[G] 界面操作，[任意字符] 命令行操作";
-$options = Read-Host "$FurTools 您的输入是";
+Write-Warning "$MoYuTools 请键入操作类型：[G] 界面操作，[任意字符] 命令行操作";
+$options = Read-Host "$MoYuTools 您的输入是";
 
 # 选择 GUI 操作
 if($options -eq "G")
@@ -182,8 +182,8 @@ if($options -eq "G")
         $connectionDefine = [regex]::Matches($appsetting, '"ConnectionStrings"\s*.\s+\{(?<define>[\s\S]*?)\}');
         if($connectionDefine.Count -eq 0)
         {
-            # Write-Warning "$FurTools 未找到 $settingsPath 中定义的数据库连接字符串！";
-            # Write-Warning "$FurTools 程序终止！";
+            # Write-Warning "$MoYuTools 未找到 $settingsPath 中定义的数据库连接字符串！";
+            # Write-Warning "$MoYuTools 程序终止！";
             return;
         }
 
@@ -213,7 +213,7 @@ if($options -eq "G")
 
     # 创建一个 Winform 窗口
     $mainForm = New-Object System.Windows.Forms.Form;
-    $mainForm.Text = $FurTools;
+    $mainForm.Text = $MoYuTools;
     $mainForm.Size = New-Object System.Drawing.Size(800,600);
     $mainForm.StartPosition = "CenterScreen";
 
@@ -303,12 +303,12 @@ if($options -eq "G")
         $DbContextLocators = $locatorTextBox.Text;
 
         Try{
-            Write-Warning "$FurTools 正在加载数据库表和视图......"
+            Write-Warning "$MoYuTools 正在加载数据库表和视图......"
             loadDbTable;
-            Write-Warning "$FurTools 加载成功！"
+            Write-Warning "$MoYuTools 加载成功！"
         }
         Catch{
-            Write-Warning "$FurTools 加载数据库表和视图出错，请重试！";
+            Write-Warning "$MoYuTools 加载数据库表和视图出错，请重试！";
         }
     }
     $btnLoad.Add_Click($btnLoadClickEventHandler);
@@ -378,12 +378,12 @@ if($options -eq "G")
 
         if($OutputDir -eq $null -and $OutputDir -eq "")
         {
-            Write-Warning "$FurTools 用户取消操作，程序终止！";
+            Write-Warning "$MoYuTools 用户取消操作，程序终止！";
             return;
         }
     }
     else{
-        Write-Warning "$FurTools 用户取消操作，程序终止！";
+        Write-Warning "$MoYuTools 用户取消操作，程序终止！";
         return;
     }
 
@@ -401,20 +401,20 @@ else{
 
     if($OutputDir -eq $null -and $OutputDir -eq "")
     {
-        Write-Warning "$FurTools 用户取消操作，程序终止！";
+        Write-Warning "$MoYuTools 用户取消操作，程序终止！";
         return;
     }
 }
 
 if($ConnectionName -eq "NonConfigureConnectionString")
 {
-    Write-Warning "$FurTools 未找到连接字符串，程序终止！";
+    Write-Warning "$MoYuTools 未找到连接字符串，程序终止！";
     return;
 }
 
 # 执行 Scaffold-DbContext 命令
 
-Write-Output "$FurTools 正在编译解决方案代码......";
+Write-Output "$MoYuTools 正在编译解决方案代码......";
 
 if ($Tables.Count -eq 0){
     if($UseDatabaseNames)
@@ -437,13 +437,13 @@ else
     }
 }
 
-Write-Output "$FurTools 编译成功！";
+Write-Output "$MoYuTools 编译成功！";
 
-Write-Output "$FurTools 开始生成实体文件......";
+Write-Output "$MoYuTools 开始生成实体文件......";
 
 # 获取 DbContext 生成的配置内容
 $dbContextContent = Get-Content "$TempOutputDir\$Context.cs" -raw;
-$entityConfigures = [regex]::Matches($dbContextContent, "modelBuilder.Entity\<(?<table>\w+)\>\(entity\s=\>\n*[\s\S]*?\{(?<content>[\s\S]*?)\s*\n+\s*\}\);");
+$entityConfigures = [regex]::Matches($dbContextContent, "modelBuilder.Entity\<(?<table>\w+)\>\(entity\s=\>\n*[\s\S]*?\{(?<content>(?:[^{}]|(?<open>{)|(?<-open>}))+(?(open)(?!)))\}\);");
 
 # 定义字典集合
 $dic = New-Object -TypeName 'System.Collections.Generic.Dictionary[System.String, System.String]';
@@ -452,7 +452,7 @@ $dic = New-Object -TypeName 'System.Collections.Generic.Dictionary[System.String
 for ($i = 0; $i -le $entityConfigures.Count - 1; $i++){
     $groups = $entityConfigures[$i].Groups;
     $tableName = $groups.Value[1];
-    $configure = $groups.Value[2].Replace("entity.", "entityBuilder.");
+    $configure = $groups.Value[2] -replace '(?ms)(entity\s*\.\s*)', 'entityBuilder.'
 
     $dic.Add($tableName, $configure);
 }
@@ -460,7 +460,7 @@ for ($i = 0; $i -le $entityConfigures.Count - 1; $i++){
 # 定义实体文件头模板
 $fileHeader = @"
 // -----------------------------------------------------------------------------
-// Generate By $FurTools
+// Generate By $MoYuTools
 // -----------------------------------------------------------------------------
 
 using MoYu.DatabaseAccessor;
@@ -502,7 +502,7 @@ for ($i = 0; $i -le $files.Count - 1; $i++){
     }
 
 # 输出
-    Write-Output "$FurTools 正在生成 $fileName.cs 实体代码......";
+    Write-Output "$MoYuTools 正在生成 $fileName.cs 实体代码......";
 
     # 读取生成模型内容
     $entityContent = Get-Content $filePath -raw;
@@ -533,7 +533,7 @@ public partial class $fileName$extents
     Set-Content -Path $filePath -Value $finalClass -Encoding utf8;
 
     # 打印生成后代码
-    Write-Output "$FurTools 成功生成 $fileName.cs 实体代码";
+    Write-Output "$MoYuTools 成功生成 $fileName.cs 实体代码";
     $finalClass;
 
 # 移动文件
@@ -546,4 +546,4 @@ Remove-Item "$TempOutputDir\$Context.cs";
 # 删除临时实体文件夹
 Remove-Item $TempOutputDir -force;
 
-Write-Warning "$FurTools 全部实体生成成功！";
+Write-Warning "$MoYuTools 全部实体生成成功！";

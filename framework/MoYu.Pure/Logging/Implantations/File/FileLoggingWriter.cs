@@ -1,4 +1,4 @@
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
@@ -303,14 +303,18 @@ internal class FileLoggingWriter
     /// </summary>
     /// <param name="logMsg">日志消息</param>
     /// <param name="flush"></param>
-    internal void Write(LogMessage logMsg, bool flush)
+    /// <returns></returns>
+    internal async Task WriteAsync(LogMessage logMsg, bool flush)
     {
         if (_textWriter == null) return;
 
         CheckForNewLogFile();
-        _textWriter.WriteLine(logMsg.Message);
+        await _textWriter.WriteLineAsync(logMsg.Message);
 
-        if (flush) _textWriter.Flush();
+        if (flush)
+        {
+            await _textWriter.FlushAsync();
+        }
     }
 
     /// <summary>

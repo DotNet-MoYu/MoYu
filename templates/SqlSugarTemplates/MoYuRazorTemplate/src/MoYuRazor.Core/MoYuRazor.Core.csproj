@@ -27,8 +27,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MoYu.Extras.ObjectMapper.Mapster" Version="1.0.0" />
-		<PackageReference Include="MoYu.Pure" Version="1.0.0" />
+		<PackageReference Include="MoYu.Extras.ObjectMapper.Mapster" Version="1.0.1" />
+		<PackageReference Include="MoYu.Pure" Version="1.0.1" />
 		<PackageReference Include="SqlSugarCore" Version="5.1.4.145" />
 	</ItemGroup>
 

@@ -1,4 +1,4 @@
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
@@ -21,7 +21,7 @@ internal sealed class DateTimeJsonConverter : JsonConverter<DateTime>
     /// <returns><see cref="DateTime"/></returns>
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return DateTime.Parse(reader.GetString() ?? string.Empty);
+        return Convert.ToDateTime(reader.GetString());
     }
 
     /// <summary>
