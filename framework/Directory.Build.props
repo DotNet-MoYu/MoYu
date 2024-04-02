@@ -1,7 +1,7 @@
 <Project>
 	<PropertyGroup>
 		<TargetFrameworks>net5.0;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Authors>少林寺驻北固山办事处大神父王喇嘛</Authors>
 		<Company>.NET 摸鱼社区</Company>
