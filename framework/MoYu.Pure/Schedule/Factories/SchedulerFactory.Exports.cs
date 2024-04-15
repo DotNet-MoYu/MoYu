@@ -12,6 +12,11 @@ namespace MoYu.Schedule;
 internal sealed partial class SchedulerFactory
 {
     /// <summary>
+    /// 当前作业组名称
+    /// </summary>
+    internal string _groupSet;
+
+    /// <summary>
     /// 查找所有作业
     /// </summary>
     /// <param name="group">作业组名称</param>
@@ -327,8 +332,29 @@ internal sealed partial class SchedulerFactory
         // 逐条将作业计划构建器保存到作业计划中
         foreach (var schedulerBuilder in schedulerBuilders)
         {
-            _ = TrySaveJob(schedulerBuilder, out var _);
+            _ = TrySaveJob(schedulerBuilder, out _);
         }
+    }
+
+    /// <summary>
+    /// 添加作业组作业
+    /// </summary>
+    /// <param name="groupSet">作业组名称</param>
+    /// <param name="setAction"><see cref="Action"/></param>
+    public void GroupSet(string groupSet, Action setAction)
+    {
+        // 空检查
+        if (string.IsNullOrWhiteSpace(groupSet)) throw new ArgumentNullException(nameof(groupSet));
+        if (setAction is null) throw new ArgumentNullException(nameof(setAction));
+
+        // 设置当前作业组名称（理应不存在并发问题，若有添加 lock）
+        _groupSet = groupSet;
+
+        // 调用设置
+        setAction();
+
+        // 清空当前作业组名称
+        _groupSet = null;
     }
 
     /// <summary>
@@ -340,6 +366,10 @@ internal sealed partial class SchedulerFactory
     /// <returns><see cref="ScheduleResult"/></returns>
     public ScheduleResult TryAddJob(SchedulerBuilder schedulerBuilder, out IScheduler scheduler, bool immediately = true)
     {
+        // 设置作业组名称
+        var jobBuilder = schedulerBuilder?.JobBuilder;
+        if (!string.IsNullOrWhiteSpace(_groupSet)) jobBuilder?.SetGroupName(_groupSet);
+
         return TrySaveJob(schedulerBuilder?.Appended(), out scheduler, immediately);
     }
 
@@ -355,7 +385,7 @@ internal sealed partial class SchedulerFactory
         // 逐条将作业计划构建器保存到作业计划中
         foreach (var schedulerBuilder in schedulerBuilders)
         {
-            _ = TryAddJob(schedulerBuilder, out var _);
+            _ = TryAddJob(schedulerBuilder, out _);
         }
     }
 
@@ -379,7 +409,7 @@ internal sealed partial class SchedulerFactory
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     public void AddJob(JobBuilder jobBuilder, params TriggerBuilder[] triggerBuilders)
     {
-        _ = TryAddJob(jobBuilder, triggerBuilders, out var _);
+        _ = TryAddJob(jobBuilder, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -430,7 +460,7 @@ internal sealed partial class SchedulerFactory
     public void AddJob<TJob>(params TriggerBuilder[] triggerBuilders)
          where TJob : class, IJob
     {
-        _ = TryAddJob<TJob>(triggerBuilders, out var _);
+        _ = TryAddJob<TJob>(triggerBuilders, out _);
     }
 
     /// <summary>
@@ -440,7 +470,7 @@ internal sealed partial class SchedulerFactory
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     public void AddJob(Type jobType, params TriggerBuilder[] triggerBuilders)
     {
-        _ = TryAddJob(jobType, triggerBuilders, out var _);
+        _ = TryAddJob(jobType, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -450,7 +480,7 @@ internal sealed partial class SchedulerFactory
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     public void AddJob(Func<JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync, params TriggerBuilder[] triggerBuilders)
     {
-        _ = TryAddJob(dynamicExecuteAsync, triggerBuilders, out var _);
+        _ = TryAddJob(dynamicExecuteAsync, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -505,7 +535,7 @@ internal sealed partial class SchedulerFactory
     public void AddJob<TJob>(string jobId, params TriggerBuilder[] triggerBuilders)
          where TJob : class, IJob
     {
-        _ = TryAddJob<TJob>(jobId, triggerBuilders, out var _);
+        _ = TryAddJob<TJob>(jobId, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -516,7 +546,7 @@ internal sealed partial class SchedulerFactory
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     public void AddJob(Type jobType, string jobId, params TriggerBuilder[] triggerBuilders)
     {
-        _ = TryAddJob(jobType, jobId, triggerBuilders, out var _);
+        _ = TryAddJob(jobType, jobId, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -527,7 +557,7 @@ internal sealed partial class SchedulerFactory
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     public void AddJob(Func<JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync, string jobId, params TriggerBuilder[] triggerBuilders)
     {
-        _ = TryAddJob(dynamicExecuteAsync, jobId, triggerBuilders, out var _);
+        _ = TryAddJob(dynamicExecuteAsync, jobId, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -586,7 +616,7 @@ internal sealed partial class SchedulerFactory
     public void AddJob<TJob>(string jobId, bool concurrent, params TriggerBuilder[] triggerBuilders)
          where TJob : class, IJob
     {
-        _ = TryAddJob<TJob>(jobId, concurrent, triggerBuilders, out var _);
+        _ = TryAddJob<TJob>(jobId, concurrent, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -598,7 +628,7 @@ internal sealed partial class SchedulerFactory
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     public void AddJob(Type jobType, string jobId, bool concurrent, params TriggerBuilder[] triggerBuilders)
     {
-        _ = TryAddJob(jobType, jobId, concurrent, triggerBuilders, out var _);
+        _ = TryAddJob(jobType, jobId, concurrent, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -610,7 +640,7 @@ internal sealed partial class SchedulerFactory
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     public void AddJob(Func<JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync, string jobId, bool concurrent, params TriggerBuilder[] triggerBuilders)
     {
-        _ = TryAddJob(dynamicExecuteAsync, jobId, concurrent, triggerBuilders, out var _);
+        _ = TryAddJob(dynamicExecuteAsync, jobId, concurrent, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -665,7 +695,7 @@ internal sealed partial class SchedulerFactory
     public void AddJob<TJob>(bool concurrent, params TriggerBuilder[] triggerBuilders)
          where TJob : class, IJob
     {
-        _ = TryAddJob<TJob>(concurrent, triggerBuilders, out var _);
+        _ = TryAddJob<TJob>(concurrent, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -676,7 +706,7 @@ internal sealed partial class SchedulerFactory
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     public void AddJob(Type jobType, bool concurrent, params TriggerBuilder[] triggerBuilders)
     {
-        _ = TryAddJob(jobType, concurrent, triggerBuilders, out var _);
+        _ = TryAddJob(jobType, concurrent, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -687,7 +717,7 @@ internal sealed partial class SchedulerFactory
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     public void AddJob(Func<JobExecutingContext, CancellationToken, Task> dynamicExecuteAsync, bool concurrent, params TriggerBuilder[] triggerBuilders)
     {
-        _ = TryAddJob(dynamicExecuteAsync, concurrent, triggerBuilders, out var _);
+        _ = TryAddJob(dynamicExecuteAsync, concurrent, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -698,7 +728,7 @@ internal sealed partial class SchedulerFactory
     /// <returns><see cref="ScheduleOptionsBuilder"/></returns>
     public void AddHttpJob(Action<HttpJobMessage> buildMessage, params TriggerBuilder[] triggerBuilders)
     {
-        _ = TryAddHttpJob<HttpJob>(buildMessage, triggerBuilders, out var _);
+        _ = TryAddHttpJob<HttpJob>(buildMessage, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -724,7 +754,7 @@ internal sealed partial class SchedulerFactory
     public void AddHttpJob<TJob>(Action<HttpJobMessage> buildMessage, params TriggerBuilder[] triggerBuilders)
         where TJob : class, IJob
     {
-        _ = TryAddHttpJob<TJob>(buildMessage, triggerBuilders, out var _);
+        _ = TryAddHttpJob<TJob>(buildMessage, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -751,7 +781,7 @@ internal sealed partial class SchedulerFactory
     /// <returns><see cref="ScheduleOptionsBuilder"/></returns>
     public void AddHttpJob(Action<HttpJobMessage> buildMessage, string jobId, params TriggerBuilder[] triggerBuilders)
     {
-        _ = TryAddHttpJob<HttpJob>(buildMessage, jobId, triggerBuilders, out var _);
+        _ = TryAddHttpJob<HttpJob>(buildMessage, jobId, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -779,7 +809,7 @@ internal sealed partial class SchedulerFactory
     public void AddHttpJob<TJob>(Action<HttpJobMessage> buildMessage, string jobId, params TriggerBuilder[] triggerBuilders)
         where TJob : class, IJob
     {
-        _ = TryAddHttpJob<TJob>(buildMessage, jobId, triggerBuilders, out var _);
+        _ = TryAddHttpJob<TJob>(buildMessage, jobId, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -808,7 +838,7 @@ internal sealed partial class SchedulerFactory
     /// <returns><see cref="ScheduleOptionsBuilder"/></returns>
     public void AddHttpJob(Action<HttpJobMessage> buildMessage, string jobId, bool concurrent, params TriggerBuilder[] triggerBuilders)
     {
-        _ = TryAddHttpJob<HttpJob>(buildMessage, jobId, concurrent, triggerBuilders, out var _);
+        _ = TryAddHttpJob<HttpJob>(buildMessage, jobId, concurrent, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -838,7 +868,7 @@ internal sealed partial class SchedulerFactory
     public void AddHttpJob<TJob>(Action<HttpJobMessage> buildMessage, string jobId, bool concurrent, params TriggerBuilder[] triggerBuilders)
         where TJob : class, IJob
     {
-        _ = TryAddHttpJob<TJob>(buildMessage, jobId, concurrent, triggerBuilders, out var _);
+        _ = TryAddHttpJob<TJob>(buildMessage, jobId, concurrent, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -867,7 +897,7 @@ internal sealed partial class SchedulerFactory
     /// <returns><see cref="ScheduleOptionsBuilder"/></returns>
     public void AddHttpJob(Action<HttpJobMessage> buildMessage, bool concurrent, params TriggerBuilder[] triggerBuilders)
     {
-        _ = TryAddHttpJob<HttpJob>(buildMessage, concurrent, triggerBuilders, out var _);
+        _ = TryAddHttpJob<HttpJob>(buildMessage, concurrent, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -895,7 +925,7 @@ internal sealed partial class SchedulerFactory
     public void AddHttpJob<TJob>(Action<HttpJobMessage> buildMessage, bool concurrent, params TriggerBuilder[] triggerBuilders)
         where TJob : class, IJob
     {
-        _ = TryAddHttpJob<TJob>(buildMessage, concurrent, triggerBuilders, out var _);
+        _ = TryAddHttpJob<TJob>(buildMessage, concurrent, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -964,7 +994,7 @@ internal sealed partial class SchedulerFactory
         // 逐条将作业计划构建器保存到作业计划中
         foreach (var schedulerBuilder in schedulerBuilders)
         {
-            _ = TryUpdateJob(schedulerBuilder, out var _);
+            _ = TryUpdateJob(schedulerBuilder, out _);
         }
     }
 
@@ -995,9 +1025,12 @@ internal sealed partial class SchedulerFactory
     /// <param name="jobIds">作业 Id 集合</param>
     public void RemoveJob(params string[] jobIds)
     {
+        // 空检查
+        if (jobIds == null || jobIds.Length == 0) throw new ArgumentNullException(nameof(jobIds));
+
         foreach (var jobId in jobIds)
         {
-            _ = TryRemoveJob(jobId, out var _);
+            _ = TryRemoveJob(jobId, out _);
         }
     }
 
@@ -1018,6 +1051,8 @@ internal sealed partial class SchedulerFactory
     /// <param name="schedulers">作业计划集合</param>
     public void RemoveJob(params IScheduler[] schedulers)
     {
+        if (schedulers == null || schedulers.Length == 0) throw new ArgumentNullException(nameof(schedulers));
+
         foreach (var scheduler in schedulers)
         {
             _ = TryRemoveJob(scheduler);
@@ -1109,13 +1144,15 @@ internal sealed partial class SchedulerFactory
     /// 立即执行作业
     /// </summary>
     /// <param name="jobId">作业 Id</param>
+    /// <param name="scheduler">作业计划</param>
     /// <returns><see cref="ScheduleResult"/></returns>
-    public ScheduleResult TryRunJob(string jobId)
+    public ScheduleResult TryRunJob(string jobId, out IScheduler scheduler)
     {
         // 查找作业
-        var scheduleResult = InternalTryGetJob(jobId, out var _, true);
+        var scheduleResult = InternalTryGetJob(jobId, out var originScheduler, true);
         if (scheduleResult != ScheduleResult.Succeed)
         {
+            scheduler = null;
             return scheduleResult;
         }
 
@@ -1125,25 +1162,230 @@ internal sealed partial class SchedulerFactory
         // 取消作业调度器休眠状态（强制唤醒）
         CancelSleep();
 
+        scheduler = originScheduler;
         return ScheduleResult.Succeed;
     }
 
     /// <summary>
     /// 立即执行作业
     /// </summary>
-    /// <param name="jobId">作业 Id</param>
-    public void RunJob(string jobId)
+    /// <param name="jobIds">作业 Id 集合</param>
+    public void RunJob(params string[] jobIds)
     {
-        _ = TryRunJob(jobId);
+        // 空检查
+        if (jobIds == null || jobIds.Length == 0) throw new ArgumentNullException(nameof(jobIds));
+
+        foreach (var jobId in jobIds)
+        {
+            _ = TryRunJob(jobId, out _);
+        }
+    }
+
+    /// <summary>
+    /// 立即执行作业
+    /// </summary>
+    /// <param name="scheduler">作业计划</param>
+    /// <returns><see cref="ScheduleResult"/></returns>
+    public ScheduleResult TryRunJob(IScheduler scheduler)
+    {
+        return TryRunJob(scheduler?.JobId, out _);
+    }
+
+    /// <summary>
+    /// 立即执行作业
+    /// </summary>
+    /// <param name="schedulers">作业计划集合</param>
+    public void RunJob(params IScheduler[] schedulers)
+    {
+        if (schedulers == null || schedulers.Length == 0) throw new ArgumentNullException(nameof(schedulers));
+
+        foreach (var scheduler in schedulers)
+        {
+            _ = TryRunJob(scheduler);
+        }
     }
 
     /// <summary>
     /// 取消正在执行的作业
     /// </summary>
     /// <param name="jobId">作业 Id</param>
-    public void CancelJob(string jobId)
+    /// <param name="scheduler">作业计划</param>
+    /// <returns><see cref="ScheduleResult"/></returns>
+    public ScheduleResult TryCancelJob(string jobId, out IScheduler scheduler)
     {
+        // 查找作业
+        var scheduleResult = InternalTryGetJob(jobId, out var originScheduler, true);
+        if (scheduleResult != ScheduleResult.Succeed)
+        {
+            scheduler = null;
+            return scheduleResult;
+        }
+
         _jobCancellationToken.Cancel(jobId);
+
+        scheduler = originScheduler;
+        return ScheduleResult.Succeed;
+    }
+
+    /// <summary>
+    /// 取消正在执行的作业
+    /// </summary>
+    /// <param name="jobIds">作业 Id 集合</param>
+    public void CancelJob(params string[] jobIds)
+    {
+        // 空检查
+        if (jobIds == null || jobIds.Length == 0) throw new ArgumentNullException(nameof(jobIds));
+
+        foreach (var jobId in jobIds)
+        {
+            _ = TryCancelJob(jobId, out _);
+        }
+    }
+
+    /// <summary>
+    /// 取消正在执行的作业
+    /// </summary>
+    /// <param name="scheduler">作业计划</param>
+    /// <returns><see cref="ScheduleResult"/></returns>
+    public ScheduleResult TryCancelJob(IScheduler scheduler)
+    {
+        return TryCancelJob(scheduler?.JobId, out _);
+    }
+
+    /// <summary>
+    /// 取消正在执行的作业
+    /// </summary>
+    /// <param name="schedulers">作业计划集合</param>
+    public void CancelJob(params IScheduler[] schedulers)
+    {
+        if (schedulers == null || schedulers.Length == 0) throw new ArgumentNullException(nameof(schedulers));
+
+        foreach (var scheduler in schedulers)
+        {
+            _ = TryCancelJob(scheduler);
+        }
+    }
+
+    /// <summary>
+    /// 启动作业
+    /// </summary>
+    /// <param name="jobId">作业 Id</param>
+    /// <param name="scheduler">作业计划</param>
+    /// <returns><see cref="ScheduleResult"/></returns>
+    public ScheduleResult TryStartJob(string jobId, out IScheduler scheduler)
+    {
+        // 查找作业
+        var scheduleResult = InternalTryGetJob(jobId, out var originScheduler, true);
+        if (scheduleResult != ScheduleResult.Succeed)
+        {
+            scheduler = null;
+            return scheduleResult;
+        }
+
+        originScheduler.Start();
+
+        scheduler = originScheduler;
+        return ScheduleResult.Succeed;
+    }
+
+    /// <summary>
+    /// 启动作业
+    /// </summary>
+    /// <param name="jobIds">作业 Id 集合</param>
+    public void StartJob(params string[] jobIds)
+    {
+        // 空检查
+        if (jobIds == null || jobIds.Length == 0) throw new ArgumentNullException(nameof(jobIds));
+
+        foreach (var jobId in jobIds)
+        {
+            _ = TryStartJob(jobId, out _);
+        }
+    }
+
+    /// <summary>
+    /// 启动作业
+    /// </summary>
+    /// <param name="scheduler">作业计划</param>
+    /// <returns><see cref="ScheduleResult"/></returns>
+    public ScheduleResult TryStartJob(IScheduler scheduler)
+    {
+        return TryStartJob(scheduler?.JobId, out _);
+    }
+
+    /// <summary>
+    /// 启动作业
+    /// </summary>
+    /// <param name="schedulers">作业计划集合</param>
+    public void StartJob(params IScheduler[] schedulers)
+    {
+        if (schedulers == null || schedulers.Length == 0) throw new ArgumentNullException(nameof(schedulers));
+
+        foreach (var scheduler in schedulers)
+        {
+            _ = TryStartJob(scheduler);
+        }
+    }
+
+    /// <summary>
+    /// 暂停作业
+    /// </summary>
+    /// <param name="jobId">作业 Id</param>
+    /// <param name="scheduler">作业计划</param>
+    /// <returns><see cref="ScheduleResult"/></returns>
+    public ScheduleResult TryPauseJob(string jobId, out IScheduler scheduler)
+    {
+        // 查找作业
+        var scheduleResult = InternalTryGetJob(jobId, out var originScheduler, true);
+        if (scheduleResult != ScheduleResult.Succeed)
+        {
+            scheduler = null;
+            return scheduleResult;
+        }
+
+        originScheduler.Pause();
+
+        scheduler = originScheduler;
+        return ScheduleResult.Succeed;
+    }
+
+    /// <summary>
+    /// 暂停作业
+    /// </summary>
+    /// <param name="jobIds">作业 Id 集合</param>
+    public void PauseJob(params string[] jobIds)
+    {
+        // 空检查
+        if (jobIds == null || jobIds.Length == 0) throw new ArgumentNullException(nameof(jobIds));
+
+        foreach (var jobId in jobIds)
+        {
+            _ = TryPauseJob(jobId, out _);
+        }
+    }
+
+    /// <summary>
+    /// 暂停作业
+    /// </summary>
+    /// <param name="scheduler">作业计划</param>
+    /// <returns><see cref="ScheduleResult"/></returns>
+    public ScheduleResult TryPauseJob(IScheduler scheduler)
+    {
+        return TryPauseJob(scheduler?.JobId, out _);
+    }
+
+    /// <summary>
+    /// 暂停作业
+    /// </summary>
+    /// <param name="schedulers">作业计划集合</param>
+    public void PauseJob(params IScheduler[] schedulers)
+    {
+        if (schedulers == null || schedulers.Length == 0) throw new ArgumentNullException(nameof(schedulers));
+
+        foreach (var scheduler in schedulers)
+        {
+            _ = TryPauseJob(scheduler);
+        }
     }
 
     /// <summary>

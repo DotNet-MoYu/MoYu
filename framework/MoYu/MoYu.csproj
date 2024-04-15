@@ -8,7 +8,6 @@
 
 	<ItemGroup>
 		<None Remove="FriendlyException\Assets\error.html" />
-		<None Remove="Schedule\Dashboard\frontend\**\*" />
 		<None Remove="SpecificationDocument\Assets\index-mini-profiler.html" />
 		<None Remove="SpecificationDocument\Assets\index.html" />
 	</ItemGroup>

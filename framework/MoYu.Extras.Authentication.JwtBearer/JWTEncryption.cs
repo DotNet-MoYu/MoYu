@@ -345,7 +345,7 @@ public class JWTEncryption
         if (string.IsNullOrWhiteSpace(bearerToken)) return default;
 
         var prefixLenght = tokenPrefix.Length;
-        return bearerToken.StartsWith(tokenPrefix, true, null) && bearerToken.Length > prefixLenght ? bearerToken[prefixLenght..] : default;
+        return bearerToken.StartsWith(tokenPrefix, true, null) && bearerToken.Length > prefixLenght ? bearerToken[prefixLenght..].Trim() : default;
     }
 
     /// <summary>
@@ -360,13 +360,14 @@ public class JWTEncryption
         if (FrameworkApp == null)
         {
             Debug.WriteLine("No register the code `services.AddJwt()` on Startup.cs.");
-
-            var jwtSettings = new JWTSettingsOptions();
-            SetDefaultJwtSettings(jwtSettings);
-            return jwtSettings;
         }
 
-        return FrameworkApp.GetMethod("GetOptions").MakeGenericMethod(typeof(JWTSettingsOptions)).Invoke(null, new object[] { null }) as JWTSettingsOptions ?? SetDefaultJwtSettings(new JWTSettingsOptions());
+        var jwtSettingsOptions = FrameworkApp.GetMethod("GetOptions").MakeGenericMethod(typeof(JWTSettingsOptions)).Invoke(null, new object[] { null }) as JWTSettingsOptions;
+        if (jwtSettingsOptions.Algorithm == null && jwtSettingsOptions.ExpiredTime == null)
+        {
+            SetDefaultJwtSettings(jwtSettingsOptions);
+        }
+        return jwtSettingsOptions;
     }
 
     /// <summary>
@@ -504,17 +505,17 @@ public class JWTEncryption
             ? Assembly.GetEntryAssembly()
             : callAssembly;
 
-        // 获取 MoYu | 规范化接口程序集名称
-        var MoYuAssemblyName = callAssembly.GetReferencedAssemblies()
-                                                   .FirstOrDefault(u => u.Name == "MoYu" || u.Name == "MoYu.Pure")
-                                                   ?? throw new InvalidOperationException("No `MoYu` assembly installed in the current project was detected.");
+        // 获取 MoYu 程序集名称
+        var furionAssemblyName = executeAssembly.GetReferencedAssemblies()
+            .FirstOrDefault(u => u.Name == "MoYu" || u.Name == "MoYu.Pure")
+            ?? throw new InvalidOperationException("No `MoYu` assembly installed in the current project was detected.");
 
-        // 加载 MoYu | 规范化接口程序集
-        var MoYuAssembly = AssemblyLoadContext.Default.LoadFromAssemblyName(MoYuAssemblyName);
+        // 加载 MoYu 程序集
+        var furionAssembly = AssemblyLoadContext.Default.LoadFromAssemblyName(furionAssemblyName);
 
         // 获取 MoYu.App 静态类
-        FrameworkApp = MoYuAssembly.GetType("MoYu.App");
+        FrameworkApp = furionAssembly.GetType("MoYu.App");
 
-        return MoYuAssembly;
+        return furionAssembly;
     }
 }

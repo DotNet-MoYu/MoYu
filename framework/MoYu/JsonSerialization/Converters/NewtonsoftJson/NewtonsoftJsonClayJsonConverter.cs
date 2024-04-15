@@ -1,4 +1,4 @@
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
@@ -37,6 +37,6 @@ public class NewtonsoftJsonClayJsonConverter : JsonConverter<Clay>
     /// <param name="serializer"></param>
     public override void WriteJson(JsonWriter writer, Clay value, JsonSerializer serializer)
     {
-        serializer.Serialize(writer, value.ToString());
+        writer.WriteRawValue(value.ToString());
     }
 }
