@@ -1,6 +1,8 @@
+
 // 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
+
 
 using MoYu.Extensions;
 using MoYu.UnifyResult;
@@ -512,7 +514,8 @@ internal sealed class DynamicApiControllerApplicationModelConvention : IApplicat
         if (action.Parameters.Count == 0) return default;
 
         var parameterRouteTemplate = new ParameterRouteTemplate();
-        var parameters = action.Parameters;
+        var parameters = action.Parameters
+            .Where(u => !(u.BindingInfo is { BindingSource.DisplayName: "Special" } || u.Attributes.Any(c => c.GetType() == typeof(BindNeverAttribute))));
 
         // 判断是否贴有 [QueryParameters] 特性
         var isQueryParametersAction = action.Attributes.Any(u => u is QueryParametersAttribute);

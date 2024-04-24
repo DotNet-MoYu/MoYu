@@ -1,6 +1,8 @@
+
 // 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
+
 
 using MoYu.ClayObject.Extensions;
 using MoYu.Extensions;
@@ -102,10 +104,13 @@ public sealed class Clay : DynamicObject, IEnumerable
     public static dynamic Object(object obj, bool throwOnUndefined = true)
     {
         // 空检查
-        if (obj == null) throw new ArgumentNullException(nameof(obj));
+        if (obj != null)
+        {
+            var json = CreateJsonString(new XStreamingElement("root", CreateTypeAttr(GetJsonType(obj)), CreateJsonNode(obj)));
+            return Parse(json, throwOnUndefined);
+        }
 
-        var json = CreateJsonString(new XStreamingElement("root", CreateTypeAttr(GetJsonType(obj)), CreateJsonNode(obj)));
-        return Parse(json, throwOnUndefined);
+        throw new ArgumentNullException(nameof(obj));
     }
 
     /// <summary>
@@ -188,6 +193,7 @@ public sealed class Clay : DynamicObject, IEnumerable
         }
 
         result = IsDefined(binder.Name);
+
         return true;
     }
 
@@ -210,6 +216,7 @@ public sealed class Clay : DynamicObject, IEnumerable
         {
             result = Deserialize(binder.Type);
         }
+
         return true;
     }
 
@@ -284,12 +291,21 @@ public sealed class Clay : DynamicObject, IEnumerable
     /// <returns></returns>
     public override string ToString()
     {
-        // 处理类型为 null 且为双闭合标签
+        // 清除 null 节点
+        ClearNullNodes();
+
+        return CreateJsonString(new XStreamingElement("root", CreateTypeAttr(jsonType), XmlElement.Elements()));
+    }
+
+    /// <summary>
+    /// 清除 null 节点
+    /// </summary>
+    private void ClearNullNodes()
+    {
         foreach (var elem in XmlElement.Descendants().Where(x => x.Attribute("type").Value == "null"))
         {
             elem.RemoveNodes();
         }
-        return CreateJsonString(new XStreamingElement("root", CreateTypeAttr(jsonType), XmlElement.Elements()));
     }
 
     /// <summary>
@@ -357,45 +373,35 @@ public sealed class Clay : DynamicObject, IEnumerable
     /// <summary>
     /// 将粘土对象转换为 object 类型
     /// </summary>
+    /// <param name="jsonSerializerOptions"></param>
     /// <returns></returns>
-    public object Solidify()
+    public object Solidify(object jsonSerializerOptions = null)
     {
-        return Solidify<object>();
+        return Solidify<object>(jsonSerializerOptions);
     }
 
     /// <summary>
     /// 将粘土对象转换为特定类型
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    /// <param name="jsonSerializerOptions"></param>
     /// <returns></returns>
-    public T Solidify<T>()
+    public T Solidify<T>(object jsonSerializerOptions = null)
     {
-        return JSON.Deserialize<T>(ToString());
+        return JSON.Deserialize<T>(ToString(), jsonSerializerOptions);
     }
 
     /// <summary>
     /// 将粘土对象转换为字典类型
     /// </summary>
+    /// <param name="jsonSerializerOptions"></param>
     /// <returns></returns>
-    public IDictionary<string, object> ToDictionary()
+    public IDictionary<string, object> ToDictionary(object jsonSerializerOptions = null)
     {
         // 数组类型不支持转换成字典
         if (IsArray) throw new InvalidOperationException("Cannot convert a clay object with JsonType as an array to a dictionary object.");
 
-        var dic = new Dictionary<string, object>();
-        foreach (KeyValuePair<string, dynamic> item in this)
-        {
-            if (item.Value is Clay clay && clay.IsObject)
-            {
-                dic[item.Key] = clay.ToDictionary();
-            }
-            else
-            {
-                dic[item.Key] = item.Value;
-            }
-        }
-
-        return dic;
+        return Solidify<Dictionary<string, object>>(jsonSerializerOptions);
     }
 
     /// <summary>
@@ -550,6 +556,12 @@ public sealed class Clay : DynamicObject, IEnumerable
     /// <returns></returns>
     private static IEnumerable<XStreamingElement> CreateXArray<T>(T obj) where T : IEnumerable
     {
+        if (obj is Clay clay)
+        {
+            clay.ClearNullNodes();
+            return clay.XmlElement.Elements().Select(xElement => new XStreamingElement(xElement.Name, xElement.Attributes(), xElement.Nodes()));
+        }
+
         return obj.Cast<object>()
             .Select(o => new XStreamingElement("item", CreateTypeAttr(GetJsonType(o)), CreateJsonNode(o)));
     }
@@ -561,6 +573,12 @@ public sealed class Clay : DynamicObject, IEnumerable
     /// <returns></returns>
     private static IEnumerable<XStreamingElement> CreateXObject(object obj)
     {
+        if (obj is Clay clay)
+        {
+            clay.ClearNullNodes();
+            return clay.XmlElement.Elements().Select(xElement => new XStreamingElement(xElement.Name, xElement.Attributes(), xElement.Nodes()));
+        }
+
         if (obj is ExpandoObject expando)
         {
             var dict = (IDictionary<string, object>)expando;
@@ -730,7 +748,7 @@ public sealed class Clay : DynamicObject, IEnumerable
             value = clay.Deserialize(elementType);
         }
 
-        return MoYu.Extensions.ObjectExtensions.ChangeType(value, elementType);
+        return ObjectExtensions.ChangeType(value, elementType);
     }
 
     /// <summary>
@@ -818,7 +836,8 @@ public sealed class Clay : DynamicObject, IEnumerable
     /// <summary>
     /// 将被转换成字符串的类型
     /// </summary>
-    private static readonly Type[] ToBeConvertStringTypes = new[] {
-            typeof(DateTimeOffset)
-        };
+    private static readonly Type[] ToBeConvertStringTypes = new[]
+    {
+        typeof(DateTimeOffset)
+    };
 }

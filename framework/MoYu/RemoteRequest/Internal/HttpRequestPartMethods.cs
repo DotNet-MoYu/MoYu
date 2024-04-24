@@ -1,6 +1,8 @@
+
 // 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
+
 
 using MoYu.ClayObject;
 using MoYu.ClayObject.Extensions;
@@ -556,16 +558,17 @@ public sealed partial class HttpRequestPart
                                 ? clientFactory.CreateClient()
                                 : clientFactory.CreateClient(clientName));
 
-        // 判断命名客户端是否配置了 BaseAddress，且必须以 / 结尾
-        var httpClientOriginalString = httpClient.BaseAddress?.OriginalString;
-        if (!string.IsNullOrWhiteSpace(httpClientOriginalString) && !httpClientOriginalString.EndsWith("/"))
-            throw new InvalidOperationException($"The `{ClientName}` of HttpClient BaseAddress must be end with '/'.");
-
         // 添加默认 User-Agent
         if (!httpClient.DefaultRequestHeaders.Contains("User-Agent"))
         {
             httpClient.DefaultRequestHeaders.Add("User-Agent",
                              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36 Edg/104.0.1293.47");
+        }
+
+        // 处理 [BaseAddress] 特性
+        if (!string.IsNullOrWhiteSpace(BaseAddress))
+        {
+            httpClient.BaseAddress = new Uri(BaseAddress.TrimEnd('/') + "/");
         }
 
         // 配置 HttpClient 拦截
@@ -574,8 +577,13 @@ public sealed partial class HttpRequestPart
             u?.Invoke(httpClient);
         });
 
+        // 判断命名客户端是否配置了 BaseAddress，且必须以 / 结尾
+        var httpClientOriginalString = httpClient.BaseAddress?.OriginalString;
+        if (!string.IsNullOrWhiteSpace(httpClientOriginalString) && !httpClientOriginalString.EndsWith("/"))
+            throw new InvalidOperationException($"The `{ClientName}` of HttpClient BaseAddress must be end with '/'.");
+
         // 检查请求地址，如果客户端 BaseAddress 没有配置且 RequestUrl 也没配置
-        if (string.IsNullOrWhiteSpace(httpClient.BaseAddress?.OriginalString) && string.IsNullOrWhiteSpace(RequestUrl)) throw new NullReferenceException(RequestUrl);
+        if (string.IsNullOrWhiteSpace(httpClientOriginalString) && string.IsNullOrWhiteSpace(RequestUrl)) throw new NullReferenceException(RequestUrl);
 
         // 处理模板问题
         RequestUrl = RequestUrl.Render(Templates, EncodeUrl);

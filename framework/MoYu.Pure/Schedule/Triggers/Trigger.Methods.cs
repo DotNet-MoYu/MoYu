@@ -1,6 +1,8 @@
-﻿// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿
+// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
+
 
 using MoYu.Templates;
 using System.Collections.Concurrent;
@@ -139,12 +141,7 @@ public partial class Trigger
         if (baseTime == null) return null;
 
         // 获取下一次执行时间
-        var nextRunTime = GetNextOccurrence(baseTime.Value);
-
-        // 控制误差在 30ms 以内
-        return nextRunTime.Millisecond > 30
-            ? nextRunTime.AddMilliseconds(-30)
-            : nextRunTime;
+        return GetNextOccurrence(baseTime.Value);
     }
 
     /// <summary>
@@ -161,9 +158,15 @@ public partial class Trigger
         }
         else
         {
-            return (StartTime == null || StartTime.Value <= startAt)
-                ? startAt.AddSeconds(-1)
-                : StartTime;
+            // 检查是否设置了 RunOnStartProvider 配置
+            if (ScheduleOptionsBuilder.InternalRunOnStartProvider is null)
+            {
+                return (StartTime == null || StartTime.Value <= startAt)
+                    ? startAt.AddSeconds(-1)
+                    : StartTime;
+            }
+
+            return ScheduleOptionsBuilder.InternalRunOnStartProvider(this, startAt);
         }
     }
 

@@ -1,6 +1,8 @@
-﻿// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿
+// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
+
 
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
@@ -150,7 +152,7 @@ public sealed class FileLoggerProvider : ILoggerProvider, ISupportExternalScope
         _rollingFileNames.Clear();
 
         // 释放内部文件写入器
-        _fileLoggingWriter.Close();
+        Task.Run(_fileLoggingWriter.CloseAsync);
     }
 
     /// <summary>

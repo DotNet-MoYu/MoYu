@@ -1,6 +1,8 @@
-﻿// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿
+// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
+
 
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -109,6 +111,26 @@ public sealed class ScheduleOptionsBuilder
     /// 内部生成 SQL 的类型
     /// </summary>
     internal static SqlTypes InternalBuildSqlType { get; private set; } = SqlTypes.Standard;
+
+    /// <summary>
+    /// 配置 RunOnStart 提供程序
+    /// </summary>
+    public Func<Trigger, DateTime, DateTime?> RunOnStartProvider
+    {
+        get
+        {
+            return InternalRunOnStartProvider;
+        }
+        set
+        {
+            InternalRunOnStartProvider = value;
+        }
+    }
+
+    /// <summary>
+    /// 内部配置 RunOnStart 提供程序
+    /// </summary>
+    internal static Func<Trigger, DateTime, DateTime?> InternalRunOnStartProvider { get; private set; }
 
     /// <summary>
     /// 添加作业组作业

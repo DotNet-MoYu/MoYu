@@ -1,6 +1,8 @@
+﻿
 // 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
+
 
 using MoYu.ClayObject.Extensions;
 using MoYu.JsonSerialization;
@@ -127,6 +129,17 @@ public sealed partial class HttpRequestPart
     public HttpRequestPart SetClient(Func<HttpClient> clientProvider)
     {
         ClientProvider = clientProvider;
+        return this;
+    }
+
+    /// <summary>
+    /// 设置客户端 BaseAddress
+    /// </summary>
+    /// <param name="baseAddress"></param>
+    /// <returns></returns>
+    public HttpRequestPart SetBaseAddress(string baseAddress)
+    {
+        if (!string.IsNullOrWhiteSpace(baseAddress)) BaseAddress = baseAddress;
         return this;
     }
 

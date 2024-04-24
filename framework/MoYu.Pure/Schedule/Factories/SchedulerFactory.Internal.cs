@@ -1,6 +1,8 @@
-﻿// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿
+// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
+
 
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
@@ -370,8 +372,7 @@ internal sealed partial class SchedulerFactory : ISchedulerFactory
         var jobHandler = jobFactory?.CreateJob(serviceProvider, context);
         if (jobHandler != null) return jobHandler;
 
-        var provider = jobFactory == null ? _serviceProvider : serviceProvider;
-        jobHandler = ActivatorUtilities.GetServiceOrCreateInstance(provider, context.JobType) as IJob;
+        jobHandler = ActivatorUtilities.GetServiceOrCreateInstance(serviceProvider, context.JobType) as IJob;
 
         return jobHandler;
     }

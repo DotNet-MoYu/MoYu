@@ -1,6 +1,8 @@
+
 // 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
+
 
 using MoYu.JsonSerialization;
 using System.Text;
@@ -54,6 +56,11 @@ public sealed partial class HttpRequestPart
     /// 客户端名称
     /// </summary>
     public string ClientName { get; private set; }
+
+    /// <summary>
+    /// 客户端 BaseAddress
+    /// </summary>
+    public string BaseAddress { get; private set; }
 
     /// <summary>
     /// 客户端提供者

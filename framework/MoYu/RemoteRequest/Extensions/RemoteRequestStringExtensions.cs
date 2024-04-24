@@ -1,6 +1,8 @@
+﻿
 // 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
+
 
 using MoYu.JsonSerialization;
 using System.Text;
@@ -112,6 +114,17 @@ public static class RemoteRequestStringExtensions
     public static HttpRequestPart SetClient(this string requestUrl, Func<HttpClient> clientProvider)
     {
         return HttpRequestPart.Default().SetRequestUrl(requestUrl).SetClient(clientProvider);
+    }
+
+    /// <summary>
+    /// 设置客户端 BaseAddress
+    /// </summary>
+    /// <param name="requestUrl"></param>
+    /// <param name="baseAddress"></param>
+    /// <returns></returns>
+    public static HttpRequestPart SetBaseAddress(this string requestUrl, string baseAddress)
+    {
+        return HttpRequestPart.Default().SetRequestUrl(requestUrl).SetBaseAddress(baseAddress);
     }
 
     /// <summary>

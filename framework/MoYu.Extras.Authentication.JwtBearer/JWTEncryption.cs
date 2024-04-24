@@ -506,16 +506,16 @@ public class JWTEncryption
             : callAssembly;
 
         // 获取 MoYu 程序集名称
-        var furionAssemblyName = executeAssembly.GetReferencedAssemblies()
+        var moyuAssemblyName = executeAssembly.GetReferencedAssemblies()
             .FirstOrDefault(u => u.Name == "MoYu" || u.Name == "MoYu.Pure")
             ?? throw new InvalidOperationException("No `MoYu` assembly installed in the current project was detected.");
 
         // 加载 MoYu 程序集
-        var furionAssembly = AssemblyLoadContext.Default.LoadFromAssemblyName(furionAssemblyName);
+        var moyuAssembly = AssemblyLoadContext.Default.LoadFromAssemblyName(moyuAssemblyName);
 
         // 获取 MoYu.App 静态类
-        FrameworkApp = furionAssembly.GetType("MoYu.App");
+        FrameworkApp = moyuAssembly.GetType("MoYu.App");
 
-        return furionAssembly;
+        return moyuAssembly;
     }
 }

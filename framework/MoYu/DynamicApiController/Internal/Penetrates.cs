@@ -1,6 +1,8 @@
+
 // 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
+
 
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Concurrent;
@@ -79,16 +81,18 @@ internal static class Penetrates
         // 本地静态方法
         static bool Function(Type type)
         {
-
             // 排除 OData 控制器
             if (type.Assembly.GetName().Name.StartsWith("Microsoft.AspNetCore.OData")) return false;
-
 
             // 不能是非公开、基元类型、值类型、抽象类、接口、泛型类
             if (!type.IsPublic || type.IsPrimitive || type.IsValueType || type.IsAbstract || type.IsInterface || type.IsGenericType) return false;
 
             // 继承 ControllerBase 或 实现 IDynamicApiController 的类型 或 贴了 [DynamicApiController] 特性
-            if ((!typeof(Controller).IsAssignableFrom(type) && typeof(ControllerBase).IsAssignableFrom(type)) || typeof(IDynamicApiController).IsAssignableFrom(type) || type.IsDefined(typeof(DynamicApiControllerAttribute), true))
+            if ((!typeof(Controller).IsAssignableFrom(type) && typeof(ControllerBase).IsAssignableFrom(type))
+                || typeof(IDynamicApiController).IsAssignableFrom(type)
+                || type.IsDefined(typeof(DynamicApiControllerAttribute), true)
+                // 支持没有继承 ControllerBase 且贴了 [Route] 特性的情况
+                || (type.IsDefined(typeof(RouteAttribute), true)))
             {
                 // 处理运行时动态生成程序集问题
                 if (type.Assembly?.ManifestModule?.Name == "<Unknown>") return true;
@@ -98,6 +102,7 @@ internal static class Penetrates
 
                 return true;
             }
+
             return false;
         }
     }

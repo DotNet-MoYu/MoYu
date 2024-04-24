@@ -1,6 +1,8 @@
-﻿// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿
+// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
+
 
 using MoYu.FriendlyException;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +38,13 @@ internal sealed class ScheduleHostedService : BackgroundService
     /// </summary>
     private readonly IServiceProvider _serviceProvider;
 
+#if !NET5_0
+    /// <summary>
+    /// 服务检测器
+    /// </summary>
+    private readonly IServiceProviderIsService _serviceProviderIsService;
+#endif
+
     /// <summary>
     /// 取消作业执行 Token 器
     /// </summary>
@@ -63,6 +72,10 @@ internal sealed class ScheduleHostedService : BackgroundService
         Monitor = serviceProvider.GetService<IJobMonitor>();
         Executor = serviceProvider.GetService<IJobExecutor>();
         ClusterServer = serviceProvider.GetService<IJobClusterServer>();
+
+#if !NET5_0
+        _serviceProviderIsService = serviceProvider.GetService<IServiceProviderIsService>();
+#endif
 
         ClusterId = clusterId;
     }
@@ -105,7 +118,7 @@ internal sealed class ScheduleHostedService : BackgroundService
     /// </summary>
     /// <param name="stoppingToken">后台主机服务停止时取消任务 Token</param>
     /// <returns><see cref="Task"/> 实例</returns>
-    protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Schedule hosted service is running.");
 
@@ -194,8 +207,11 @@ internal sealed class ScheduleHostedService : BackgroundService
                         // 创建唯一的作业运行标识
                         var runId = Guid.NewGuid();
 
+                        // 创建服务作用域
+                        var serviceScoped = _serviceProvider.CreateScope();
+
                         // 创建作业执行前上下文
-                        var jobExecutingContext = new JobExecutingContext(jobDetail, trigger, occurrenceTime, runId, _serviceProvider)
+                        var jobExecutingContext = new JobExecutingContext(jobDetail, trigger, occurrenceTime, runId, serviceScoped.ServiceProvider)
                         {
                             ExecutingTime = Penetrates.GetNowTime(ScheduleOptionsBuilder.UseUtcTimestampProperty)
                         };
@@ -205,7 +221,6 @@ internal sealed class ScheduleHostedService : BackgroundService
 
                         // 作业处理程序
                         IJob jobHandler = null;
-                        var serviceScoped = _serviceProvider.CreateScope();
 
                         // 创建取消作业执行 Token
                         var jobCancellationTokenSource = _jobCancellationToken.GetOrCreate(jobId, runId, stoppingToken);
@@ -296,7 +311,7 @@ internal sealed class ScheduleHostedService : BackgroundService
                             if (executionException != null || Monitor != default)
                             {
                                 // 创建作业执行后上下文
-                                var jobExecutedContext = new JobExecutedContext(jobDetail, trigger, occurrenceTime, runId, _serviceProvider)
+                                var jobExecutedContext = new JobExecutedContext(jobDetail, trigger, occurrenceTime, runId, serviceScoped.ServiceProvider)
                                 {
                                     ExecutedTime = Penetrates.GetNowTime(ScheduleOptionsBuilder.UseUtcTimestampProperty),
                                     Exception = executionException,
@@ -355,6 +370,7 @@ internal sealed class ScheduleHostedService : BackgroundService
                             await trigger.RecordTimelineAsync(_schedulerFactory, jobId);
 
                             // 释放服务作用域
+                            await ReleaseJobHandlerAsync(jobHandler);
                             jobHandler = null;
                             serviceScoped.Dispose();
 
@@ -456,5 +472,33 @@ internal sealed class ScheduleHostedService : BackgroundService
 
         // 输出作业集群可正常工作日志
         _logger.LogWarning("The job cluster of <{ClusterId}> service worked now, and the current schedule hosted service will be preload.", ClusterId);
+    }
+
+    /// <summary>
+    /// 释放作业处理程序对象
+    /// </summary>
+    /// <param name="jobHandler"><see cref="IJob"/></param>
+    /// <returns><see cref="Task"/></returns>
+    private async Task ReleaseJobHandlerAsync(IJob jobHandler)
+    {
+        var isService = false;
+
+#if !NET5_0
+        isService = _serviceProviderIsService.IsService(jobHandler.GetType());
+#endif
+
+        if (isService) return;
+
+        // 手动释放
+        if (jobHandler is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
+
+        // 手动释放
+        if (jobHandler is IAsyncDisposable asyncDisposable)
+        {
+            await asyncDisposable.DisposeAsync();
+        }
     }
 }
