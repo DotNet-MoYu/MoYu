@@ -1,8 +1,6 @@
-
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
-
 
 using MoYu.Extensions;
 using MoYu.UnifyResult;
@@ -557,6 +555,12 @@ internal sealed class DynamicApiControllerApplicationModelConvention : IApplicat
             // 处理 [ApiController] 特性情况
             // https://docs.microsoft.com/en-US/aspnet/core/web-api/?view=aspnetcore-5.0#binding-source-parameter-inference
             if (!hasFormAttribute && hasApiControllerAttribute) continue;
+
+            // 处理默认基元参数绑定方式，若是 query（[FromQuery]）则跳过
+            if (_dynamicApiControllerSettings?.DefaultBindingInfo?.ToLower() == "query")
+            {
+                continue;
+            }
 
             // 判断是否可以为null
             var canBeNull = parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Nullable<>);

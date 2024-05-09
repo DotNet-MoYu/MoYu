@@ -1,8 +1,6 @@
-﻿
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
-
 
 using MoYu.Templates;
 using System.Collections.Concurrent;
@@ -21,6 +19,19 @@ public partial class JobDetail
     public Dictionary<string, object> GetProperties()
     {
         return RuntimeProperties;
+    }
+
+    /// <summary>
+    /// 检查作业信息额外数据键是否存在
+    /// </summary>
+    /// <param name="key">键</param>
+    /// <returns><see cref="bool"/></returns>
+    public bool ContainsProperty(string key)
+    {
+        // 空检查
+        if (string.IsNullOrWhiteSpace(key)) throw new ArgumentNullException(nameof(key));
+
+        return RuntimeProperties.ContainsKey(key);
     }
 
     /// <summary>

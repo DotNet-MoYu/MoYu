@@ -1,8 +1,10 @@
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
+using MoYu.ClayObject;
 using MoYu.Extensions;
+using System.Dynamic;
 using System.Reflection;
 
 namespace MoYu.ViewEngine;
@@ -56,7 +58,7 @@ public sealed partial class ViewEnginePart
         var viewEngineType = viewEngine.GetType();
 
         // 反射获取视图引擎方法
-        var runCompileMethod = TemplateModel.Type.IsAnonymous() || TemplateModel.Type == typeof(object)
+        var runCompileMethod = TemplateModel.Type.IsAnonymous() || TemplateModel.Type == typeof(object) || TemplateModel.Type == typeof(Clay) || typeof(DynamicObject).IsAssignableFrom(TemplateModel.Type)
             ? viewEngineType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
                        .First(m => m.Name == methodName && !m.IsGenericMethod)
             : viewEngineType.GetMethods(BindingFlags.Public | BindingFlags.Instance)

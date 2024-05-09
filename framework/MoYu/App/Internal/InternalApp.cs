@@ -1,4 +1,4 @@
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
@@ -41,7 +41,7 @@ internal static class InternalApp
     internal static IHostEnvironment HostEnvironment;
 
     /// <summary>
-    /// 配置 MoYu | 规范化接口框架（Web）
+    /// 配置 MoYu 框架（Web）
     /// </summary>
     /// <remarks>此次添加 <see cref="HostBuilder"/> 参数是为了兼容 .NET 5 直接升级到 .NET 6 问题</remarks>
     /// <param name="builder"></param>
@@ -93,7 +93,7 @@ internal static class InternalApp
     }
 
     /// <summary>
-    /// 配置 MoYu | 规范化接口框架（非 Web）
+    /// 配置 MoYu 框架（非 Web）
     /// </summary>
     /// <param name="builder"></param>
     /// <param name="autoRegisterBackgroundService"></param>

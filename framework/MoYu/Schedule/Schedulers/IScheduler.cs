@@ -1,8 +1,6 @@
-﻿
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
-
 
 namespace MoYu.Schedule;
 
@@ -178,8 +176,8 @@ public interface IScheduler
     /// <summary>
     /// 删除作业触发器
     /// </summary>
-    /// <param name="triggerId">作业触发器 Id</param>
-    void RemoveTrigger(string triggerId);
+    /// <param name="triggerIds">作业触发器 Id 集合</param>
+    void RemoveTrigger(params string[] triggerIds);
 
     /// <summary>
     /// 将当前作业计划从调度器中删除
@@ -262,5 +260,6 @@ public interface IScheduler
     /// <summary>
     /// 取消正在执行的作业
     /// </summary>
-    void Cancel();
+    /// <param name="triggerId">作业触发器 Id</param>
+    void Cancel(string triggerId = null);
 }

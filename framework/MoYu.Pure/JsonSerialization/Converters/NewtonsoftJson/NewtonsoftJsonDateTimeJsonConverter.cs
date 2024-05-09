@@ -1,4 +1,4 @@
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
@@ -58,7 +58,7 @@ public class NewtonsoftJsonDateTimeJsonConverter : JsonConverter<DateTime>
     /// <exception cref="NotImplementedException"></exception>
     public override void WriteJson(JsonWriter writer, DateTime value, JsonSerializer serializer)
     {
-        serializer.Serialize(writer, value.ToString(Format));
+        writer.WriteValue(value.ToString(Format));
     }
 }
 
@@ -115,6 +115,6 @@ public class NewtonsoftNullableJsonDateTimeJsonConverter : JsonConverter<DateTim
     public override void WriteJson(JsonWriter writer, DateTime? value, JsonSerializer serializer)
     {
         if (value == null) writer.WriteNull();
-        else serializer.Serialize(writer, value.Value.ToString(Format));
+        else writer.WriteValue(value.Value.ToString(Format));
     }
 }

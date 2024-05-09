@@ -1,8 +1,6 @@
-
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
-
 
 using MoYu.ClayObject.Extensions;
 using MoYu.Extensions;
@@ -822,6 +820,15 @@ public sealed class Clay : DynamicObject, IEnumerable
     public IEnumerable<T> AsEnumerator<T>()
     {
         return ((IEnumerable)this).Cast<T>();
+    }
+
+    /// <summary>
+    /// 转换为枚举对象
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<dynamic> AsEnumerable()
+    {
+        return AsEnumerator<dynamic>();
     }
 
     /// <summary>

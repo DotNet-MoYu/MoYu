@@ -1,4 +1,4 @@
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
@@ -10,7 +10,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-///MoYu | 规范化接口|MoYu | 规范化接口服务拓展类
+/// 规范化接口服务拓展类
 /// </summary>
 [SuppressSniffer]
 public static class SpecificationDocumentServiceCollectionExtensions
@@ -82,6 +82,6 @@ public static class SpecificationDocumentServiceCollectionExtensions
             options.RouteBasePath = "/index-mini-profiler";
             options.EnableMvcFilterProfiling = false;
             options.EnableMvcViewProfiling = false;
-        }).AddRelationalDiagnosticListener();
+        });
     }
 }

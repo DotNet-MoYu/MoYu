@@ -1,8 +1,6 @@
-
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
-
 
 using System.Security.Cryptography;
 
@@ -121,27 +119,27 @@ public static class StringEncryptionExtensions
     }
 
     /// <summary>
-    /// 字符串 DESC 加密
+    /// 字符串 DES 加密
     /// </summary>
     /// <param name="text">需要加密的字符串</param>
     /// <param name="skey">密钥</param>
     /// <param name="uppercase">是否输出大写加密，默认 false</param>
     /// <returns>string</returns>
-    public static string ToDESCEncrypt(this string text, string skey, bool uppercase = false)
+    public static string ToDESEncrypt(this string text, string skey, bool uppercase = false)
     {
-        return DESCEncryption.Encrypt(text, skey, uppercase);
+        return DESEncryption.Encrypt(text, skey, uppercase);
     }
 
     /// <summary>
-    /// 字符串 DESC 解密
+    /// 字符串 DES 解密
     /// </summary>
     /// <param name="text"></param>
     /// <param name="skey">密钥</param>
     /// <param name="uppercase">是否输出大写加密，默认 false</param>
     /// <returns>string</returns>
-    public static string ToDESCDecrypt(this string text, string skey, bool uppercase = false)
+    public static string ToDESDecrypt(this string text, string skey, bool uppercase = false)
     {
-        return DESCEncryption.Decrypt(text, skey, uppercase);
+        return DESEncryption.Decrypt(text, skey, uppercase);
     }
 
     /// <summary>
@@ -164,5 +162,51 @@ public static class StringEncryptionExtensions
     public static string ToRSADecrypt(this string text, string privateKey)
     {
         return RSAEncryption.Decrypt(text, privateKey);
+    }
+
+    /// <summary>
+    /// 字符串 SHA1 加密
+    /// </summary>
+    /// <param name="text">需要加密的文本</param>
+    /// <param name="uppercase">是否输出大写加密，默认 false</param>
+    /// <returns></returns>
+    public static string ToSHA1Encrypt(this string text, bool uppercase = false)
+    {
+        return SHA1Encryption.Encrypt(text, uppercase);
+    }
+
+    /// <summary>
+    /// 字节数组的 SHA1 加密
+    /// </summary>
+    /// <param name="bytes">字节数组</param>
+    /// <param name="uppercase">是否输出大写加密，默认 false</param>
+    /// <returns></returns>
+    public static string ToSHA1Encrypt(this byte[] bytes, bool uppercase = false)
+    {
+        return SHA1Encryption.Encrypt(bytes, uppercase);
+    }
+
+    /// <summary>
+    /// 字符串的 SHA1 对比
+    /// </summary>
+    /// <param name="text"></param>
+    /// <param name="hash"></param>
+    /// <param name="uppercase">是否输出大写加密，默认 false</param>
+    /// <returns>string</returns>
+    public static bool ToSHA1Compare(this string text, string hash, bool uppercase = false)
+    {
+        return SHA1Encryption.Compare(text, hash, uppercase);
+    }
+
+    /// <summary>
+    /// 字节数组的 SHA1 对比
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <param name="hash"></param>
+    /// <param name="uppercase">是否输出大写加密，默认 false</param>
+    /// <returns>string</returns>
+    public static bool ToSHA1Compare(this byte[] bytes, string hash, bool uppercase = false)
+    {
+        return SHA1Encryption.Compare(bytes, hash, uppercase);
     }
 }

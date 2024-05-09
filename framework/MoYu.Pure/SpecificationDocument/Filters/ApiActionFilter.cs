@@ -1,4 +1,4 @@
-// 版权归百小僧及百签科技（广东）有限公司所有。
+﻿// 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
@@ -37,8 +37,8 @@ public class ApiActionFilter : IOperationFilter
             }
         }
 
-        // 将 [DisplayName] 特性内容直接覆盖 Swagger 注释
-        if (method.IsDefined(typeof(DisplayNameAttribute), true))
+        // 处理定义 [DisplayName] 特性但并未注释的情况
+        if (string.IsNullOrWhiteSpace(operation.Summary) && method.IsDefined(typeof(DisplayNameAttribute), true))
         {
             var displayName = method.GetCustomAttribute<DisplayNameAttribute>(true);
             if (!string.IsNullOrWhiteSpace(displayName.DisplayName))

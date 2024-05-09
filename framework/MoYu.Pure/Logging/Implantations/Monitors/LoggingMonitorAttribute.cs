@@ -1,8 +1,6 @@
-
 // 版权归百小僧及百签科技（广东）有限公司所有。
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
-
 
 using MoYu;
 using MoYu.DataValidation;
@@ -513,7 +511,7 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IAs
             writer.WriteStartObject();
             writer.WriteString("type", exceptionTypeName);
             writer.WriteString("message", exception.Message);
-            writer.WriteString("stackTrace", exception.StackTrace.ToString());
+            writer.WriteString("stackTrace", exception.StackTrace?.ToString());
             writer.WriteEndObject();
 
             writer.WritePropertyName("validation");
@@ -525,9 +523,9 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IAs
             templates.AddRange(new[]
             {
                 $"━━━━━━━━━━━━━━━  业务异常 ━━━━━━━━━━━━━━━"
-                , $"##业务码## {friendlyException.ErrorCode}"
-                , $"##业务码（原）## {friendlyException.OriginErrorCode}"
-                , $"##业务消息## {friendlyException.ErrorMessage}"
+                , $"##业务码## {friendlyException?.ErrorCode}"
+                , $"##业务码（原）## {friendlyException?.OriginErrorCode}"
+                , $"##业务消息## {friendlyException?.ErrorMessage}"
             });
 
             writer.WritePropertyName("exception");
@@ -535,9 +533,9 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IAs
 
             writer.WritePropertyName("validation");
             writer.WriteStartObject();
-            writer.WriteString("errorCode", friendlyException.ErrorCode?.ToString());
-            writer.WriteString("originErrorCode", friendlyException.OriginErrorCode?.ToString());
-            writer.WriteString("message", friendlyException.Message);
+            writer.WriteString("errorCode", friendlyException?.ErrorCode?.ToString());
+            writer.WriteString("originErrorCode", friendlyException?.OriginErrorCode?.ToString());
+            writer.WriteString("message", friendlyException?.Message);
             writer.WriteEndObject();
         }
 

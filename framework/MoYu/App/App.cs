@@ -554,7 +554,7 @@ public static class App
                 Console.WriteLine(TP.Wrapper("Deploy Console"
                     , "Single file deploy error."
                     , "##Exception## Single file deployment configuration error."
-                    , "##Documentation## https://furion.net/docs/singlefile"));
+                    , "##Documentation## https://52moyu.net/docs/singlefile"));
                 Console.ResetColor();
             }
 
