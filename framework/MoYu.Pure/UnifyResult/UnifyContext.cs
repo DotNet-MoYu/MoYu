@@ -131,7 +131,8 @@ public static class UnifyContext
             ErrorCode = errorCode,
             OriginErrorCode = originErrorCode,
             Errors = errors,
-            Data = data
+            Data = data,
+            Exception = exception
         };
     }
 
@@ -216,6 +217,26 @@ public static class UnifyContext
     }
 
     /// <summary>
+    /// 获取序列化配置
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public static object GetSerializerSettings(DefaultHttpContext context)
+    {
+        // 获取终点路由特性
+        var endpointFeature = context?.Features?.Get<IEndpointFeature>();
+        if (endpointFeature == null) return null;
+
+        // 获取序列化配置
+        var unifySerializerSettingAttribute = context.GetMetadata<UnifySerializerSettingAttribute>() ?? endpointFeature?.Endpoint?.Metadata?.GetMetadata<UnifySerializerSettingAttribute>();
+        if (unifySerializerSettingAttribute == null || string.IsNullOrWhiteSpace(unifySerializerSettingAttribute.Name)) return null;
+
+        // 解析全局配置
+        var succeed = UnifySerializerSettings.TryGetValue(unifySerializerSettingAttribute.Name, out var serializerSettings);
+        return succeed ? serializerSettings : null;
+    }
+
+    /// <summary>
     /// 检查请求成功是否进行规范化处理
     /// </summary>
     /// <param name="method"></param>
@@ -274,10 +295,10 @@ public static class UnifyContext
     /// <param name="context"></param>
     /// <param name="unifyResult"></param>
     /// <returns>返回 true 跳过处理，否则进行规范化处理</returns>
-    internal static bool CheckStatusCodeNonUnify(HttpContext context, out IUnifyResultProvider unifyResult)
+    internal static bool CheckExceptionHttpContextNonUnify(HttpContext context, out IUnifyResultProvider unifyResult)
     {
         // 获取终点路由特性
-        var endpointFeature = context.Features.Get<IEndpointFeature>();
+        var endpointFeature = context.Features?.Get<IEndpointFeature>();
         if (endpointFeature == null) return (unifyResult = null) == null;
 
         // 判断是否跳过规范化处理
@@ -295,7 +316,9 @@ public static class UnifyContext
             var unifyProviderAttribute = endpointFeature?.Endpoint?.Metadata?.GetMetadata<UnifyProviderAttribute>();
             UnifyProviders.TryGetValue(unifyProviderAttribute?.Name ?? string.Empty, out var unityMetadata);
 
-            unifyResult = context.RequestServices.GetService(unityMetadata.ProviderType) as IUnifyResultProvider;
+            unifyResult = unityMetadata?.ProviderType == null
+                ? null
+                : context.RequestServices.GetService(unityMetadata.ProviderType) as IUnifyResultProvider;
         }
 
         return unifyResult == null || isSkip;

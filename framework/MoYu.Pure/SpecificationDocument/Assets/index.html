@@ -391,7 +391,7 @@
             var oauthConfigObject = JSON.parse('%(OAuthConfigObject)');
 
             var loginObject = configObject.LoginInfo;
-            if (loginObject && loginObject.enabled === true) {
+            if (loginObject && loginObject.Enabled === true) {
                 var loginForm = document.getElementById("login-form");
                 var userName = document.getElementById("userName");
                 var password = document.getElementById("password");
@@ -401,7 +401,7 @@
 
                 sendRequest({
                     method: "POST",
-                    url: loginObject.checkUrl,
+                    url: loginObject.CheckUrl,
                     success: function (res, headerMap) {
                         if (res.toString() === "200") {
                             loginForm.style.display = "none";
@@ -424,7 +424,7 @@
 
                                 sendRequest({
                                     method: "POST",
-                                    url: loginObject.submitUrl,
+                                    url: loginObject.SubmitUrl,
                                     data: {
                                         userName: userName.value.trim(),
                                         password: password.value.trim()
@@ -441,10 +441,10 @@
                                     },
                                     error: function (xhr) {
                                         if (xhr.status === 404) {
-                                            loginError.innerHTML = "Not Found: " + loginObject.submitUrl;
+                                            loginError.innerHTML = "Not Found: " + loginObject.SubmitUrl;
                                         }
                                         else {
-                                            loginError.innerHTML = "Internal ServerError: " + loginObject.submitUrl;
+                                            loginError.innerHTML = "Internal ServerError: " + loginObject.SubmitUrl;
                                         }
                                     }
                                 });
@@ -453,10 +453,10 @@
                     },
                     error: function (xhr) {
                         if (xhr.status === 404) {
-                            loginError.innerHTML = "Not Found: " + loginObject.checkUrl;
+                            loginError.innerHTML = "Not Found: " + loginObject.CheckUrl;
                         }
                         else {
-                            loginError.innerHTML = "Internal ServerError: " + loginObject.checkUrl;
+                            loginError.innerHTML = "Internal ServerError: " + loginObject.CheckUrl;
                         }
                     }
                 });

@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.Logging;
 public static class ILoggerExtensions
 {
     /// <summary>
-    /// 配置日志上下文
+    /// 设置日志上下文
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="properties">建议使用 ConcurrentDictionary 类型</param>
@@ -26,7 +26,7 @@ public static class ILoggerExtensions
     }
 
     /// <summary>
-    /// 配置日志上下文
+    /// 设置日志上下文
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="configure"></param>
@@ -42,7 +42,7 @@ public static class ILoggerExtensions
     }
 
     /// <summary>
-    /// 配置日志上下文
+    /// 设置日志上下文
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="context"></param>

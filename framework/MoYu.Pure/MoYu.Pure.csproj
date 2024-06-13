@@ -39,4 +39,9 @@
 		<ProjectReference Include="..\MoYu.Pure.Extras.DependencyModel.CodeAnalysis\MoYu.Pure.Extras.DependencyModel.CodeAnalysis.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Content Include="SpecificationDocument\Assets\index-mini-profiler.html" />
+	  <Content Include="SpecificationDocument\Assets\index.html" />
+	</ItemGroup>
+
 </Project>

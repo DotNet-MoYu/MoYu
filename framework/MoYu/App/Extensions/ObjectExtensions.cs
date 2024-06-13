@@ -328,7 +328,7 @@ public static class ObjectExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
     /// <returns></returns>
-    internal static T ChangeType<T>(this object obj)
+    public static T ChangeType<T>(this object obj)
     {
         return (T)ChangeType(obj, typeof(T));
     }
@@ -339,7 +339,7 @@ public static class ObjectExtensions
     /// <param name="obj">待转换的对象</param>
     /// <param name="type">目标类型</param>
     /// <returns>转换后的对象</returns>
-    internal static object ChangeType(this object obj, Type type)
+    public static object ChangeType(this object obj, Type type)
     {
         if (type == null) return obj;
         if (type == typeof(string)) return obj?.ToString();

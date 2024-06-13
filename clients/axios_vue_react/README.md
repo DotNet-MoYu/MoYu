@@ -6,7 +6,7 @@
 
 ![](./swagger-editor.png)
 
-2. 拷贝 `MoYu` 源码下的 `clients/axios_vue_react/axios-utils.ts`文件放置到 `api-services` 同级目录下，同时修改 `serveConfig` 中的配置地址为对应的服务器地址，同时**安装 `"axios": "^0.21.1"` 的包到 `package.json` 中**
+2. 拷贝 `Furion` 源码下的 `clients/axios_vue_react/axios-utils.ts`文件放置到 `api-services` 同级目录下，同时修改 `serveConfig` 中的配置地址为对应的服务器地址，同时**安装 `"axios": "^0.21.1"` 的包到 `package.json` 中**
 
 3. 基本使用
 
@@ -68,7 +68,7 @@ export class RequiredError extends Error {
 
 `Swagger` 多分组处理
 
-如果使用了`Swagger` 多分组的功能，可以升级 `MoYu` 框架至 `v3.3.4` 版本，之后启用 `EnableAllGroups` 功能，如：
+如果使用了`Swagger` 多分组的功能，可以升级 `Furion` 框架至 `v3.3.4` 版本，之后启用 `EnableAllGroups` 功能，如：
 
 ```json
 {

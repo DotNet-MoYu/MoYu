@@ -74,7 +74,7 @@ internal sealed partial class SchedulerFactory : ISchedulerFactory
     /// 不受控的作业 Id 集合
     /// </summary>
     /// <remarks>用于实现 立即执行 的作业</remarks>
-    private readonly List<string> _manualRunJobIds;
+    private readonly List<(string JobId, string TriggerId)> _manualRunJobIds;
 
     /// <summary>
     /// 构造函数
@@ -92,7 +92,7 @@ internal sealed partial class SchedulerFactory : ISchedulerFactory
         _logger = logger;
         _jobCancellationToken = jobCancellationToken;
         _schedulerBuilders = schedulerBuilders;
-        _manualRunJobIds = new List<string>();
+        _manualRunJobIds = new();
 
         Persistence = _serviceProvider.GetService<IJobPersistence>();
 
@@ -208,15 +208,24 @@ internal sealed partial class SchedulerFactory : ISchedulerFactory
                  });
 
         // 查看 立即执行 的作业
-        var runtimeJobIds = _manualRunJobIds.ToArray();
-        var manualRunSchedulers = jobsOfGroup
-                .Where(s => runtimeJobIds.Contains(s.JobId))
-                .Select(s => new Scheduler(s.JobDetail, s.Triggers)
-                {
-                    Factory = s.Factory,
-                    Logger = s.Logger,
-                    JobLogger = s.JobLogger,
-                });
+        var runJobIds = _manualRunJobIds.ToArray();
+        var manualRunSchedulers = from job in jobsOfGroup
+                                  join runJob in runJobIds on job.JobId equals runJob.JobId into newRunJobs
+                                  from runJob in newRunJobs.DefaultIfEmpty()
+                                  where job.JobId == runJob.JobId
+                                  select new Scheduler(job.JobDetail, job.Triggers.Values
+                                    .Where(t => string.IsNullOrWhiteSpace(runJob.TriggerId) || (t.JobId == runJob.JobId && t.TriggerId == runJob.TriggerId))
+                                    .Select(t =>
+                                    {
+                                        t.Mode = 1;
+                                        return t;
+                                    })
+                                    .ToDictionary(t => t.TriggerId, t => t))
+                                  {
+                                      Factory = job.Factory,
+                                      Logger = job.Logger,
+                                      JobLogger = job.JobLogger,
+                                  };
 
         // 合并即将执行的作业
         var willBeRunJobs = currentRunSchedulers.Concat(manualRunSchedulers);
@@ -344,7 +353,10 @@ internal sealed partial class SchedulerFactory : ISchedulerFactory
                 // 创建作业信息/触发器持久化上下文
                 var context = trigger == null ?
                     new PersistenceContext(jobDetail, behavior)
-                    : new PersistenceTriggerContext(jobDetail, trigger, behavior);
+                    : new PersistenceTriggerContext(jobDetail, trigger, behavior)
+                    {
+                        Mode = trigger.Mode
+                    };
 
                 _persistenceMessageQueue.Add(context);
                 return;

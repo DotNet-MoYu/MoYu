@@ -60,12 +60,13 @@ public static class SystemTextJsonExtensions
     /// 添加 DateOnly/DateOnly? 类型序列化处理
     /// </summary>
     /// <param name="converters"></param>
+    /// <param name="outputFormat"></param>
     /// <returns></returns>
-    public static IList<JsonConverter> AddDateOnlyConverters(this IList<JsonConverter> converters)
+    public static IList<JsonConverter> AddDateOnlyConverters(this IList<JsonConverter> converters, string outputFormat = "yyyy-MM-dd")
     {
 #if !NET5_0
-        converters.Add(new SystemTextJsonDateOnlyJsonConverter());
-        converters.Add(new SystemTextJsonNullableDateOnlyJsonConverter());
+        converters.Add(new SystemTextJsonDateOnlyJsonConverter(outputFormat));
+        converters.Add(new SystemTextJsonNullableDateOnlyJsonConverter(outputFormat));
 #endif
         return converters;
     }
@@ -74,12 +75,13 @@ public static class SystemTextJsonExtensions
     /// 添加 TimeOnly/TimeOnly? 类型序列化处理
     /// </summary>
     /// <param name="converters"></param>
+    /// <param name="outputFormat"></param>
     /// <returns></returns>
-    public static IList<JsonConverter> AddTimeOnlyConverters(this IList<JsonConverter> converters)
+    public static IList<JsonConverter> AddTimeOnlyConverters(this IList<JsonConverter> converters, string outputFormat = "HH:mm:ss")
     {
 #if !NET5_0
-        converters.Add(new SystemTextJsonTimeOnlyJsonConverter());
-        converters.Add(new SystemTextJsonNullableTimeOnlyJsonConverter());
+        converters.Add(new SystemTextJsonTimeOnlyJsonConverter(outputFormat));
+        converters.Add(new SystemTextJsonNullableTimeOnlyJsonConverter(outputFormat));
 #endif
         return converters;
     }

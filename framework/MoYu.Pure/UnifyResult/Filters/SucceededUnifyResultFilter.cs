@@ -3,6 +3,7 @@
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
 using MoYu.DataValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -50,7 +51,7 @@ public class SucceededUnifyResultFilter : IAsyncActionFilter, IOrderedFilter
             if (statusCodeResult.StatusCode.Value < 200 || statusCodeResult.StatusCode.Value > 299)
             {
                 // 处理规范化结果
-                if (!UnifyContext.CheckStatusCodeNonUnify(context.HttpContext, out var unifyRes))
+                if (!UnifyContext.CheckExceptionHttpContextNonUnify(context.HttpContext, out var unifyRes))
                 {
                     var httpContext = context.HttpContext;
                     var statusCode = statusCodeResult.StatusCode.Value;
@@ -69,6 +70,13 @@ public class SucceededUnifyResultFilter : IAsyncActionFilter, IOrderedFilter
                     // 检查是否启用状态码拦截中间件
                     if (UnifyContext.EnabledStatusCodesMiddleware)
                     {
+                        // 获取授权失败设置的状态码
+                        var authorizationFailStatusCode = httpContext.Items[AuthorizationHandlerContextExtensions.FAIL_STATUSCODE_KEY];
+                        if (authorizationFailStatusCode != null)
+                        {
+                            statusCode = Convert.ToInt32(authorizationFailStatusCode);
+                        }
+
                         await unifyRes.OnResponseStatusCodes(httpContext, statusCode, httpContext.RequestServices.GetService<IOptions<UnifyResultSettingsOptions>>()?.Value);
                     }
                 }
@@ -95,6 +103,8 @@ public class SucceededUnifyResultFilter : IAsyncActionFilter, IOrderedFilter
         {
             // 解析验证消息
             var validationMetadata = ValidatorContext.GetValidationMetadata(badRequestObjectResult.Value);
+            var unifyResultSettingsOptions = context.HttpContext.RequestServices.GetService<IOptions<UnifyResultSettingsOptions>>()?.Value;
+            validationMetadata.SingleValidationErrorDisplay = unifyResultSettingsOptions.SingleValidationErrorDisplay ?? false;
 
             var result = unifyResult.OnValidateFailed(context, validationMetadata);
             if (result != null) actionExecutedContext.Result = result;

@@ -2,8 +2,11 @@
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
+using MoYu.FriendlyException;
+using MoYu.UnifyResult;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MoYu.Authorization;
 
@@ -23,7 +26,31 @@ public abstract class AppAuthorizeHandler : IAuthorizationHandler
     /// </summary>
     /// <param name="context"></param>
     /// <returns></returns>
-    public virtual async Task HandleAsync(AuthorizationHandlerContext context)
+    public async Task HandleAsync(AuthorizationHandlerContext context)
+    {
+        // 获取 HttpContext 上下文
+        var httpContext = context.GetCurrentHttpContext();
+
+        try
+        {
+            await HandleAsync(context, httpContext);
+        }
+        catch (Exception exception)
+        {
+            context.Fail();
+
+            // 处理规范化结果
+            await UnifyWrapper(httpContext, exception);
+        }
+    }
+
+    /// <summary>
+    /// 授权验证核心方法（可重写）
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="httpContext"></param>
+    /// <returns></returns>
+    public virtual async Task HandleAsync(AuthorizationHandlerContext context, DefaultHttpContext httpContext)
     {
         // 判断是否授权
         var isAuthenticated = context.User.Identity.IsAuthenticated;
@@ -38,7 +65,7 @@ public abstract class AppAuthorizeHandler : IAuthorizationHandler
 
             await AuthorizeHandleAsync(context);
         }
-        else context.GetCurrentHttpContext()?.SignoutToSwagger();    // 退出Swagger登录
+        else context.GetCurrentHttpContext()?.SignoutToSwagger();    // 退出 Swagger 登录
     }
 
     /// <summary>
@@ -91,5 +118,36 @@ public abstract class AppAuthorizeHandler : IAuthorizationHandler
             }
         }
         else context.Fail();
+    }
+
+    /// <summary>
+    /// 处理规范化结果
+    /// </summary>
+    /// <param name="httpContext"></param>
+    /// <param name="exception"></param>
+    /// <returns></returns>
+    private static async Task UnifyWrapper(DefaultHttpContext httpContext, Exception exception)
+    {
+        // 尝试解析为友好异常
+        var friendlyException = exception as AppFriendlyException;
+
+        // 处理规范化结果
+        if (!UnifyContext.CheckExceptionHttpContextNonUnify(httpContext, out var unifyRes))
+        {
+            _ = UnifyContext.CheckVaildResult(unifyRes.OnAuthorizeException(httpContext, new ExceptionMetadata
+            {
+                StatusCode = friendlyException?.StatusCode ?? StatusCodes.Status500InternalServerError,
+                Errors = friendlyException?.ErrorMessage ?? exception.Message,
+                Data = friendlyException?.Data,
+                ErrorCode = friendlyException?.ErrorCode,
+                OriginErrorCode = friendlyException?.OriginErrorCode,
+                Exception = exception
+            }), out var data);
+
+            // 终止返回
+            httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            await httpContext.Response.WriteAsJsonAsync(data, App.GetOptions<JsonOptions>()?.JsonSerializerOptions);
+        }
+        else throw exception;
     }
 }

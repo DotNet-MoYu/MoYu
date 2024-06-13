@@ -3,6 +3,7 @@ import {
   IconMore,
   IconPlayCircle,
   IconStop,
+  IconVigoLogo,
 } from "@douyinfe/semi-icons";
 import {
   Descriptions,
@@ -94,6 +95,14 @@ export default function Jobs() {
       let jobDetail = scheduler.jobDetail!;
       jobDetail.triggers = scheduler.triggers;
       jobDetail.refreshDate = new Date();
+
+      if (
+        apiconfig.displayEmptyTriggerJobs === "false" &&
+        scheduler.triggers?.length === 0
+      ) {
+        continue;
+      }
+
       jobDetails.push(jobDetail);
     }
 
@@ -226,6 +235,17 @@ export default function Jobs() {
                           <IconDelete size="small" /> &nbsp;删除
                         </Popconfirm>
                       </Dropdown.Item>
+                      <Dropdown.Item
+                        onClick={() =>
+                          callAction(
+                            (expandData[1] as any).ovalue!.toString(),
+                            (expandData[0] as any).ovalue!.toString(),
+                            "run"
+                          )
+                        }
+                      >
+                        <IconVigoLogo size="extra-large" /> 立即执行
+                      </Dropdown.Item>
                     </Dropdown.Menu>
                   }
                 >
@@ -264,6 +284,8 @@ export default function Jobs() {
       onRow={handleRow}
       expandedRowRender={expandRowRender}
       pagination={false}
+      expandRowByClick
+      expandAllRows={apiconfig.defaultExpandAllJobs === "true"}
       rowExpandable={(jobDetail) =>
         !!(
           jobDetail?.jobId &&

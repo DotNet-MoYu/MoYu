@@ -2,6 +2,8 @@
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
+using MoYu.Extensions;
+
 namespace MoYu.Logging;
 
 /// <summary>
@@ -71,9 +73,9 @@ public static class LogContextExtensions
     /// <param name="logContext"></param>
     /// <param name="key">键</param>
     /// <returns></returns>
-    public static object Get<T>(this LogContext logContext, object key)
+    public static T Get<T>(this LogContext logContext, object key)
     {
         var value = logContext.Get(key);
-        return (T)value;
+        return value.ChangeType<T>();
     }
 }

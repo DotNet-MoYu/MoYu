@@ -18,6 +18,7 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -259,8 +260,11 @@ public static class SpecificationDocumentBuilder
         // 配置 Action 排序
         ConfigureActionSequence(swaggerGenOptions);
 
-        // 加载注释描述文件
-        LoadXmlComments(swaggerGenOptions);
+        if (_specificationDocumentSettings.EnableXmlComments == true)
+        {
+            // 加载注释描述文件
+            LoadXmlComments(swaggerGenOptions);
+        }
 
         // 配置授权
         ConfigureSecurities(swaggerGenOptions);
@@ -287,10 +291,11 @@ public static class SpecificationDocumentBuilder
     /// <param name="swaggerUIOptions"></param>
     /// <param name="routePrefix"></param>
     /// <param name="configure"></param>
-    internal static void BuildUI(SwaggerUIOptions swaggerUIOptions, string routePrefix = default, Action<SwaggerUIOptions> configure = null)
+    /// <param name="withProxy">解决 Swagger 被代理问题</param>
+    internal static void BuildUI(SwaggerUIOptions swaggerUIOptions, string routePrefix = default, Action<SwaggerUIOptions> configure = null, bool withProxy = false)
     {
         // 配置分组终点路由
-        CreateGroupEndpoint(swaggerUIOptions);
+        CreateGroupEndpoint(swaggerUIOptions, routePrefix, withProxy);
 
         // 配置文档标题
         swaggerUIOptions.DocumentTitle = _specificationDocumentSettings.DocumentTitle;
@@ -432,13 +437,13 @@ public static class SpecificationDocumentBuilder
     /// <param name="swaggerGenOptions">Swagger 生成器配置</param>
     private static void LoadXmlComments(SwaggerGenOptions swaggerGenOptions)
     {
-        var xmlComments = _specificationDocumentSettings.XmlComments;
+        var xmlComments = _specificationDocumentSettings.XmlComments ?? Array.Empty<string>();
         var members = new Dictionary<string, XElement>();
 
         // 显式继承的注释
-        var regex = new Regex(@"[A-Z]:[a-zA-Z_@\.]+");
+        var regex = new Regex(@"[A-Z]:[a-zA-Z0-9_@\.]+");
         // 隐式继承的注释
-        var regex2 = new Regex(@"[A-Z]:[a-zA-Z_@\.]+\.");
+        var regex2 = new Regex(@"[A-Z]:[a-zA-Z0-9_@\.]+\.");
 
         // 支持注释完整特性，包括 inheritdoc 注释语法
         foreach (var xmlComment in xmlComments)
@@ -473,7 +478,7 @@ public static class SpecificationDocumentBuilder
 
                         // 处理隐式实现接口的注释
                         // 注释格式：M:MoYu.Application.TestInheritdoc.MoYu#Application#ITestInheritdoc#Abc(System.String)
-                        // 匹配格式：[A-Z]:[a-zA-Z_@\.]+\.
+                        // 匹配格式：[A-Z]:[a-zA-Z0-9_@\.]+\.
                         // 处理逻辑：直接替换匹配为空，然后讲 # 替换为 . 查找即可
                         if (memberName.Contains('#'))
                         {
@@ -481,7 +486,7 @@ public static class SpecificationDocumentBuilder
                         }
                         // 处理带参数的注释
                         // 注释格式：M:MoYu.Application.TestInheritdoc.WithParams(System.String)
-                        // 匹配格式：[A-Z]:[a-zA-Z_@\.]+
+                        // 匹配格式：[A-Z]:[a-zA-Z0-9_@\.]+
                         // 处理逻辑：匹配出不带参数的部分，然后获取类型命名空间，最后调用 GenerateInheritdocCref 进行生成
                         else if (memberName.Contains('('))
                         {
@@ -578,13 +583,18 @@ public static class SpecificationDocumentBuilder
     /// 配置分组终点路由
     /// </summary>
     /// <param name="swaggerUIOptions"></param>
-    private static void CreateGroupEndpoint(SwaggerUIOptions swaggerUIOptions)
+    /// <param name="routePrefix"></param>
+    /// <param name="withProxy">解决 Swagger 被代理问题</param>
+    private static void CreateGroupEndpoint(SwaggerUIOptions swaggerUIOptions, string routePrefix = default, bool withProxy = false)
     {
+        var routePrefixArrs = (routePrefix ?? swaggerUIOptions.RoutePrefix).Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var routePrefixList = routePrefixArrs.Length == 0 ? routePrefixArrs.Concat(new[] { string.Empty }) : routePrefixArrs;
+
         foreach (var group in DocumentGroups)
         {
             var groupOpenApiInfo = GetGroupOpenApiInfo(group);
 
-            swaggerUIOptions.SwaggerEndpoint(groupOpenApiInfo.RouteTemplate, groupOpenApiInfo?.Title ?? group);
+            swaggerUIOptions.SwaggerEndpoint((withProxy ? string.Join(string.Empty, routePrefixList.Select(c => "../")) : "/") + groupOpenApiInfo.RouteTemplate.TrimStart('/'), groupOpenApiInfo?.Title ?? group);
         }
     }
 
@@ -630,7 +640,12 @@ public static class SpecificationDocumentBuilder
         var additionals = _specificationDocumentSettings.LoginInfo;
         if (additionals != null)
         {
-            swaggerUIOptions.ConfigObject.AdditionalItems.Add(nameof(_specificationDocumentSettings.LoginInfo), additionals);
+            swaggerUIOptions.ConfigObject.AdditionalItems.Add(nameof(_specificationDocumentSettings.LoginInfo), new JsonObject
+            {
+                [nameof(SpecificationLoginInfo.Enabled)] = additionals.Enabled,
+                [nameof(SpecificationLoginInfo.CheckUrl)] = additionals.CheckUrl,
+                [nameof(SpecificationLoginInfo.SubmitUrl)] = additionals.SubmitUrl
+            });
         }
     }
 

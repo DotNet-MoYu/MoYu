@@ -333,7 +333,8 @@ public partial class Trigger
             Status = Status,
             Result = Result,
             ElapsedTime = ElapsedTime,
-            CreatedTime = DateTime.Now
+            CreatedTime = DateTime.Now,
+            Mode = Mode
         };
 
         Timelines.Enqueue(timeline);

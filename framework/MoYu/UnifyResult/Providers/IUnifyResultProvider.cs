@@ -16,6 +16,14 @@ namespace MoYu.UnifyResult;
 public interface IUnifyResultProvider
 {
     /// <summary>
+    /// JWT 授权异常返回值
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="metadata"></param>
+    /// <returns></returns>
+    IActionResult OnAuthorizeException(DefaultHttpContext context, ExceptionMetadata metadata);
+
+    /// <summary>
     /// 异常返回值
     /// </summary>
     /// <param name="context"></param>

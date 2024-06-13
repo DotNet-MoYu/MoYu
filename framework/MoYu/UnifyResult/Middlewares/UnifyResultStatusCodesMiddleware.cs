@@ -2,6 +2,7 @@
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -20,12 +21,28 @@ public class UnifyResultStatusCodesMiddleware
     private readonly RequestDelegate _next;
 
     /// <summary>
+    /// 授权头
+    /// </summary>
+    private readonly string[] _authorizedHeaders;
+
+    /// <summary>
+    /// 是否携带授权头判断
+    /// </summary>
+    private readonly bool _withAuthorizationHeaderCheck;
+
+    /// <summary>
     /// 构造函数
     /// </summary>
     /// <param name="next"></param>
-    public UnifyResultStatusCodesMiddleware(RequestDelegate next)
+    /// <param name="authorizedHeaders"></param>
+    /// <param name="withAuthorizationHeaderCheck"></param>
+    public UnifyResultStatusCodesMiddleware(RequestDelegate next
+        , string[] authorizedHeaders
+        , bool withAuthorizationHeaderCheck)
     {
         _next = next;
+        _authorizedHeaders = authorizedHeaders;
+        _withAuthorizationHeaderCheck = withAuthorizationHeaderCheck;
     }
 
     /// <summary>
@@ -42,8 +59,16 @@ public class UnifyResultStatusCodesMiddleware
             || context.Response.StatusCode < 400
             || context.Response.StatusCode == 404) return;
 
+        // 仅针对特定的头进行处理
+        if (_withAuthorizationHeaderCheck
+            && context.Response.StatusCode == StatusCodes.Status401Unauthorized
+            && !context.Response.Headers.Any(h => _authorizedHeaders.Contains(h.Key, StringComparer.OrdinalIgnoreCase)))
+        {
+            return;
+        }
+
         // 处理规范化结果
-        if (!UnifyContext.CheckStatusCodeNonUnify(context, out var unifyResult))
+        if (!UnifyContext.CheckExceptionHttpContextNonUnify(context, out var unifyResult))
         {
             // 解决刷新 Token 时间和 Token 时间相近问题
             if (context.Response.StatusCode == StatusCodes.Status401Unauthorized
@@ -55,7 +80,17 @@ public class UnifyResultStatusCodesMiddleware
 
             // 如果 Response 已经完成输出，则禁止写入
             if (context.Response.HasStarted) return;
-            await unifyResult.OnResponseStatusCodes(context, context.Response.StatusCode, context.RequestServices.GetService<IOptions<UnifyResultSettingsOptions>>()?.Value);
+
+            var statusCode = context.Response.StatusCode;
+
+            // 获取授权失败设置的状态码
+            var authorizationFailStatusCode = context.Items[AuthorizationHandlerContextExtensions.FAIL_STATUSCODE_KEY];
+            if (authorizationFailStatusCode != null)
+            {
+                statusCode = Convert.ToInt32(authorizationFailStatusCode);
+            }
+
+            await unifyResult.OnResponseStatusCodes(context, statusCode, context.RequestServices.GetService<IOptions<UnifyResultSettingsOptions>>()?.Value);
         }
     }
 }

@@ -73,6 +73,12 @@ public abstract class JobExecutionContext
     public string Result { get; set; }
 
     /// <summary>
+    /// 触发模式
+    /// </summary>
+    /// <remarks>默认为定时触发</remarks>
+    public int Mode { get; internal set; }
+
+    /// <summary>
     /// 转换成 JSON 字符串
     /// </summary>
     /// <param name="naming">命名法</param>
@@ -101,6 +107,6 @@ public abstract class JobExecutionContext
     /// <returns><see cref="string"/></returns>
     public override string ToString()
     {
-        return $"{JobDetail} {Trigger} {OccurrenceTime.ToUnspecifiedString()}{(Trigger.NextRunTime == null ? $" [{Trigger.Status}]" : $" -> {Trigger.NextRunTime.ToUnspecifiedString()}")}";
+        return $"{JobDetail} {Trigger}{(Mode == 1 ? " Manual" : string.Empty)} {OccurrenceTime.ToUnspecifiedString()}{(Trigger.NextRunTime == null ? $" [{Trigger.Status}]" : $" -> {Trigger.NextRunTime.ToUnspecifiedString()}")}";
     }
 }

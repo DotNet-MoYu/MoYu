@@ -51,6 +51,11 @@ public sealed class SpecificationDocumentSettingsOptions : IConfigurableOptions<
     public string[] XmlComments { get; set; }
 
     /// <summary>
+    /// 是否自动加载 Xml 注释文件
+    /// </summary>
+    public bool? EnableXmlComments { get; set; }
+
+    /// <summary>
     /// 分组信息
     /// </summary>
     public SpecificationOpenApiInfo[] GroupOpenApiInfos { get; set; }
@@ -124,10 +129,14 @@ public sealed class SpecificationDocumentSettingsOptions : IConfigurableOptions<
         options.DocExpansionState ??= DocExpansion.List;
 
         // 加载项目注册和模块化/插件注释
-        var frameworkPackageName = Reflect.GetAssemblyName(GetType());
-        var projectXmlComments = App.Assemblies.Where(u => u.GetName().Name != frameworkPackageName).Select(t => t.GetName().Name);
-        var externalXmlComments = App.ExternalAssemblies.Any() ? App.PathOfExternalAssemblies.Select(u => u.EndsWith(".dll") ? u[0..^4] : u) : Array.Empty<string>();
-        XmlComments ??= projectXmlComments.Concat(externalXmlComments).ToArray();
+        EnableXmlComments ??= true;
+        if (EnableXmlComments == true)
+        {
+            var frameworkPackageName = Reflect.GetAssemblyName(GetType());
+            var projectXmlComments = App.Assemblies.Where(u => u.GetName().Name != frameworkPackageName).Select(t => t.GetName().Name);
+            var externalXmlComments = App.ExternalAssemblies.Any() ? App.PathOfExternalAssemblies.Select(u => u.EndsWith(".dll") ? u[0..^4] : u) : Array.Empty<string>();
+            XmlComments ??= projectXmlComments.Concat(externalXmlComments).ToArray();
+        }
 
         GroupOpenApiInfos ??= new SpecificationOpenApiInfo[]
         {

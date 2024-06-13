@@ -812,28 +812,57 @@ public sealed partial class HttpRequestPart
             var errors = exception != null
                 ? exception?.Message
                 : response?.ReasonPhrase;
-            var statusCode = (int)(response?.StatusCode ?? HttpStatusCode.InternalServerError);
+
+            var statusCode = response != null ? (int)response.StatusCode : ParseExceptionMessage(errors);
 
             // 打印失败请求
             App.PrintToMiniProfiler(MiniProfilerCategory, "Failed", $"[StatusCode: {statusCode}] {errors}", exception != null);
 
             // 调用异常拦截器
-            if (ExceptionInterceptors != null && ExceptionInterceptors.Count > 0) ExceptionInterceptors.ForEach(u =>
+            if (ExceptionInterceptors != null && ExceptionInterceptors.Count > 0)
             {
-                u?.Invoke(httpClient, response, errors);
-            });
+                response ??= new HttpResponseMessage
+                {
+                    RequestMessage = request,
+                    ReasonPhrase = exception.Message,
+                    StatusCode = (HttpStatusCode)statusCode
+                };
+
+                ExceptionInterceptors.ForEach(u =>
+                {
+                    u?.Invoke(httpClient, response, errors);
+                });
+            }
 
             // 抛出请求异常
             if (exception != null)
             {
                 request?.Dispose();
                 response?.Dispose();
+                request = null;
+                response = null;
+
                 throw exception;
             }
         }
 
         request?.Dispose();
         return response;
+    }
+
+    /// <summary>
+    /// 解析常规错误码
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    private static int ParseExceptionMessage(string errors)
+    {
+        if (errors.Contains("HttpClient.Timeout"))
+        {
+            return 408;
+        }
+
+        return 500;
     }
 
     /// <summary>
@@ -917,6 +946,9 @@ public sealed partial class HttpRequestPart
             case "application/json":
             case "text/json":
             case "application/*+json":
+            case "application/json-patch+json":
+            case "application/ld+json":
+            case var _ when ContentType.Contains("+json"):
                 if (Body != null)
                 {
                     httpContent = new StringContent(SerializerObject(Body), ContentEncoding);
@@ -927,20 +959,28 @@ public sealed partial class HttpRequestPart
                 break;
 
             case "application/x-www-form-urlencoded":
-                // 解析字典
-                var keyValues = ConvertBodyToDictionary();
-
-                if (keyValues == null || keyValues.Count == 0) return;
-
-                // 设置内容类型
-                if (EncodeUrl)
+                // 如果 Body 是字符串类型，直接传入
+                if (Body is string stringBody)
                 {
-                    httpContent = new FormUrlEncodedContent(keyValues);
+                    httpContent = new StringContent(stringBody, ContentEncoding, ContentType);
                 }
                 else
                 {
-                    var formData = string.Join('&', keyValues.Select(kv => $"{kv.Key}={kv.Value}"));
-                    httpContent = new StringContent(formData, ContentEncoding, ContentType);
+                    // 解析字典
+                    var keyValues = ConvertBodyToDictionary();
+
+                    if (keyValues == null || keyValues.Count == 0) return;
+
+                    // 设置内容类型
+                    if (EncodeUrl)
+                    {
+                        httpContent = new FormUrlEncodedContent(keyValues);
+                    }
+                    else
+                    {
+                        var formData = string.Join('&', keyValues.Select(kv => $"{kv.Key}={kv.Value}"));
+                        httpContent = new StringContent(formData, ContentEncoding, ContentType);
+                    }
                 }
 
                 break;
@@ -949,6 +989,7 @@ public sealed partial class HttpRequestPart
             case "text/xml":
             case "text/html":
             case "text/plain":
+            case var _ when ContentType.StartsWith("text/"):
                 if (Body != null) httpContent = new StringContent(Body.ToString(), ContentEncoding, ContentType);
                 break;
 
@@ -958,7 +999,75 @@ public sealed partial class HttpRequestPart
         }
 
         // 设置 HttpContent
-        if (httpContent != null) request.Content = httpContent;
+        if (httpContent != null)
+        {
+            request.Content = httpContent;
+
+            // 设置请求内容头
+            SetContentHeaders(request);
+        }
+    }
+
+    /// <summary>
+    /// 设置请求内容头
+    /// </summary>
+    /// <param name="request"></param>
+    private void SetContentHeaders(HttpRequestMessage request)
+    {
+        if (ContentHeaders != null && ContentHeaders.Count > 0)
+        {
+            // 处理 Content-Disposition
+            if (ContentHeaders.ContainsKey("Content-Disposition") && ContentHeaders["Content-Disposition"] != null)
+            {
+                request.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue(ContentHeaders["Content-Disposition"].ToString());
+            }
+
+            // 处理 Content-Length
+            if (ContentHeaders.ContainsKey("Content-Length") && ContentHeaders["Content-Length"] != null)
+            {
+                request.Content.Headers.ContentLength = (long)ContentHeaders["Content-Length"];
+            }
+
+            // 处理 Content-Location
+            if (ContentHeaders.ContainsKey("Content-Location") && ContentHeaders["Content-Location"] != null)
+            {
+                request.Content.Headers.ContentLocation = ContentHeaders["Content-Location"] is string str
+                    ? new Uri(str)
+                    : (Uri)ContentHeaders["Content-Location"];
+            }
+
+            // 处理 Content-MD5
+            if (ContentHeaders.ContainsKey("Content-MD5") && ContentHeaders["Content-MD5"] != null)
+            {
+                request.Content.Headers.ContentMD5 = ContentHeaders["Content-MD5"] is string str
+                    ? Convert.FromBase64String(str)
+                    : (byte[])ContentHeaders["Content-MD5"];
+            }
+
+            // 处理 Content-Range
+            if (ContentHeaders.ContainsKey("Content-Range") && ContentHeaders["Content-Range"] != null)
+            {
+                request.Content.Headers.ContentRange = new ContentRangeHeaderValue((long)ContentHeaders["Content-Range"]);
+            }
+
+            // 处理 Content-Type
+            if (ContentHeaders.ContainsKey("Content-Type") && ContentHeaders["Content-Type"] != null)
+            {
+                request.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentHeaders["Content-Type"].ToString());
+            }
+
+            // 处理 Expires
+            if (ContentHeaders.ContainsKey("Expires") && ContentHeaders["Expires"] != null)
+            {
+                request.Content.Headers.Expires = ContentHeaders["Expires"].ChangeType<DateTimeOffset>();
+            }
+
+            // 处理 LastModified
+            if (ContentHeaders.ContainsKey("LastModified") && ContentHeaders["LastModified"] != null)
+            {
+                request.Content.Headers.LastModified = ContentHeaders["LastModified"].ChangeType<DateTimeOffset>();
+            }
+        }
     }
 
     /// <summary>

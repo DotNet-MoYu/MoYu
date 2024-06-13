@@ -1,5 +1,5 @@
 /**
- * 当前版本：v1.3.0
+ * 当前版本：v1.4.0
  * 使用描述：https://editor.swagger.io 代码生成 typescript-axios 辅组工具库
  * 依赖说明：适配 axios 版本：v0.21.4
  * 视频教程：https://www.bilibili.com/video/BV1EW4y1C71D
@@ -21,7 +21,7 @@ export const serveConfig = new Configuration({
   basePath:
     process.env.NODE_ENV !== "production"
       ? "https://localhost:44342" // 开发环境服务器接口地址
-      : "https://52moyu.net", // 生产环境服务器接口地址
+      : "https://furion.net", // 生产环境服务器接口地址
 });
 
 // token 键定义
@@ -112,7 +112,7 @@ axiosInstance.interceptors.response.use(
           ? serve.errors
           : JSON.stringify(serve.errors)
       );
-      return;
+      return res;
     }
 
     // 这里编写响应拦截代码 =========================================
@@ -246,4 +246,13 @@ export function getAccessInfo(): any {
   } catch {
     return null;
   }
+}
+
+/**
+ * 实现异步延迟
+ * @param delay 延迟时间（毫秒）
+ * @returns
+ */
+export function sleep(delay: number) {
+  return new Promise((resolve) => setTimeout(resolve, delay));
 }
