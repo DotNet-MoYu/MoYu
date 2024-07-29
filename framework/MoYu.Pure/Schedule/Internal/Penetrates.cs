@@ -25,12 +25,16 @@ internal static class Penetrates
         {
             PropertyNameCaseInsensitive = true,
             ReadCommentHandling = JsonCommentHandling.Skip,
+            //PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             AllowTrailingCommas = true
         };
 
         // 处理时间类型
-        jsonSerializerOptions.Converters.Add(new DateTimeJsonConverter());
+        if (!ScheduleOptionsBuilder.UseUtcTimestampProperty)
+        {
+            jsonSerializerOptions.Converters.Add(new DateTimeJsonConverter());
+        }
 
         return jsonSerializerOptions;
     }
@@ -58,11 +62,10 @@ internal static class Penetrates
     /// <summary>
     /// 获取当前时间
     /// </summary>
-    /// <param name="useUtcTimestamp">是否使用 UTC 时间</param>
     /// <returns><see cref="DateTime"/></returns>
-    internal static DateTime GetNowTime(bool useUtcTimestamp)
+    internal static DateTime GetNowTime()
     {
-        return GetUnspecifiedTime(useUtcTimestamp ? DateTime.UtcNow : DateTime.Now);
+        return GetUnspecifiedTime(!ScheduleOptionsBuilder.UseUtcTimestampProperty ? DateTime.Now : DateTime.UtcNow);
     }
 
     /// <summary>
@@ -74,12 +77,13 @@ internal static class Penetrates
     {
         // 采用 DateTimeKind.Unspecified 转换当前时间并忽略毫秒之后部分（用于减少误差）
         return new DateTime(dateTime.Year
-            , dateTime.Month
-            , dateTime.Day
-            , dateTime.Hour
-            , dateTime.Minute
-            , dateTime.Second
-            , dateTime.Millisecond);
+                , dateTime.Month
+                , dateTime.Day
+                , dateTime.Hour
+                , dateTime.Minute
+                , dateTime.Second
+                , dateTime.Millisecond
+                , !ScheduleOptionsBuilder.UseUtcTimestampProperty ? DateTimeKind.Local : DateTimeKind.Utc);
     }
 
     /// <summary>

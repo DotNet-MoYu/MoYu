@@ -7,7 +7,7 @@ namespace MoYu.ViewEngine;
 /// <summary>
 /// 视图引擎模板（编译后）
 /// </summary>
-public interface IViewEngineTemplate
+public interface IViewEngineTemplate : IDisposable
 {
     /// <summary>
     /// 保存到流中
@@ -54,7 +54,7 @@ public interface IViewEngineTemplate
 /// 泛型视图编译模板接口
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public interface IViewEngineTemplate<out T>
+public interface IViewEngineTemplate<out T> : IDisposable
     where T : IViewEngineModel
 {
     /// <summary>

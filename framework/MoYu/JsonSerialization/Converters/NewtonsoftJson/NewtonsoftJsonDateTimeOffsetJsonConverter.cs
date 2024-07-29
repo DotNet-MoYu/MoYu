@@ -2,7 +2,6 @@
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
-using MoYu.Extensions;
 using Newtonsoft.Json;
 
 namespace MoYu.JsonSerialization;
@@ -76,7 +75,7 @@ public class NewtonsoftJsonDateTimeOffsetJsonConverter : JsonConverter<DateTimeO
     public override void WriteJson(JsonWriter writer, DateTimeOffset value, JsonSerializer serializer)
     {
         // 判断是否序列化成当地时间
-        var formatDateTime = Localized ? value.ConvertToDateTime() : value;
+        var formatDateTime = Localized ? value.ToLocalTime() : value;
         writer.WriteValue(formatDateTime.ToString(Format));
     }
 }
@@ -153,8 +152,8 @@ public class NewtonsoftJsonNullableDateTimeOffsetJsonConverter : JsonConverter<D
         else
         {
             // 判断是否序列化成当地时间
-            var formatDateTime = Localized ? value.ConvertToDateTime() : value;
-            writer.WriteValue(formatDateTime.Value.ToString(Format));
+            var formatDateTime = Localized ? value.Value.ToLocalTime() : value.Value;
+            writer.WriteValue(formatDateTime.ToString(Format));
         }
     }
 }

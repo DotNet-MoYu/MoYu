@@ -214,13 +214,13 @@ internal sealed partial class SchedulerFactory : ISchedulerFactory
                                   from runJob in newRunJobs.DefaultIfEmpty()
                                   where job.JobId == runJob.JobId
                                   select new Scheduler(job.JobDetail, job.Triggers.Values
-                                    .Where(t => string.IsNullOrWhiteSpace(runJob.TriggerId) || (t.JobId == runJob.JobId && t.TriggerId == runJob.TriggerId))
-                                    .Select(t =>
-                                    {
-                                        t.Mode = 1;
-                                        return t;
-                                    })
-                                    .ToDictionary(t => t.TriggerId, t => t))
+                                  .Where(t => string.IsNullOrWhiteSpace(runJob.TriggerId) || (t.JobId == runJob.JobId && t.TriggerId == runJob.TriggerId))
+                                  .Select(t =>
+                                  {
+                                      t.Mode = 1;
+                                      return t;
+                                  })
+                                  .ToDictionary(t => t.TriggerId, t => t))
                                   {
                                       Factory = job.Factory,
                                       Logger = job.Logger,
@@ -321,9 +321,7 @@ internal sealed partial class SchedulerFactory : ISchedulerFactory
             // 调用事件委托
             OnChanged?.Invoke(this, new(jobDetail));
         }
-        catch
-        {
-        }
+        catch { }
     }
 
     /// <summary>
@@ -338,7 +336,7 @@ internal sealed partial class SchedulerFactory : ISchedulerFactory
         if (jobDetail.DynamicExecuteAsync != null) return;
 
         // 设置更新时间
-        var nowTime = Penetrates.GetNowTime(ScheduleOptionsBuilder.UseUtcTimestampProperty);
+        var nowTime = Penetrates.GetNowTime();
         jobDetail.UpdatedTime = nowTime;
         if (trigger != null) trigger.UpdatedTime = nowTime;
 
@@ -429,24 +427,22 @@ internal sealed partial class SchedulerFactory : ISchedulerFactory
     /// <summary>
     /// 记录作业触发器运行信息
     /// </summary>
-    /// <param name="timeline">作业触发器运行记录</param>
+    /// <param name="context">作业执行记录持久上下文</param>
     /// <returns><see cref="Task"/></returns>
-    internal async Task RecordTimelineAsync(TriggerTimeline timeline)
+    internal async Task RecordTimelineAsync(PersistenceExecutionRecordContext context)
     {
         try
         {
             // 作业触发记录通知
             if (Persistence is not null)
             {
-                await Persistence.OnExecutionRecordAsync(timeline);
+                await Persistence.OnExecutionRecordAsync(context);
             }
 
             // 调用事件委托
-            OnExecutionRecord?.Invoke(this, new(timeline));
+            OnExecutionRecord?.Invoke(this, new(context));
         }
-        catch
-        {
-        }
+        catch { }
     }
 
     /// <summary>

@@ -897,9 +897,9 @@ public sealed partial class HttpRequestPart
                         byteArrayContent.Headers.TryAddWithoutValidation("Content-Type", contentType ?? "application/octet-stream");
 
                         if (string.IsNullOrWhiteSpace(httpFile.FileName))
-                            multipartFormDataContent.Add(byteArrayContent, Uri.EscapeDataString(httpFile.Name));
+                            multipartFormDataContent.Add(byteArrayContent, httpFile.Escape ? Uri.EscapeDataString(httpFile.Name) : httpFile.Name);
                         else
-                            multipartFormDataContent.Add(byteArrayContent, Uri.EscapeDataString(httpFile.Name), Uri.EscapeDataString(httpFile.FileName));
+                            multipartFormDataContent.Add(byteArrayContent, httpFile.Escape ? Uri.EscapeDataString(httpFile.Name) : httpFile.Name, httpFile.Escape ? Uri.EscapeDataString(httpFile.FileName) : httpFile.FileName);
                     }
 
                     // 处理 Stream 文件
@@ -909,9 +909,9 @@ public sealed partial class HttpRequestPart
                         streamContent.Headers.TryAddWithoutValidation("Content-Type", contentType ?? "application/octet-stream");
 
                         if (string.IsNullOrWhiteSpace(httpFile.FileName))
-                            multipartFormDataContent.Add(streamContent, Uri.EscapeDataString(httpFile.Name));
+                            multipartFormDataContent.Add(streamContent, httpFile.Escape ? Uri.EscapeDataString(httpFile.Name) : httpFile.Name);
                         else
-                            multipartFormDataContent.Add(streamContent, Uri.EscapeDataString(httpFile.Name), Uri.EscapeDataString(httpFile.FileName));
+                            multipartFormDataContent.Add(streamContent, httpFile.Escape ? Uri.EscapeDataString(httpFile.Name) : httpFile.Name, httpFile.Escape ? Uri.EscapeDataString(httpFile.FileName) : httpFile.FileName);
                     }
                 }
 
@@ -934,6 +934,7 @@ public sealed partial class HttpRequestPart
                 break;
 
             case "application/octet-stream":
+            case "application/pdf":
                 if (Files.Count > 0 && Files[0].Bytes.Length > 0)
                 {
                     httpContent = new ByteArrayContent(Files[0].Bytes);

@@ -315,13 +315,18 @@ public partial class Trigger
     /// </summary>
     /// <param name="schedulerFactory">作业计划工厂</param>
     /// <param name="jobId">作业 Id</param>
+    /// <param name="exception">异常信息</param>
     /// <returns><see cref="Task"/></returns>
-    internal async Task RecordTimelineAsync(ISchedulerFactory schedulerFactory, string jobId)
+    internal async Task RecordTimelineAsync(ISchedulerFactory schedulerFactory, string jobId, string exception = null)
     {
         Timelines ??= new();
 
         // 只保留 5 条记录
-        if (Timelines.Count >= 5) Timelines.Dequeue();
+        if (Timelines.Count >= 5)
+        {
+            var _timelines = Timelines.Dequeue();
+            _timelines?.Dispose();
+        }
 
         var timeline = new TriggerTimeline
         {
@@ -334,15 +339,23 @@ public partial class Trigger
             Result = Result,
             ElapsedTime = ElapsedTime,
             CreatedTime = DateTime.Now,
-            Mode = Mode
+            Mode = Mode,
+            Exception = exception
         };
 
         Timelines.Enqueue(timeline);
 
         // 调用事件委托（记录作业触发器运行信息）
-        if (schedulerFactory is SchedulerFactory schedulerFactoryObj)
+        if (schedulerFactory is SchedulerFactory schedulerFactoryInstance)
         {
-            await schedulerFactoryObj.RecordTimelineAsync(timeline);
+            // 初始化作业执行记录持久上下文
+            var context = new PersistenceExecutionRecordContext(
+                schedulerFactoryInstance.GetJob(jobId).GetJobDetail()
+                , this
+                , timeline.Mode
+                , timeline);
+
+            await schedulerFactoryInstance.RecordTimelineAsync(context);
         }
     }
 

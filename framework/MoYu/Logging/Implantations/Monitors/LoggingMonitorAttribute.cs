@@ -543,6 +543,47 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IAs
     }
 
     /// <summary>
+    /// 生成附加信息日志模板
+    /// </summary>
+    /// <param name="writer"></param>
+    /// <param name="httpContext"></param>
+    /// <returns></returns>
+    private List<string> GenerateExtraTemplate(Utf8JsonWriter writer, HttpContext httpContext)
+    {
+        if (!httpContext.Items.TryGetValue(LoggingMonitorContext.KEY, out var values))
+        {
+            return null;
+        }
+
+        if (values is not Dictionary<string, object> extras || extras.Count == 0)
+        {
+            return null;
+        }
+
+        var templates = new List<string>();
+
+        templates.AddRange(new[]
+        {
+            $"━━━━━━━━━━━━━━━  附加信息 ━━━━━━━━━━━━━━━"
+        });
+
+        // 遍历附加信息
+        writer.WritePropertyName("loggingExtras");
+        writer.WriteStartObject();
+        foreach (var (key, value) in extras)
+        {
+            templates.Add($"##{key}## {value}");
+            writer.WriteString(key, value?.ToString());
+        }
+        writer.WriteEndObject();
+
+        // 移除内存占用
+        httpContext.Items.Remove(LoggingMonitorContext.KEY);
+
+        return templates;
+    }
+
+    /// <summary>
     /// 序列化对象
     /// </summary>
     /// <param name="obj"></param>
@@ -873,6 +914,10 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IAs
         var requestUrl = Uri.UnescapeDataString(httpRequest.GetRequestUrlAddress());
         writer.WriteString(nameof(requestUrl), requestUrl);
 
+        // 获取请求 HTTP 协议
+        var protocol = Uri.UnescapeDataString(httpRequest.Protocol);
+        writer.WriteString(nameof(protocol), protocol);
+
         // 获取来源 Url 地址
         var refererUrl = Uri.UnescapeDataString(httpRequest.GetRefererUrlAddress());
         writer.WriteString(nameof(refererUrl), refererUrl);
@@ -990,6 +1035,7 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IAs
             , $"##路由信息## [area]: {areaName}; [controller]: {controllerName}; [action]: {actionName}"
             , $"##请求方式## {httpMethod}"
             , $"##请求地址## {requestUrl}"
+            , $"##HTTP 协议## {protocol}"
             , $"##来源地址## {refererUrl}"
             , $"##请求端源## {requestFrom}"
             , $"##浏览器标识## {userAgent}"
@@ -1036,6 +1082,9 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IAs
             // 添加返回值信息日志模板
             monitorItems.AddRange(GenerateReturnInfomationTemplate(writer, resultContext, actionMethod, monitorMethod));
         }
+
+        // 添加附加信息模板
+        monitorItems.AddRange(GenerateExtraTemplate(writer, resultHttpContext) ?? Enumerable.Empty<string>());
 
         // 添加异常信息日志模板
         monitorItems.AddRange(GenerateExcetpionInfomationTemplate(writer, exception, isValidationException));

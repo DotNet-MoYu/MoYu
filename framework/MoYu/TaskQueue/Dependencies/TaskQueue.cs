@@ -51,7 +51,7 @@ internal sealed partial class TaskQueue : ITaskQueue
     public object Enqueue(Action<IServiceProvider> taskHandler, int delay = 0, string channel = null, object taskId = null, bool? concurrent = null, bool runOnceIfDelaySet = false)
     {
         // 空检查
-        if (taskHandler == default)
+        if (taskHandler == null)
         {
             throw new ArgumentNullException(nameof(taskHandler));
         }
@@ -77,7 +77,7 @@ internal sealed partial class TaskQueue : ITaskQueue
     public async ValueTask<object> EnqueueAsync(Func<IServiceProvider, CancellationToken, ValueTask> taskHandler, int delay = 0, string channel = null, object taskId = null, bool? concurrent = null, bool runOnceIfDelaySet = false)
     {
         // 空检查
-        if (taskHandler == default)
+        if (taskHandler == null)
         {
             throw new ArgumentNullException(nameof(taskHandler));
         }
@@ -125,7 +125,7 @@ internal sealed partial class TaskQueue : ITaskQueue
     public object Enqueue(Action<IServiceProvider> taskHandler, string cronExpression, CronStringFormat format = CronStringFormat.Default, string channel = null, object taskId = null, bool? concurrent = null, bool runOnceIfDelaySet = false)
     {
         var totalMilliseconds = Crontab.Parse(cronExpression, format)
-                                            .GetSleepMilliseconds(DateTime.Now);
+            .GetSleepMilliseconds(DateTime.Now);
 
         return Enqueue(taskHandler, (int)totalMilliseconds, channel, taskId, concurrent, runOnceIfDelaySet);
     }
@@ -144,7 +144,7 @@ internal sealed partial class TaskQueue : ITaskQueue
     public ValueTask<object> EnqueueAsync(Func<IServiceProvider, CancellationToken, ValueTask> taskHandler, string cronExpression, CronStringFormat format = CronStringFormat.Default, string channel = null, object taskId = null, bool? concurrent = null, bool runOnceIfDelaySet = false)
     {
         var totalMilliseconds = Crontab.Parse(cronExpression, format)
-                                            .GetSleepMilliseconds(DateTime.Now);
+            .GetSleepMilliseconds(DateTime.Now);
 
         return EnqueueAsync(taskHandler, (int)totalMilliseconds, channel, taskId, concurrent, runOnceIfDelaySet);
     }

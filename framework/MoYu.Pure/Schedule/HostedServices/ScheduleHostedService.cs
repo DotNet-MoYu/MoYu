@@ -153,7 +153,7 @@ internal sealed class ScheduleHostedService : BackgroundService
     private async Task BackgroundProcessing(CancellationToken stoppingToken)
     {
         // 获取当前时间作为检查时间
-        var startAt = Penetrates.GetNowTime(ScheduleOptionsBuilder.UseUtcTimestampProperty);
+        var startAt = Penetrates.GetNowTime();
 
         // 查找所有符合触发的作业
         var currentRunJobs = _schedulerFactory.GetCurrentRunJobs(startAt).Cast<Scheduler>().ToList();
@@ -211,7 +211,7 @@ internal sealed class ScheduleHostedService : BackgroundService
                         // 创建作业执行前上下文
                         var jobExecutingContext = new JobExecutingContext(jobDetail, trigger, occurrenceTime, runId, serviceScoped.ServiceProvider)
                         {
-                            ExecutingTime = Penetrates.GetNowTime(ScheduleOptionsBuilder.UseUtcTimestampProperty),
+                            ExecutingTime = Penetrates.GetNowTime(),
                             Mode = trigger.Mode
                         };
 
@@ -315,7 +315,7 @@ internal sealed class ScheduleHostedService : BackgroundService
                                 // 创建作业执行后上下文
                                 var jobExecutedContext = new JobExecutedContext(jobDetail, trigger, occurrenceTime, runId, serviceScoped.ServiceProvider)
                                 {
-                                    ExecutedTime = Penetrates.GetNowTime(ScheduleOptionsBuilder.UseUtcTimestampProperty),
+                                    ExecutedTime = Penetrates.GetNowTime(),
                                     Exception = executionException,
                                     Result = jobExecutingContext.Result,
                                     Mode = trigger.Mode
@@ -370,7 +370,7 @@ internal sealed class ScheduleHostedService : BackgroundService
                             }
 
                             // 记录作业触发器运行信息
-                            await trigger.RecordTimelineAsync(_schedulerFactory, jobId);
+                            await trigger.RecordTimelineAsync(_schedulerFactory, jobId, executionException?.ToString());
 
                             // 重置触发模式
                             trigger.Mode = 0;
@@ -455,7 +455,7 @@ internal sealed class ScheduleHostedService : BackgroundService
             _schedulerFactory.Shorthand(jobDetail, trigger);
 
             // 输出阻塞日志
-            _logger.LogWarning("{occurrenceTime}: The <{triggerId}> trigger of job <{jobId}> failed to execute as scheduled due to blocking.", occurrenceTime, trigger.TriggerId, jobDetail.JobId);
+            _logger.LogWarning("{occurrenceTime}: The <{TriggerId}> trigger of job <{JobId}> failed to execute as scheduled due to blocking.", occurrenceTime, trigger.TriggerId, jobDetail.JobId);
 
             return true;
         }

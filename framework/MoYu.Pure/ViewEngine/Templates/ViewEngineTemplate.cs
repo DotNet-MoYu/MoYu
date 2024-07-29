@@ -165,6 +165,12 @@ public class ViewEngineTemplate : IViewEngineTemplate
 
         return new ViewEngineTemplate(memoryStream);
     }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        assemblyByteCode?.Dispose();
+    }
 }
 
 /// <summary>
@@ -321,5 +327,11 @@ public class ViewEngineTemplate<T> : IViewEngineTemplate<T>
         memoryStream.Position = 0;
 
         return new ViewEngineTemplate<T>(memoryStream);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        assemblyByteCode.Dispose();
     }
 }

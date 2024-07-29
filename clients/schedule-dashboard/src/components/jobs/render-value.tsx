@@ -1,23 +1,25 @@
-import { IconActivity, IconCalendarClock } from "@douyinfe/semi-icons";
+import {
+  IconActivity,
+  IconCalendarClock,
+  IconUploadError,
+} from "@douyinfe/semi-icons";
 import {
   Button,
   Modal,
+  Popover,
   Tag,
+  TextArea,
   Timeline,
   Tooltip,
   Typography,
 } from "@douyinfe/semi-ui";
 import Paragraph from "@douyinfe/semi-ui/lib/es/typography/paragraph";
-import dayjs from "dayjs";
-import "dayjs/locale/zh-cn";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { useEffect, useState } from "react";
 import useFetch from "use-http/dist/cjs/useFetch";
 import { Trigger, TriggerTimeline } from "../../types";
+import { dayFromNow, dayTime } from "../../utils";
 import apiconfig from "./apiconfig";
 import StatusText from "./state-text";
-dayjs.extend(relativeTime);
-dayjs.locale("zh-cn");
 
 /**
  * 渲染触发器属性值
@@ -45,7 +47,9 @@ export default function RenderValue(props: {
   /**
    * 构建预览节点
    */
-  let preview = <span>{value?.toString() || ""}</span>;
+  let preview = (
+    <span style={{ wordBreak: "break-all" }}>{value?.toString() || ""}</span>
+  );
 
   /**
    * 处理下一次运行时间
@@ -53,7 +57,7 @@ export default function RenderValue(props: {
   if (prop === "nextRunTime") {
     preview = value ? (
       <Tag color="light-green" type="solid">
-        {value} ({dayjs(value).fromNow()})
+        {dayTime(value).format("YYYY/MM/DD HH:mm:ss")} ({dayFromNow(value)})
       </Tag>
     ) : (
       <span></span>
@@ -65,7 +69,7 @@ export default function RenderValue(props: {
     preview = value ? (
       <>
         <Tag color="grey" type="light" style={{ verticalAlign: "middle" }}>
-          {value} ({dayjs(value).fromNow()})
+          {dayTime(value).format("YYYY/MM/DD HH:mm:ss")} ({dayFromNow(value)})
         </Tag>
         <div>
           <Button
@@ -105,7 +109,9 @@ export default function RenderValue(props: {
     /**
      * 处理状态
      */
-    preview = <StatusText value={Number(value)} />;
+    preview = (
+      <StatusText value={Number(value)} showError onErrorClick={showDialog} />
+    );
   } else if (
     prop === "startNow" ||
     prop === "runOnStart" ||
@@ -124,7 +130,12 @@ export default function RenderValue(props: {
      * 处理触发器和作业 Id
      */
     preview = (
-      <Paragraph copyable underline strong style={{ display: "inline-block" }}>
+      <Paragraph
+        copyable
+        underline
+        strong
+        style={{ display: "inline-block", wordBreak: "break-all" }}
+      >
         {value?.toString() || ""}
       </Paragraph>
     );
@@ -133,7 +144,11 @@ export default function RenderValue(props: {
      * 处理参数类型
      */
     preview = value ? (
-      <Paragraph copyable mark style={{ display: "inline-block" }}>
+      <Paragraph
+        copyable
+        mark
+        style={{ display: "inline-block", wordBreak: "break-all" }}
+      >
         {value?.toString() || ""}
       </Paragraph>
     ) : (
@@ -154,7 +169,7 @@ export default function RenderValue(props: {
      * 处理触发器类型
      */
     preview = (
-      <span style={{ wordBreak: "break-word" }}>{value?.toString() || ""}</span>
+      <span style={{ wordBreak: "break-all" }}>{value?.toString() || ""}</span>
     );
   } else if (prop === "result") {
     /**
@@ -168,7 +183,7 @@ export default function RenderValue(props: {
           collapsible: true,
           collapseText: "折叠",
         }}
-        style={{ width: 200 }}
+        style={{ width: 200, wordBreak: "break-all" }}
         copyable
       >
         {value?.toString() || ""}
@@ -185,9 +200,24 @@ export default function RenderValue(props: {
         </Tag>
       </>
     );
+  } else if (
+    prop === "updatedTime" ||
+    prop === "startTime" ||
+    prop === "endTime"
+  ) {
+    /**
+     * 处理其他时间
+     */
+    preview = value ? (
+      <>
+        {dayTime(value).format("YYYY/MM/DD HH:mm:ss")} ({dayFromNow(value)})
+      </>
+    ) : (
+      <span></span>
+    );
   } else
     preview = (
-      <span style={{ wordBreak: "break-word" }}>{value?.toString() || ""}</span>
+      <span style={{ wordBreak: "break-all" }}>{value?.toString() || ""}</span>
     );
 
   return (
@@ -261,7 +291,7 @@ function LogPanel(props: {
       onCancel={handleCancel}
       closeOnEsc={true}
       zIndex={10000000000}
-      width={640}
+      width={850}
     >
       <Timeline mode="center">
         {timelines.map((timeline, i) => (
@@ -270,23 +300,31 @@ function LogPanel(props: {
             time={
               <div style={{ display: "inline-flex" }}>
                 {timeline.nextRunTime ? (
-                  <Tooltip content={"NextRunTime"} zIndex={10000000002}>
+                  <div style={{ display: "inline-block" }}>
                     <Tag
                       color={"light-green"}
                       type={i === 0 ? "solid" : "light"}
                     >
-                      {timeline.nextRunTime}
+                      {dayTime(timeline.nextRunTime).format(
+                        "YYYY/MM/DD HH:mm:ss"
+                      )}
+                      ({dayFromNow(timeline.nextRunTime)})
                     </Tag>
-                  </Tooltip>
+                    <div>NextRunTime</div>
+                  </div>
                 ) : (
                   <StatusText value={Number(timeline.status)} />
                 )}
                 <span style={{ padding: "0 3px" }}>{"<"}-</span>
-                <Tooltip content={"LastRunTime"} zIndex={10000000002}>
+                <div style={{ display: "inline-block" }}>
                   <Tag color="grey" type="light">
-                    {timeline.lastRunTime}
+                    {dayTime(timeline.lastRunTime).format(
+                      "YYYY/MM/DD HH:mm:ss"
+                    )}
+                    ({dayFromNow(timeline.lastRunTime)})
                   </Tag>
-                </Tooltip>
+                  <div>LastRunTime</div>
+                </div>
               </div>
             }
             dot={
@@ -324,7 +362,40 @@ function LogPanel(props: {
             次运行，耗时{" "}
             <Tag color="lime" type="light">
               {timeline.elapsedTime}ms
-            </Tag>
+            </Tag>{" "}
+            {timeline.mode === 1 && (
+              <Tag color="yellow" type="solid">
+                手动
+              </Tag>
+            )}
+            {timeline.exception && (
+              <Popover
+                showArrow
+                content={
+                  <div
+                    className="exception-box"
+                    style={{
+                      padding: 10,
+                      width: 400,
+                    }}
+                  >
+                    <TextArea value={timeline.exception} rows={10} />
+                  </div>
+                }
+                trigger="click"
+                zIndex={10000000002}
+              >
+                <IconUploadError
+                  style={{
+                    position: "relative",
+                    color: "red",
+                    top: 4,
+                    cursor: "pointer",
+                    marginLeft: 5,
+                  }}
+                />
+              </Popover>
+            )}
           </Timeline.Item>
         ))}
       </Timeline>

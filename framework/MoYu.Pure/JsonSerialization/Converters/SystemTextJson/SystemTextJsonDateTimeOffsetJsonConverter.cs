@@ -2,7 +2,6 @@
 //
 // 此源代码遵循位于源代码树根目录中的 LICENSE 文件的许可证。
 
-using MoYu.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -73,7 +72,7 @@ public class SystemTextJsonDateTimeOffsetJsonConverter : JsonConverter<DateTimeO
     public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options)
     {
         // 判断是否序列化成当地时间
-        var formatDateTime = Localized ? value.ConvertToDateTime() : value;
+        var formatDateTime = Localized ? value.ToLocalTime() : value;
         writer.WriteStringValue(formatDateTime.ToString(Format));
     }
 }
@@ -146,8 +145,8 @@ public class SystemTextJsonNullableDateTimeOffsetJsonConverter : JsonConverter<D
         else
         {
             // 判断是否序列化成当地时间
-            var formatDateTime = Localized ? value.ConvertToDateTime() : value;
-            writer.WriteStringValue(formatDateTime.Value.ToString(Format));
+            var formatDateTime = Localized ? value.Value.ToLocalTime() : value.Value;
+            writer.WriteStringValue(formatDateTime.ToString(Format));
         }
     }
 }

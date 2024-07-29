@@ -1,5 +1,6 @@
 import {
   IconDelete,
+  IconLink,
   IconMore,
   IconPlayCircle,
   IconStop,
@@ -19,16 +20,17 @@ import {
 import { Data } from "@douyinfe/semi-ui/lib/es/descriptions";
 import { ColumnProps } from "@douyinfe/semi-ui/lib/es/table/interface";
 import Paragraph from "@douyinfe/semi-ui/lib/es/typography/paragraph";
-import dayjs from "dayjs";
-import "dayjs/locale/zh-cn";
-import relativeTime from "dayjs/plugin/relativeTime";
 import useFetch from "use-http";
 import { JobDetail, Trigger } from "../../types";
+import {
+  dayFromNow,
+  dayTime,
+  findMaxUtcTimeString,
+  findMinUtcTimeString,
+} from "../../utils";
 import apiconfig from "./apiconfig";
 import RenderValue from "./render-value";
 import StatusText from "./state-text";
-dayjs.extend(relativeTime);
-dayjs.locale("zh-cn");
 
 const style = {
   padding: "10px",
@@ -70,13 +72,15 @@ const columns: ColumnProps<JobDetail>[] = [
   {
     title: "JobId",
     dataIndex: "jobId",
-    width: 200,
+    width: 300,
+    fixed: true,
     render: (text, jobDetail, index) => {
       return (
         <>
           <Popover
             content={
               <div style={style}>
+                {(jobDetail.triggers?.length || 0) === 0 && "暂无作业触发器"}
                 {jobDetail.triggers?.map((t, i) => (
                   <div key={t.triggerId}>
                     <Descriptions data={getData(t)} />
@@ -106,6 +110,19 @@ const columns: ColumnProps<JobDetail>[] = [
                 <StatusText value={3} />
               </span>
             )}
+          {(jobDetail.jobType === "Furion.Schedule.HttpJob" ||
+            jobDetail.jobType === "Furion.Pure.Schedule.HttpJob") && (
+            <Tooltip content="HTTP 作业">
+              <IconLink
+                style={{
+                  marginLeft: 5,
+                  position: "relative",
+                  top: 4,
+                  color: "#999",
+                }}
+              />
+            </Tooltip>
+          )}
         </>
       );
     },
@@ -193,6 +210,9 @@ const columns: ColumnProps<JobDetail>[] = [
             expandable: true,
             collapsible: true,
             collapseText: "折叠",
+            onExpand: (expand, e) => {
+              e.stopPropagation();
+            },
           }}
           style={{ width: 200 }}
           copyable
@@ -216,17 +236,15 @@ const columns: ColumnProps<JobDetail>[] = [
       var lastRunTimes =
         jobDetail.triggers
           ?.filter((u) => !!u.lastRunTime)
-          ?.map((u) => new Date(u.lastRunTime!)) || [];
+          ?.map((u) => u.lastRunTime!) || [];
 
-      var lastRunTime =
-        lastRunTimes.length === 0
-          ? null
-          : new Date(Math.max.apply(null, lastRunTimes as any));
+      const lastRunTime =
+        lastRunTimes.length === 0 ? null : findMaxUtcTimeString(lastRunTimes);
 
       return lastRunTime ? (
         <Tag color="grey" type="light" style={{ verticalAlign: "middle" }}>
-          {dayjs(lastRunTime).format("YYYY/MM/DD HH:mm:ss")} (
-          {dayjs(lastRunTime).fromNow()})
+          {dayTime(lastRunTime).format("YYYY/MM/DD HH:mm:ss")} (
+          {dayFromNow(lastRunTime)})
         </Tag>
       ) : (
         <></>
@@ -242,12 +260,10 @@ const columns: ColumnProps<JobDetail>[] = [
       var nextRunTimes =
         jobDetail.triggers
           ?.filter((u) => !!u.nextRunTime)
-          ?.map((u) => new Date(u.nextRunTime!)) || [];
+          ?.map((u) => u.nextRunTime!) || [];
 
       var nextRunTime =
-        nextRunTimes.length === 0
-          ? null
-          : new Date(Math.min.apply(null, nextRunTimes as any));
+        nextRunTimes.length === 0 ? null : findMinUtcTimeString(nextRunTimes);
 
       return nextRunTime ? (
         <Tag
@@ -255,8 +271,8 @@ const columns: ColumnProps<JobDetail>[] = [
           type="solid"
           style={{ verticalAlign: "middle" }}
         >
-          {dayjs(nextRunTime).format("YYYY/MM/DD HH:mm:ss")} (
-          {dayjs(nextRunTime).fromNow()})
+          {dayTime(nextRunTime).format("YYYY/MM/DD HH:mm:ss")} (
+          {dayFromNow(nextRunTime)})
         </Tag>
       ) : (
         <></>
@@ -268,7 +284,19 @@ const columns: ColumnProps<JobDetail>[] = [
     dataIndex: "operate",
     width: 50,
     fixed: "right",
-    render: (text, jobDetail, index) => <Operation jobid={jobDetail.jobId} />,
+    render: (text, jobDetail, index) => (
+      <Operation
+        jobid={jobDetail.jobId}
+        hasTrigger={(jobDetail.triggers?.length || 0) > 0}
+      />
+    ),
+    onCell: (jobDetail, index) => {
+      return {
+        onClick: (e) => {
+          e.stopPropagation();
+        },
+      };
+    },
   },
 ];
 
@@ -277,8 +305,8 @@ const columns: ColumnProps<JobDetail>[] = [
  * @param props
  * @returns
  */
-function Operation(props: { jobid?: string | null }) {
-  const { jobid } = props;
+function Operation(props: { jobid?: string | null; hasTrigger: boolean }) {
+  const { jobid, hasTrigger } = props;
 
   /**
    * 初始化请求配置
@@ -312,10 +340,16 @@ function Operation(props: { jobid?: string | null }) {
     <Dropdown
       render={
         <Dropdown.Menu>
-          <Dropdown.Item onClick={() => callAction("start")}>
+          <Dropdown.Item
+            onClick={() => callAction("start")}
+            disabled={!hasTrigger}
+          >
             <IconPlayCircle size="extra-large" /> 启动
           </Dropdown.Item>
-          <Dropdown.Item onClick={() => callAction("pause")}>
+          <Dropdown.Item
+            onClick={() => callAction("pause")}
+            disabled={!hasTrigger}
+          >
             <IconStop size="extra-large" /> 暂停
           </Dropdown.Item>
           <Dropdown.Item>
@@ -327,7 +361,11 @@ function Operation(props: { jobid?: string | null }) {
               <IconDelete size="small" /> &nbsp;删除
             </Popconfirm>
           </Dropdown.Item>
-          <Dropdown.Item onClick={() => callAction("run")}>
+
+          <Dropdown.Item
+            onClick={() => callAction("run")}
+            disabled={!hasTrigger}
+          >
             <IconVigoLogo size="extra-large" /> 立即执行
           </Dropdown.Item>
         </Dropdown.Menu>
