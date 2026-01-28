@@ -83,11 +83,12 @@ function Get-ReplaceFiles {
         )
         $args = @(
             '-l',
-            '-e','MoYu','-e','MoYu','-e','MoYu','-e','MoYu','-e','MoYu','-e','MoYu',
+            '-e','Furion','-e','furion','-e','FURION',
+            '-e','Fuion','-e','fuion','-e','FUION',
             '--no-messages','--text'
         )
         foreach ($g in $include) { $args += @('-g', $g) }
-        $args += @('-g','!schemas/**','-g','!snks/**','-g','!**/bin/**','-g','!**/obj/**','-g','!**/.git/**','-g','!icon*.png')
+        $args += @('-g','!schemas/**','-g','!snks/**','-g','!**/bin/**','-g','!**/obj/**','-g','!**/.git/**','-g','!icon*.png','-g','!**/*.map')
         $files = & $rg @args $RepoPath
         $rootReadme = Join-Path $RepoPath 'README.md'
         $rootReadmeZh = Join-Path $RepoPath 'README.zh.md'
@@ -101,7 +102,7 @@ function Get-ReplaceFiles {
         } |
         ForEach-Object { $_.FullName } |
         Where-Object {
-            try { (Get-Content -Raw -Path $_ -ErrorAction Stop) -match 'MoYu|MoYu|MoYu|MoYu|MoYu|MoYu' } catch { $false }
+            try { (Get-Content -Raw -Path $_ -ErrorAction Stop) -match 'Furion|furion|FURION|Fuion|fuion|FUION' } catch { $false }
         } |
         Where-Object {
             $_ -ne (Join-Path $RepoPath 'README.md') -and $_ -ne (Join-Path $RepoPath 'README.zh.md')
@@ -115,7 +116,7 @@ function Get-RenameTargets {
             $_.FullName -notmatch '\\schemas\\' -and $_.FullName -notmatch '\\snks\\' -and $_.FullName -notmatch '\\bin\\' -and
             $_.FullName -notmatch '\\obj\\' -and $_.FullName -notmatch '\\.git\\' -and $_.Name -notlike 'icon*.png'
         } |
-        Where-Object { $_.Name -match 'MoYu|MoYu|MoYu|MoYu|MoYu|MoYu' }
+        Where-Object { $_.Name -match 'Furion|furion|FURION|Fuion|fuion|FUION' }
 }
 
 function Rename-PathTokens {
@@ -123,7 +124,7 @@ function Rename-PathTokens {
 
     $dirs = Get-RenameTargets -RepoPath $RepoPath | Where-Object { $_.PSIsContainer } | Sort-Object { $_.FullName.Length } -Descending
     foreach ($t in $dirs) {
-        $newName = $t.Name -replace 'MoYu','MoYu' -replace 'MoYu','moyu' -replace 'MoYu','MOYU' -replace 'MoYu','MoYu' -replace 'MoYu','moyu' -replace 'MoYu','MOYU'
+        $newName = $t.Name -replace 'Furion','MoYu' -replace 'furion','moyu' -replace 'FURION','MOYU' -replace 'Fuion','MoYu' -replace 'fuion','moyu' -replace 'FUION','MOYU'
         if ($newName -ne $t.Name) {
             $dest = Join-Path $t.Parent.FullName $newName
             if ((Test-Path $dest) -and -not $Force) { continue }
@@ -135,7 +136,7 @@ function Rename-PathTokens {
     $files = Get-RenameTargets -RepoPath $RepoPath | Where-Object { -not $_.PSIsContainer } | Sort-Object { $_.FullName.Length } -Descending
     foreach ($t in $files) {
         if (-not (Test-Path $t.FullName)) { continue }
-        $newName = $t.Name -replace 'MoYu','MoYu' -replace 'MoYu','moyu' -replace 'MoYu','MOYU' -replace 'MoYu','MoYu' -replace 'MoYu','moyu' -replace 'MoYu','MOYU'
+        $newName = $t.Name -replace 'Furion','MoYu' -replace 'furion','moyu' -replace 'FURION','MOYU' -replace 'Fuion','MoYu' -replace 'fuion','moyu' -replace 'FUION','MOYU'
         if ($newName -ne $t.Name) {
             $dest = Join-Path $t.DirectoryName $newName
             if ((Test-Path $dest) -and -not $Force) { continue }
@@ -256,7 +257,7 @@ if (-not $ReplaceOnly -and -not $SkipSync) {
 }
 
 if ($NormalizeLayout) {
-    Write-Host "Normalizing paths (MoYu -> MoYu)..."
+    Write-Host "Normalizing paths (Furion -> MoYu)..."
     Rename-PathTokens -RepoPath $Repo -Force:$ForceRenamePaths
 }
 
@@ -288,9 +289,9 @@ if (-not $SkipReplace) {
     Write-Host "Replacing branding strings..."
     $files = Get-ReplaceFiles -RepoPath $Repo
     $find = @(
-        'MoYu','MoYu','MoYu','MoYu','MoYu','MoYu',
-        'https://gitee.com/dotnetchina/MoYu','https://gitee.com/dotnetchina/MoYu',
-        'https://gitee.com/dotnetchina/MoYu','https://gitee.com/dotnetchina/MoYu'
+        'Furion','furion','FURION','Fuion','fuion','FUION',
+        'https://gitee.com/dotnetchina/Furion','https://gitee.com/dotnetchina/furion',
+        'https://gitee.com/dotnetchina/Fuion','https://gitee.com/dotnetchina/fuion'
     )
     $repl = @(
         'MoYu','moyu','MOYU','MoYu','moyu','MOYU',
@@ -305,6 +306,14 @@ if (-not $SkipReplace) {
     Write-Host "Skip replace (-SkipReplace)."
 }
 
+if (-not $ReplaceOnly) {
+    $rootIcon = Join-Path (Split-Path $Repo -Parent) 'icon.png'
+    if (Test-Path $rootIcon) {
+        Get-ChildItem -Path $Repo -Recurse -Filter 'icon.png' -File | ForEach-Object {
+            Copy-Item -Path $rootIcon -Destination $_.FullName -Force
+        }
+    }
+}
 if ($Commit) {
     Invoke-Git -GitArgs @('-C', $Repo, 'add', '-A')
     $msg = "sync upstream $UpstreamBranch + branding"

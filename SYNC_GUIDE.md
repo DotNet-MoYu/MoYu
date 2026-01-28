@@ -5,9 +5,11 @@
 ## 目标
 - 同步 Furion 的 `v5-transition` 分支到 MoYu
 - 命名空间/目录/文件/内容中所有 `Furion` 统一替换为 `MoYu`（含大小写）
+- 同时处理 `Fuion`/`fuion` 的误拼写
+- 替换 Furion 的 Gitee 链接为 `https://gitee.com/dotnetmoyu/MoYu`
 - 保留你自己的：`README.md`、`README.zh.md`、`icon.png`
 - `framework/Directory.Build.props` 与 `tools/MoYu.Tools/Directory.Build.props` 以你自己的模板为准，但 **TargetFrameworks** 和 **Version** 使用 Furion 的
-- 不替换 `schemas` 和 `snks`
+- 不替换 `schemas` 和 `snks`（同时跳过 `bin/obj/.git/*.map/icon*.png`）
 
 ## 一键流程（推荐）
 在 `D:\MoYu\MoYu` 下执行：
@@ -22,10 +24,12 @@ powershell -ExecutionPolicy Bypass -File .\sync-upstream.ps1 \
 - 拉取 Furion 的 `v5-transition`
 - 合并到 MoYu
 - 执行字符串替换和路径重命名
-- 保留你的 README/icon（脚本内会做备份与回填）
+- 保留你的 README/icon（脚本内会做备份与回填，并用 `D:\MoYu\icon.png` 统一覆盖所有 `icon.png`）
+- 用你的模板重写 `framework/Directory.Build.props` 和 `tools/MoYu.Tools/Directory.Build.props`（仅保留 Furion 的 `TargetFrameworks` 和 `Version`）
+- 自动从 `framework\MoYu.sln` 移除 tests 项目
 
-## 必要的后置修正（每次同步后都要跑）
-以下是“保证结果正确”的必跑步骤：
+## 必要的后置修正（仅在异常时需要）
+一般不需要手动跑，除非你手动改过或出现异常。
 
 ### 1) 保留 README
 ```
@@ -63,7 +67,7 @@ Get-ChildItem .\framework -Directory -Filter 'Furion*' | ForEach-Object {
 ```
 
 ### 5) 从 framework 解决方案中移除 tests（避免 TargetFramework 不兼容）
-同步后 `framework\MoYu.sln` 里不要包含 tests 项目。
+同步后 `framework\MoYu.sln` 里不要包含 tests 项目（脚本已自动处理）。
 
 ## 打包
 ```
