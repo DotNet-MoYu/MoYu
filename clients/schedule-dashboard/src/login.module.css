@@ -1,0 +1,90 @@
+.main {
+  display: flex;
+  flex-basis: 0;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  align-self: stretch;
+  justify-content: center;
+  padding: 10px;
+  row-gap: 10px;
+  margin-top: 48px;
+
+  .login {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    align-items: center;
+    border-radius: 8px;
+    box-shadow: var(
+      --shadow-elevated,
+      0px 0px 1px 0px #0000004d,
+      0px 4px 14px 0px #0000001a
+    );
+    background: var(--semi-color-bg-0);
+    padding: 36px 48px;
+    row-gap: 30px;
+
+    .component66 {
+      display: inline-flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      align-items: center;
+      border-radius: 8px;
+      row-gap: 24px;
+
+      .header {
+        display: inline-flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        row-gap: 6px;
+
+        .title {
+          flex-shrink: 0;
+          min-width: 128px;
+          line-height: 44px;
+          letter-spacing: 0;
+          color: var(--semi-color-text-0);
+          font-size: 24px;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      align-items: flex-start;
+      align-self: stretch;
+      row-gap: 28px;
+
+      .inputs {
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        align-items: flex-start;
+        align-self: stretch;
+        justify-content: flex-start;
+        row-gap: 24px;
+
+        .formField {
+          flex-shrink: 0;
+          align-self: stretch;
+        }
+      }
+
+      .checkbox {
+        flex-shrink: 0;
+      }
+
+      .button {
+        flex-shrink: 0;
+        width: 300px;
+        height: 40px;
+      }
+    }
+  }
+}

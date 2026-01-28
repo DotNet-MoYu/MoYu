@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<LangVersion>preview</LangVersion>
+		<TargetFramework>$(framework)</TargetFramework>
+		<NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MoYuRazor.Application\MoYuRazor.Application.csproj" />
+		<ProjectReference Include="..\MoYuRazor.Database.Migrations\MoYuRazor.Database.Migrations.csproj" />
+	</ItemGroup>
+
+</Project>

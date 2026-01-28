@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<LangVersion>preview</LangVersion>
+		<TargetFramework>$(framework)</TargetFramework>
+		<NoWarn>1701;1702;1591</NoWarn>
+		<DocumentationFile>MoYuApi.Core.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="MoYuApi.Core.xml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MoYu.Extras.Authentication.JwtBearer" Version="4.9.8.9" />
+		<PackageReference Include="MoYu.Extras.ObjectMapper.Mapster" Version="4.9.8.9" />
+		<PackageReference Include="MoYu.Pure" Version="4.9.8.9" />
+		<PackageReference Include="SqlSugarCore" Version="5.1.4.211" />
+	</ItemGroup>
+
+</Project>

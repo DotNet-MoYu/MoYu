@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<LangVersion>preview</LangVersion>
+		<TargetFramework>$(framework)</TargetFramework>
+		<NoWarn>1701;1702;1591</NoWarn>
+		<DocumentationFile>MoYuApp.Web.Core.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="MoYuApp.Web.Core.xml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MoYuApp.Application\MoYuApp.Application.csproj" />
+		<ProjectReference Include="..\MoYuApp.Database.Migrations\MoYuApp.Database.Migrations.csproj" />
+	</ItemGroup>
+
+</Project>

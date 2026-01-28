@@ -1,0 +1,706 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MoYu.Application</name>
+    </assembly>
+    <members>
+        <member name="T:MoYu.Application.JobServices">
+            <summary>
+            定时任务
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.ChildrenDto.Id">
+            <summary>
+            主键
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.ChildrenDto.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.ChildrenDto.Gender">
+            <summary>
+            性别
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.ChildrenInputDto.Id">
+            <summary>
+            主键
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.ChildrenInputDto.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.ChildrenInputDto.Gender">
+            <summary>
+            性别
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonDto.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonDto.Name">
+            <summary>
+            姓名
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonDto.Age">
+            <summary>
+            年龄
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonDto.Address">
+            <summary>
+            住址
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonDto.PhoneNumber">
+            <summary>
+            电话号码
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonDto.QQ">
+            <summary>
+            QQ 号码
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonDto.CreatedTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonDto.Childrens">
+            <summary>
+            孩子
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonDto.Posts">
+            <summary>
+            孩子
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonInputDto.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonInputDto.Name">
+            <summary>
+            姓名
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonInputDto.Age">
+            <summary>
+            年龄
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonInputDto.Address">
+            <summary>
+            住址
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonInputDto.PhoneNumber">
+            <summary>
+            电话号码
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonInputDto.QQ">
+            <summary>
+            QQ 号码
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonInputDto.Childrens">
+            <summary>
+            孩子
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PersonInputDto.Posts">
+            <summary>
+            孩子
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PostInputDto.Id">
+            <summary>
+            主键
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PostInputDto.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PostDto.Id">
+            <summary>
+            主键
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.Persons.PostDto.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="T:MoYu.Application.Persons.PersonRelationshipService">
+            <summary>
+            关联数据演示
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.Persons.PersonRelationshipService.#ctor(MoYu.DatabaseAccessor.IRepository{MoYu.Core.Person},MoYu.DatabaseAccessor.IRepository{MoYu.Core.VPerson})">
+            <summary>
+            构造函数
+            </summary>
+            <param name="personRepository"></param>
+            <param name="repository"></param>
+        </member>
+        <member name="M:MoYu.Application.Persons.PersonRelationshipService.OneToOne">
+            <summary>
+            一对一
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.Persons.PersonRelationshipService.OneToMany">
+            <summary>
+            一对多
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.Persons.PersonRelationshipService.ManyToMany">
+            <summary>
+            多对多
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.Persons.PersonRelationshipService.InnerJoin">
+            <summary>
+            内连接
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.Persons.PersonRelationshipService.LeftJoin">
+            <summary>
+            左连接
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.Persons.PersonRelationshipService.RightJoin">
+            <summary>
+            右连接
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.Persons.PersonRelationshipService.GetVPerson">
+            <summary>
+            读取视图
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:MoYu.Application.PersonService">
+            <summary>
+            用户管理
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.PersonService.Insert(MoYu.Application.Persons.PersonInputDto)">
+            <summary>
+            新增一条
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.PersonService.Update(MoYu.Application.Persons.PersonInputDto)">
+            <summary>
+            更新一条
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.PersonService.Delete(System.Int32)">
+            <summary>
+            删除一条
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:MoYu.Application.PersonService.Find(System.Int32)">
+            <summary>
+            查询一条
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:MoYu.Application.PersonService.GetAll">
+            <summary>
+            查询所有
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.PersonService.GetAllByPage(System.Int32,System.Int32)">
+            <summary>
+            分页查询
+            </summary>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.PersonService.Search(System.String,System.Int32)">
+            <summary>
+            搜索数据
+            </summary>
+            <param name="name"></param>
+            <param name="age"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.PersonService.TestDbParameters">
+            <summary>
+            测试数据库参数少给或多个情况
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.PersonService.MarkdownTestMore">
+             <summary>
+             测试 Markdown
+             </summary>
+             <remarks>
+             # 先知 / MoYu ([探索版](https://gitee.com/dotnetchina/MoYu/tree/experimental/))
+            
+                 一个应用程序框架，您可以将它集成到任何.NET/C# 应用程序中。
+            
+             An application framework that you can integrate into any.NET/C# application.
+            
+             ## 安装 / Installation
+            
+             - [Package Manager] (https://www.nuget.org/packages/MoYu)
+            
+             ```powershell
+             Install-Package MoYu
+             ```
+            
+             - [.NET CLI] (https://www.nuget.org/packages/MoYu)
+            
+             ```powershell
+             dotnet add package MoYu
+             ```
+            
+             ## 例子 / Examples
+            
+             我们在[主页](https://MoYu.net)上有不少例子，这是让您入门的第一个：
+            
+             We have several examples [on the website] (https://MoYu.net). Here is the first one to get you started:
+            
+             ```cs
+             Serve.Run();
+            
+                 [DynamicApiController]
+                 public class HelloService
+                 {
+                     public string Say()
+                     {
+                         return "Hello, MoYu";
+                     }
+                 }
+             ```
+            
+             打开浏览器访问 `https://localhost:5001`。
+            
+             Open browser access `https://localhost:5001`.
+            
+             ## 文档 / Documentation
+            
+             您可以在[主页] (https://MoYu.net)或[备份主页](https://MoYu.net)找到 MoYu 文档。
+            
+             You can find the MoYu documentation[on the website](https://MoYu.net) or [on the backup website](https://MoYu.net).
+            
+             ## 贡献 / Contributing
+            
+             该存储库的主要目的是继续发展 MoYu 核心，使其更快、更易于使用。 MoYu 的开发在[Gitee](https://gitee.com/dotnetchina/MoYu) 上公开进行，我们感谢社区贡献错误修复和改进。
+            
+             阅读[贡献指南] (https://MoYu.net/docs/contribute)内容，了解如何参与改进 MoYu。
+            
+             The main purpose of this repository is to continue evolving MoYu core, making it faster and easier to use.Development of MoYu happens in the open on[Gitee] (https://gitee.com/dotnetchina/MoYu), and we are grateful to the community for contributing bugfixes and improvements.
+            
+             Read[contribution documents] (https://MoYu.net/docs/contribute) to learn how you can take part in improving MoYu.
+            
+             ## 许可证 / License
+            
+             MoYu 采用[MIT](https://gitee.com/dotnetchina/MoYu/blob/v4/LICENSE) 开源许可证。
+            
+             MoYu uses the[MIT] (https://gitee.com/dotnetchina/MoYu/blob/v4/LICENSE) open source license.
+            
+             ```
+             Copyright© 2020-present 百小僧, Baiqian Co., Ltd.
+             MoYu is licensed under Mulan PSL v2.
+             You can use this software according to the terms andconditions of the Mulan PSL v2.
+             You may obtain a copy of Mulan PSL v2 at:
+                         https://gitee.com/dotnetchina/MoYu/blob/v4/LICENSE
+             THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUTWARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+             See the Mulan PSL v2 for more details.
+             ```
+            
+             </remarks>
+             <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.PersonService.MarkdownTest">
+             <summary>
+             测试 Markdown
+             </summary>
+             <remarks>
+             # 测试 `Markdown` 注释
+            
+             ![](https://localhost:44316/images/logo.png)
+            
+             ```cs
+             Serve.Run();
+            
+             [DynamicApiController
+             public class HelloService
+             {
+                 public string Say()
+                 {
+                     return nameof(MoYu);
+                 }
+             }
+             ```
+            
+             功能还不错！！！
+            
+             | 商品         | 价格     | # 其他 |
+             |--------------|-----------|------------|
+             | Juicy Apples | 1.99      | *7*        |
+             | Bananas      | **1.89**  | 5234       |
+             | Bananas      | **1.89**  | 5234       |
+             | Bananas      | **1.89**  | 5234       |
+            
+             -----
+            
+             # MoYu 探索版
+            
+             > 在过去一年，实现 `MoYu` 从无到有，编写文档已逾百万字，过程心酸开源人自知。
+             >
+             > 这一路日夜兼程，嘲讽批评常伴眼耳，即便辛苦无奈、想过放弃，但为了那微不足道的存在感依然努力着。
+             >
+             > 当然，也收获了不少...越来越多拥趸者，越发精湛技术能力，更高层次思维模式，还有许多跨界跨行朋友。
+             >
+             > 在 《[开源指北] (https://gitee.com/opensource-guide/comments/)》中，我曾说道：“开源如同人的脸，好坏一面便知，缺点可能会受到嘲讽批评，优点也会收获赞扬尊重。别担心，他们正在塑造更好的你。”
+             >
+             > 所以，这一次重新起航，重塑 `MoYu` 重塑自己。也许未来在某个 IT 圈但凡有人谈起 `.NET` 还能瞟到 `MoYu` 的身影。
+            
+             ---
+            
+             🎉 探索 MoYu 未来更多可能性，实现无第三方依赖的版本，所有模块功能按需安装，按需加载。
+            
+             - 作者：[百小僧] (https://gitee.com/monksoul)
+             - 日期：2021 年 08 月 30 日
+            
+             ## 环境
+            
+             - IDE ：[Microsoft Visual Studio Enterprise 2022 Preview(64 位) 版本 17.0.0 Preview 3.1] (https://visualstudio.microsoft.com/zh-hans/vs/preview/)
+             - SDK ：[.NET SDK 6] (https://dotnet.microsoft.com/download/dotnet/6.0)
+             - 语言：[C# 10](https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/csharp-10)
+            
+             ## 包说明
+            
+             - `MoYu.Core`：无第三方依赖，可在 `.NET 6` 所有项目类型中运行。
+             - `MoYu`：内部依赖 `MoYu.Core` 且无第三方依赖，**聚焦 `Web` 应用**，采用共享框架 `<FrameworkReference Include="Microsoft.AspNetCore.App" />` 模式
+              </remarks>
+        </member>
+        <member name="M:MoYu.Application.PersonService.我是DisplayName">
+            <summary>
+            如果同时存在显示这个
+            </summary>
+        </member>
+        <member name="T:MoYu.Application.LoginInput">
+            <summary>
+            登录输入参数
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.LoginInput.Account">
+            <summary>
+            用户名
+            </summary>
+            <example>admin</example>
+        </member>
+        <member name="P:MoYu.Application.LoginInput.Password">
+            <summary>
+            密码
+            </summary>
+            <example>admin</example>
+        </member>
+        <member name="T:MoYu.Application.LoginOutput">
+            <summary>
+            登录输出参数
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.LoginOutput.Id">
+            <summary>
+            用户Id
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.LoginOutput.Account">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.LoginOutput.AccessToken">
+            <summary>
+            Token
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.RoleDto.Name">
+            <summary>
+            角色名称
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.RoleDto.Remark">
+            <summary>
+            角色描述
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.RoleInput.Name">
+            <summary>
+            角色名称
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.RoleInput.Remark">
+            <summary>
+            角色描述
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.SecurityDto.Id">
+            <summary>
+            权限Id
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.SecurityDto.UniqueName">
+            <summary>
+            权限唯一名（每一个接口）
+            </summary>
+        </member>
+        <member name="T:MoYu.Application.RBACService">
+            <summary>
+            角色管理服务
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.RBACService.Login(MoYu.Application.LoginInput)">
+            <summary>
+            登录（免授权）
+            </summary>
+            <param name="input"></param>
+            <remarks>管理员：admin/admin；普通用户：MoYu/dotnetchina</remarks>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.RBACService.ViewRoles">
+            <summary>
+            查看用户角色
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.RBACService.ViewSecuries">
+            <summary>
+            查看用户权限
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.RBACService.GetRoles">
+            <summary>
+            角色列表
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.RBACService.InsertRole(MoYu.Application.RoleInput)">
+            <summary>
+            新增角色
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.RBACService.GiveUserRole(System.Int32[])">
+            <summary>
+            为用户分配角色
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.RBACService.GetSecurities">
+            <summary>
+            查看系统所有的权限（免授权）
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.RBACService.GiveRoleSecurity(System.Int32,System.Int32[])">
+            <summary>
+            为角色分配权限
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.TestDateTime.测试时间1(System.DateTime)">
+            <summary>
+            测试 08/06/2022 10:45 AM
+            </summary>
+            <param name="datetime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.TestDateTime.测试其他类型(MoYu.Application.Persons.PersonDto)">
+            <summary>
+            测试其他类型
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="T:MoYu.Application.TestException">
+            <summary>
+            测试异常
+            </summary>
+        </member>
+        <member name="T:MoYu.Application.TestInheritdoc">
+            <inheritdoc cref="T:MoYu.Application.ITestInheritdoc" />
+        </member>
+        <member name="M:MoYu.Application.TestInheritdoc.GetName">
+            <inheritdoc cref="M:MoYu.Application.ITestInheritdoc.GetName"/>
+        </member>
+        <member name="M:MoYu.Application.TestInheritdoc.GetVersion">
+            <inheritdoc />
+        </member>
+        <member name="M:MoYu.Application.TestInheritdoc.WithParams(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:MoYu.Application.TestInheritdoc.WithParams2(System.Int32,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:MoYu.Application.TestInheritdoc.MoYu#Application#ITestInheritdoc#Private(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="T:MoYu.Application.ITestInheritdoc">
+            <summary>
+            测试注释继承
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.ITestInheritdoc.GetName">
+            <summary>
+            获取名称
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.ITestInheritdoc.GetVersion">
+            <summary>
+            获取版本
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.ITestInheritdoc.WithParams(System.String)">
+            <summary>
+            携带参数
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.ITestInheritdoc.WithParams2(System.Int32,System.String)">
+            <summary>
+            携带参数二
+            </summary>
+            <param name="id"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.ITestInheritdoc.Private(System.Int32)">
+            <summary>
+            隐式实现接口
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:MoYu.Application.TestLoggerServices">
+            <summary>
+            测试文件/数据库日志写入
+            </summary>
+        </member>
+        <member name="T:MoYu.Application.TestModuleServices">
+            <summary>
+            测试模块
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.TestModuleServices.TestClayMonitor">
+            <summary>
+            测试粘土对象日志监听
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:MoYu.Application.LogDispatchProxy.Target">
+            <summary>
+            当前服务实例
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.LogDispatchProxy.Services">
+            <summary>
+            服务提供器，可以用来解析服务，如：Services.GetService()
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.LogDispatchProxy.Invoke(System.Reflection.MethodInfo,System.Object[])">
+            <summary>
+            拦截方法
+            </summary>
+            <param name="method"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="P:MoYu.Application.TestDefaultValue.Bool3">
+            <example>null</example>
+        </member>
+        <member name="P:MoYu.Application.TestDefaultValue.List1">
+            <example>"[]"</example>
+        </member>
+        <member name="M:MoYu.Application.TestSensitiveDetection.GetWordsAsync">
+            <summary>
+            获取所有脱敏词汇
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.TestSensitiveDetection.IsValidAsync(System.String)">
+            <summary>
+            判断是否是正常的词汇
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.TestSensitiveDetection.ReplaceAsync(System.String)">
+            <summary>
+            替换非正常词汇
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.TestSensitiveDetection.FoundSensitiveWordsAsync(System.String)">
+            <summary>
+            返回敏感的词汇和位置
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.TestTaskQueue.SyncTask">
+            <summary>
+            同步入队
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.TestTaskQueue.SyncTask2">
+            <summary>
+            同步入队，延迟 3 秒触发
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.TestTaskQueue.SyncTask3">
+            <summary>
+            同步入队，延迟 3 秒触发，并立即执行一次
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.TestTaskQueue.AsyncTask">
+            <summary>
+            异步入队
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.TestTaskQueue.AsyncTask2">
+            <summary>
+            异步入队，延迟 3 秒触发
+            </summary>
+        </member>
+        <member name="M:MoYu.Application.TestTaskQueue.AsyncTask3">
+            <summary>
+            异步入队，延迟 3 秒触发，并立即执行一次
+            </summary>
+        </member>
+        <member name="P:MoYu.Application.MyResult`1.Data">
+            <summary>
+            数据
+            </summary>
+        </member>
+    </members>
+</doc>

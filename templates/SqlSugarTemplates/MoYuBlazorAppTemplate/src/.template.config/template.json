@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "百小僧",
+  "classifications": ["MoYu", "Blazor", "BlazorApp", "SqlSugar"],
+  "name": "MoYu Blazor App (SqlSugar)",
+  "identity": "MoYu.SqlSugar.Template.Blazor.App",
+  "shortName": "fsblazorapp",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "MoYuBlazorApp",
+  "preferNameDirectory": true,
+  "symbols": {
+    "framework": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net8.0",
+          "displayName": ".NET 8",
+          "description": ".NET8 脚手架"
+        },
+        {
+          "choice": "net9.0",
+          "displayName": ".NET 9",
+          "description": ".NET9 脚手架"
+        },
+        {
+          "choice": "net10.0",
+          "displayName": ".NET 10",
+          "description": ".NET10 脚手架"
+        }
+      ],
+      "replaces": "$(framework)",
+      "defaultValue": "net10.0",
+      "description": "选择要创建的 .NET8-10 脚手架"
+    },
+    "net8": {
+      "type": "computed",
+      "value": "(framework == \"net8.0\")"
+    },
+    "net9": {
+      "type": "computed",
+      "value": "(framework == \"net9.0\")"
+    },
+    "net10": {
+      "type": "computed",
+      "value": "(framework == \"net10.0\")"
+    }
+  }
+}

@@ -1,0 +1,285 @@
+﻿// ------------------------------------------------------------------------
+// 版权信息
+// 版权归百小僧及百签科技（广东）有限公司所有。
+// 所有权利保留。
+// 官方网站：https://baiqian.com
+//
+// 许可证信息
+// MoYu 项目主要遵循 MIT 许可证和 Apache 许可证（版本 2.0）进行分发和使用。
+// 许可证的完整文本可以在源代码树根目录中的 LICENSE-APACHE 和 LICENSE-MIT 文件中找到。
+// 官方网站：https://MoYu.net
+//
+// 使用条款
+// 使用本代码应遵守相关法律法规和许可证的要求。
+//
+// 免责声明
+// 对于因使用本代码而产生的任何直接、间接、偶然、特殊或后果性损害，我们不承担任何责任。
+//
+// 其他重要信息
+// MoYu 项目的版权、商标、专利和其他相关权利均受相应法律法规的保护。
+// 有关 MoYu 项目的其他详细信息，请参阅位于源代码树根目录中的 COPYRIGHT 和 DISCLAIMER 文件。
+//
+// 更多信息
+// 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
+// ------------------------------------------------------------------------
+
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System.Logging;
+using System.Reflection;
+using System.Transactions;
+
+namespace MoYu.DatabaseAccessor;
+
+/// <summary>
+/// 工作单元配置特性
+/// </summary>
+[SuppressSniffer, AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
+public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncPageFilter, IOrderedFilter
+{
+    /// <summary>
+    /// 确保事务可用
+    /// <para>此方法为了解决静态类方式操作数据库的问题</para>
+    /// </summary>
+    public bool EnsureTransaction { get; set; } = false;
+
+    /// <summary>
+    /// 是否使用分布式环境事务
+    /// </summary>
+    public bool UseAmbientTransaction { get; set; } = false;
+
+    /// <summary>
+    /// 分布式环境事务范围
+    /// </summary>
+    /// <remarks><see cref="UseAmbientTransaction"/> 为 true 有效</remarks>
+    public TransactionScopeOption TransactionScope { get; set; } = TransactionScopeOption.Required;
+
+    /// <summary>
+    /// 分布式环境事务隔离级别
+    /// </summary>
+    /// <remarks><see cref="UseAmbientTransaction"/> 为 true 有效</remarks>
+    public IsolationLevel TransactionIsolationLevel { get; set; } = IsolationLevel.ReadCommitted;
+
+    /// <summary>
+    /// 分布式环境事务超时时间
+    /// </summary>
+    /// <remarks>单位秒</remarks>
+    public int TransactionTimeout { get; set; } = 0;
+
+    /// <summary>
+    /// 支持分布式环境事务异步流
+    /// </summary>
+    /// <remarks><see cref="UseAmbientTransaction"/> 为 true 有效</remarks>
+    public TransactionScopeAsyncFlowOption TransactionScopeAsyncFlow { get; set; } = TransactionScopeAsyncFlowOption.Enabled;
+
+    /// <summary>
+    /// 过滤器排序
+    /// </summary>
+    private const int FilterOrder = 9999;
+
+    /// <summary>
+    /// 排序属性
+    /// </summary>
+    public int Order => FilterOrder;
+
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    public UnitOfWorkAttribute()
+    {
+    }
+
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="ensureTransaction"></param>
+    public UnitOfWorkAttribute(bool ensureTransaction)
+    {
+        EnsureTransaction = ensureTransaction;
+    }
+
+    /// <summary>
+    /// 拦截请求
+    /// </summary>
+    /// <param name="context">动作方法上下文</param>
+    /// <param name="next">中间件委托</param>
+    /// <returns></returns>
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    {
+        // 获取动作方法描述器
+        var actionDescriptor = context.ActionDescriptor as ControllerActionDescriptor;
+        var method = actionDescriptor.MethodInfo;
+
+        // 创建分布式环境事务
+        (var transactionScope, var logger) = CreateTransactionScope(context);
+
+        try
+        {
+            logger.LogWarning("[Database Transaction] Starting a new transaction.");
+
+            // 开始事务
+            BeginTransaction(context, method, out var _unitOfWork, out var unitOfWorkAttribute);
+
+            // 获取执行 Action 结果
+            var resultContext = await next();
+
+            // 提交事务
+            CommitTransaction(context, _unitOfWork, unitOfWorkAttribute, resultContext);
+
+            // 提交分布式环境事务
+            if (resultContext.Exception == null)
+            {
+                transactionScope?.Complete();
+
+                logger.LogWarning("[Database Transaction] Transaction committed successfully.");
+            }
+            else
+            {
+                logger.LogError(resultContext.Exception, "[Database Transaction] Transaction rolled back due to an error.");
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "[Database Transaction] Transaction rolled back due to an error.");
+            throw;
+        }
+        finally
+        {
+            transactionScope?.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// 模型绑定拦截
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 拦截请求
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="next"></param>
+    /// <returns></returns>
+    public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
+    {
+        // 获取动作方法描述器
+        var method = context.HandlerMethod?.MethodInfo;
+        // 处理 Blazor Server
+        if (method == null)
+        {
+            _ = await next.Invoke();
+            return;
+        }
+
+        // 创建分布式环境事务
+        (var transactionScope, var logger) = CreateTransactionScope(context);
+
+        try
+        {
+            logger.LogWarning("[Database Transaction] Starting a new transaction.");
+
+            // 开始事务
+            BeginTransaction(context, method, out var _unitOfWork, out var unitOfWorkAttribute);
+
+            // 获取执行 Action 结果
+            var resultContext = await next.Invoke();
+
+            // 提交事务
+            CommitTransaction(context, _unitOfWork, unitOfWorkAttribute, resultContext);
+
+            // 提交分布式环境事务
+            if (resultContext.Exception == null)
+            {
+                transactionScope?.Complete();
+
+                logger.LogWarning("[Database Transaction] Transaction committed successfully.");
+            }
+            else
+            {
+                logger.LogError(resultContext.Exception, "[Database Transaction] Transaction rolled back due to an error.");
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "[Database Transaction] Transaction rolled back due to an error.");
+            throw;
+        }
+        finally
+        {
+            transactionScope?.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// 创建分布式环境事务
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    private (TransactionScope, ILogger) CreateTransactionScope(FilterContext context)
+    {
+        // 是否启用分布式环境事务
+        var transactionScope = UseAmbientTransaction
+             ? new TransactionScope(TransactionScope,
+            new TransactionOptions { IsolationLevel = TransactionIsolationLevel, Timeout = TransactionTimeout > 0 ? TimeSpan.FromSeconds(TransactionTimeout) : default }
+            , TransactionScopeAsyncFlow)
+             : default;
+
+        // 创建日志记录器
+        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<UnitOfWork>>();
+
+        return (transactionScope, logger);
+    }
+
+    /// <summary>
+    /// 开始事务
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="method"></param>
+    /// <param name="_unitOfWork"></param>
+    /// <param name="unitOfWorkAttribute"></param>
+    private static void BeginTransaction(FilterContext context, MethodInfo method, out IUnitOfWork _unitOfWork, out UnitOfWorkAttribute unitOfWorkAttribute)
+    {
+        // 解析工作单元服务
+        _unitOfWork = context.HttpContext.RequestServices.GetRequiredService<IUnitOfWork>();
+
+        // 获取工作单元特性
+        unitOfWorkAttribute = method.GetCustomAttribute<UnitOfWorkAttribute>();
+
+        // 调用开启事务方法
+        _unitOfWork.BeginTransaction(context, unitOfWorkAttribute);
+    }
+
+    /// <summary>
+    /// 提交事务
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="_unitOfWork"></param>
+    /// <param name="unitOfWorkAttribute"></param>
+    /// <param name="resultContext"></param>
+    private static void CommitTransaction(FilterContext context, IUnitOfWork _unitOfWork, UnitOfWorkAttribute unitOfWorkAttribute, FilterContext resultContext)
+    {
+        // 获取动态结果上下文
+        dynamic dynamicResultContext = resultContext;
+
+        if (dynamicResultContext.Exception == null)
+        {
+            // 调用提交事务方法
+            _unitOfWork.CommitTransaction(resultContext, unitOfWorkAttribute);
+        }
+        else
+        {
+            // 调用回滚事务方法
+            _unitOfWork.RollbackTransaction(resultContext, unitOfWorkAttribute);
+        }
+
+        // 调用执行完毕方法
+        _unitOfWork.OnCompleted(context, resultContext);
+    }
+}

@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<LangVersion>preview</LangVersion>
+		<TargetFramework>$(framework)</TargetFramework>
+		<NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MoYuMvc.Application\MoYuMvc.Application.csproj" />
+		<ProjectReference Include="..\MoYuMvc.Database.Migrations\MoYuMvc.Database.Migrations.csproj" />
+	</ItemGroup>
+
+</Project>

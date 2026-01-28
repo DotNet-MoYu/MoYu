@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="../tests/MoYu.IntegrationTests/MoYu.IntegrationTests.csproj" />
+    <Project Path="../tests/MoYu.TestProject/MoYu.TestProject.csproj" />
+    <Project Path="../tests/MoYu.UnitTests/MoYu.UnitTests.csproj" />
+  </Folder>
+  <Project Path="MoYu.Extras.Authentication.JwtBearer/MoYu.Extras.Authentication.JwtBearer.csproj" />
+  <Project Path="MoYu.Extras.DatabaseAccessor.Dapper/MoYu.Extras.DatabaseAccessor.Dapper.csproj" />
+  <Project Path="MoYu.Extras.DatabaseAccessor.MongoDB/MoYu.Extras.DatabaseAccessor.MongoDB.csproj" />
+  <Project Path="MoYu.Extras.DatabaseAccessor.SqlSugar/MoYu.Extras.DatabaseAccessor.SqlSugar.csproj" />
+  <Project Path="MoYu.Extras.DependencyModel.CodeAnalysis/MoYu.Extras.DependencyModel.CodeAnalysis.csproj" />
+  <Project Path="MoYu.Extras.ObjectMapper.Mapster/MoYu.Extras.ObjectMapper.Mapster.csproj" />
+  <Project Path="MoYu.Pure.Extras.DependencyModel.CodeAnalysis/MoYu.Pure.Extras.DependencyModel.CodeAnalysis.csproj" />
+  <Project Path="MoYu.Pure.Xunit/MoYu.Pure.Xunit.csproj" />
+  <Project Path="MoYu.Pure/MoYu.Pure.csproj" />
+  <Project Path="MoYu.Xunit/MoYu.Xunit.csproj" />
+  <Project Path="MoYu/MoYu.csproj" />
+</Solution>

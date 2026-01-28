@@ -1,0 +1,15 @@
+.timelineItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.timelineItem:hover {
+  background-color: rgb(244, 244, 245);
+  border-radius: 5px;
+}
+
+.timelineItem.dark:hover {
+  background-color: rgb(50, 50, 54);
+}

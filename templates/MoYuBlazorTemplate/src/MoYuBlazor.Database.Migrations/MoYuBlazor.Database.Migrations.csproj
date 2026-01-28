@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<LangVersion>preview</LangVersion>
+		<TargetFramework>$(framework)</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MoYuBlazor.EntityFramework.Core\MoYuBlazor.EntityFramework.Core.csproj" />
+	</ItemGroup>
+
+</Project>

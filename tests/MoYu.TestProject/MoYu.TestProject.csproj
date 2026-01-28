@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<NoWarn>1701;1702;1591</NoWarn>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<ImplicitUsings>true</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\framework\MoYu.Extras.Authentication.JwtBearer\MoYu.Extras.Authentication.JwtBearer.csproj" />
+		<ProjectReference Include="..\..\framework\MoYu.Extras.DatabaseAccessor.Dapper\MoYu.Extras.DatabaseAccessor.Dapper.csproj" />
+		<ProjectReference Include="..\..\framework\MoYu.Extras.DatabaseAccessor.MongoDB\MoYu.Extras.DatabaseAccessor.MongoDB.csproj" />
+		<ProjectReference Include="..\..\framework\MoYu.Extras.DatabaseAccessor.SqlSugar\MoYu.Extras.DatabaseAccessor.SqlSugar.csproj" />
+		<ProjectReference Include="..\..\framework\MoYu.Extras.ObjectMapper.Mapster\MoYu.Extras.ObjectMapper.Mapster.csproj" />
+		<ProjectReference Include="..\..\framework\MoYu\MoYu.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="MoYu.IntegrationTests" />
+	</ItemGroup>
+
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties appsettings_1json__JsonSchema="" />
+		</VisualStudio>
+	</ProjectExtensions>
+
+</Project>

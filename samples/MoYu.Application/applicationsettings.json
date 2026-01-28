@@ -1,0 +1,61 @@
+﻿{
+  "$schema": "https://gitee.com/dotnetchina/MoYu/raw/v4/schemas/v4/MoYu-schema.json",
+
+  "SpecificationDocumentSettings": {
+    "DocumentTitle": "MoYu | 数据库操作演示",
+    "GroupOpenApiInfos": [
+      {
+        "Group": "Default",
+        "Order": 3,
+        "Title": "数据库操作演示",
+        "Description": "这里列举了常见数据库操作方法，方便大家学习。\r\n ## MoYu 入门\r\n```cs\r\nServe.Run();\r\n\r\n[DynamicApiController]\r\npublic class HelloService\r\n{\r\n    public string Say()\r\n    {\r\n        return \"Hello, MoYu\";\r\n    }\r\n}\r\n```",
+        "Version": "1.0.0",
+        "TermsOfService": "https://MoYu.net",
+        "Contact": {
+          "Name": "百小僧",
+          "Url": "https://gitee.com/monksoul",
+          "Email": "monksoul@outlook.com"
+        },
+        "License": {
+          "Name": "Apache-2.0",
+          "Url": "https://gitee.com/dotnetchina/MoYu/blob/rc1/LICENSE"
+        }
+      },
+      {
+        "Group": "Role",
+        "Title": "角色管理（RBAC）",
+        "Order": 1
+      },
+      {
+        "Group": "Job",
+        "Title": "定时任务",
+        "Order": 2
+      }
+    ],
+    "LoginInfo": {
+      "Enabled": true,
+      "CheckUrl": "/Home/CheckUrl", // 可以写任何自定义检查地址
+      "SubmitUrl": "/Home/SubmitUrl", // 可以写任何 自定义检查地址
+      "UserName": "admin",
+      "Password": "admin",
+      "DefaultUsername": "admin",
+      "DefaultPassword": "admin"
+    }
+  },
+  "LocalizationSettings": {
+    "SupportedCultures": [
+      "zh-CN",
+      "en-US"
+    ],
+    "DefaultCulture": "zh-CN",
+    "AssemblyName": "MoYu.Web.Core"
+  },
+  "AppInfo": {
+    "Name": "MoYu",
+    "Version": "1.0.0",
+    "Company_Name": "Baiqian"
+  },
+  "CorsAccessorSettings": {
+    "WithExposedHeaders": [ "access-token", "x-access-token", "environment" ]
+  }
+}
