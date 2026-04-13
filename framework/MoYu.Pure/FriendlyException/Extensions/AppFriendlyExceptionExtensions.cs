@@ -28,7 +28,7 @@ using Microsoft.AspNetCore.Http;
 namespace MoYu.FriendlyException;
 
 /// <summary>
-/// 异常扩展
+/// 异常拓展
 /// </summary>
 [SuppressSniffer]
 public static class AppFriendlyExceptionExtensions

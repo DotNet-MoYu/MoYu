@@ -249,9 +249,6 @@ internal sealed class ScheduleHostedService : BackgroundService
                                 Mode = trigger.Mode
                             });
 
-                            // 存储作业执行过程中需要传递的数据
-                            jobExecutingContext.Items = jobHandler.GetContextData() ?? new Dictionary<string, object>();
-
                             // 调用执行前监视器
                             if (Monitor != default)
                             {
@@ -275,8 +272,7 @@ internal sealed class ScheduleHostedService : BackgroundService
                                 {
                                     // 输出重试日志
                                     _logger.LogWarning("Retrying {times}/{total} times for {jobExecutingContext}", times, total, jobExecutingContext);
-                                }
-                                , shouldExit: () => !jobExecutingContext.IsNormalStatus(_schedulerFactory)); // 处理作业或触发器不正常的情况
+                                });
                             }
                             else
                             {
@@ -339,8 +335,7 @@ internal sealed class ScheduleHostedService : BackgroundService
                                     ExecutedTime = Penetrates.GetNowTime(),
                                     Exception = executionException,
                                     Result = jobExecutingContext.Result,
-                                    Mode = trigger.Mode,
-                                    Items = jobExecutingContext.Items
+                                    Mode = trigger.Mode
                                 };
 
                                 // 是否定义 FallbackAsync 方法
@@ -394,17 +389,8 @@ internal sealed class ScheduleHostedService : BackgroundService
                             // 记录作业触发器运行信息
                             await trigger.RecordTimelineAsync(_schedulerFactory, jobId, executionException?.ToString());
 
-                            // 处理临时作业，执行完成后移除（手动执行不会移除）
-                            if (jobDetail.Temporary && trigger.Mode == 0)
-                            {
-                                scheduler.Remove();
-                            }
-
-                            // 重置触发模式：0:定时，1:手动
+                            // 重置触发模式
                             trigger.Mode = 0;
-
-                            // 清空存储作业执行过程中传递的数据
-                            jobExecutingContext.Items?.Clear();
 
                             // 释放服务作用域
                             await ReleaseJobHandlerAsync(jobHandler);
@@ -486,7 +472,7 @@ internal sealed class ScheduleHostedService : BackgroundService
             _schedulerFactory.Shorthand(jobDetail, trigger);
 
             // 输出阻塞日志
-            _logger.LogWarning("{occurrenceTime}: The <{TriggerId}> trigger for job <{JobId}> was skipped as the job is configured for serial execution and a previous instance is still running.", occurrenceTime, trigger.TriggerId, jobDetail.JobId);
+            _logger.LogWarning("{occurrenceTime}: The <{TriggerId}> trigger of job <{JobId}> failed to execute as scheduled due to blocking.", occurrenceTime, trigger.TriggerId, jobDetail.JobId);
 
             return true;
         }
@@ -518,8 +504,6 @@ internal sealed class ScheduleHostedService : BackgroundService
     /// <returns><see cref="Task"/></returns>
     private async Task ReleaseJobHandlerAsync(IJob jobHandler)
     {
-        if (jobHandler is null) return;
-
         var isService = _serviceProviderIsService.IsService(jobHandler.GetType());
         if (isService) return;
 

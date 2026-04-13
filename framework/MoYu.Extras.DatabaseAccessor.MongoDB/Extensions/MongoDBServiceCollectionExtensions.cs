@@ -28,14 +28,14 @@ using MongoDB.Driver;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// MongoDB 扩展类
+/// MongoDB 拓展类
 /// </summary>
 public static class MongoDBServiceCollectionExtensions
 {
     private const string defaultDbName = "MoYu";
 
     /// <summary>
-    /// 添加 MongoDB 扩展
+    /// 添加 MongoDB 拓展
     /// </summary>
     /// <param name="services"></param>
     /// <param name="connectionString"></param>
@@ -59,7 +59,7 @@ public static class MongoDBServiceCollectionExtensions
     }
 
     /// <summary>
-    /// 添加 MongoDB 扩展
+    /// 添加 MongoDB 拓展
     /// </summary>
     /// <param name="services"></param>
     /// <param name="settings"></param>
@@ -82,7 +82,7 @@ public static class MongoDBServiceCollectionExtensions
     }
 
     /// <summary>
-    /// 添加 MongoDB 扩展
+    /// 添加 MongoDB 拓展
     /// </summary>
     /// <param name="services"></param>
     /// <param name="url"></param>

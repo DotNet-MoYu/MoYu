@@ -61,9 +61,9 @@ internal class NamedServiceProvider<TService> : INamedServiceProvider<TService>
 
         if (services
             .OfType<AspectDispatchProxy>()
-            .FirstOrDefault(u => ResolveServiceName(((dynamic)u).Target.GetType()) == serviceName) is not TService service)
+            .FirstOrDefault(u => ResovleServiceName(((dynamic)u).Target.GetType()) == serviceName) is not TService service)
         {
-            service = services.FirstOrDefault(u => ResolveServiceName(u.GetType()) == serviceName);
+            service = services.FirstOrDefault(u => ResovleServiceName(u.GetType()) == serviceName);
         }
 
         return service;
@@ -94,9 +94,9 @@ internal class NamedServiceProvider<TService> : INamedServiceProvider<TService>
 
         if (services
             .OfType<AspectDispatchProxy>()
-            .FirstOrDefault(u => ResolveServiceName(((dynamic)u).Target.GetType()) == serviceName) is not TService service)
+            .FirstOrDefault(u => ResovleServiceName(((dynamic)u).Target.GetType()) == serviceName) is not TService service)
         {
-            service = services.FirstOrDefault(u => ResolveServiceName(u.GetType()) == serviceName);
+            service = services.FirstOrDefault(u => ResovleServiceName(u.GetType()) == serviceName);
         }
 
         // 如果服务不存在，抛出异常
@@ -124,7 +124,7 @@ internal class NamedServiceProvider<TService> : INamedServiceProvider<TService>
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    private static string ResolveServiceName(Type type)
+    private static string ResovleServiceName(Type type)
     {
         if (type.IsDefined(typeof(InjectionAttribute)))
         {

@@ -26,7 +26,6 @@
 using MoYu.Reflection;
 using Microsoft.CodeAnalysis;
 using System.Data;
-using System.Dynamic;
 using System.Reflection;
 
 namespace MoYu.ViewEngine;
@@ -49,7 +48,6 @@ public class ViewEngineOptions
             typeof(System.Collections.IList).Assembly,
             typeof(IEnumerable<>).Assembly,
             typeof(DataTable).Assembly,
-            typeof(ExpandoObject).Assembly,
             Reflect.GetAssembly("Microsoft.CSharp"),
             Reflect.GetAssembly("System.Runtime"),
             Reflect.GetAssembly("System.Linq"),
@@ -83,15 +81,9 @@ public class ViewEngineOptions
     /// 默认 Using
     /// </summary>
     public HashSet<string> DefaultUsings { get; set; } = new HashSet<string>()
-    {
-        "System",
-        "System.Linq",
-        "System.Text",
-        "System.IO",
-        "System.Collections",
-        "System.Collections.Generic",
-        "System.Threading",
-        "System.Threading.Tasks",
-        "System.Dynamic"
-    };
+        {
+            "System.Linq",
+            "System.Collections",
+            "System.Collections.Generic"
+        };
 }

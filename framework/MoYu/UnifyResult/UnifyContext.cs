@@ -38,7 +38,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace MoYu.UnifyResult;
@@ -223,7 +222,7 @@ public static class UnifyContext
         if (context.ActionDescriptor is not ControllerActionDescriptor actionDescriptor) return null;
 
         // 获取序列化配置
-        var unifySerializerSettingAttribute = actionDescriptor.MethodInfo.GetFoundAttribute<UnifySerializerSettingAttribute>(true, true);
+        var unifySerializerSettingAttribute = actionDescriptor.MethodInfo.GetFoundAttribute<UnifySerializerSettingAttribute>(true);
         if (unifySerializerSettingAttribute == null || string.IsNullOrWhiteSpace(unifySerializerSettingAttribute.Name)) return null;
 
         // 解析全局配置
@@ -280,8 +279,7 @@ public static class UnifyContext
               || method.GetRealReturnType().HasImplementedRawGeneric(unityMetadata.ResultType)
               || method.CustomAttributes.Any(x => typeof(NonUnifyAttribute).IsAssignableFrom(x.AttributeType) || typeof(ProducesResponseTypeAttribute).IsAssignableFrom(x.AttributeType) || typeof(IApiResponseMetadataProvider).IsAssignableFrom(x.AttributeType))
               || method.ReflectedType.IsDefined(typeof(NonUnifyAttribute), true)
-              || method.DeclaringType.Assembly.GetName().Name.StartsWith("Microsoft.AspNetCore.OData")
-              || method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(IAsyncEnumerable<>);
+              || method.DeclaringType.Assembly.GetName().Name.StartsWith("Microsoft.AspNetCore.OData");
 
         if (!isWebRequest)
         {
@@ -311,8 +309,7 @@ public static class UnifyContext
                         !method.CustomAttributes.Any(x => typeof(ProducesResponseTypeAttribute).IsAssignableFrom(x.AttributeType) || typeof(IApiResponseMetadataProvider).IsAssignableFrom(x.AttributeType))
                         && method.ReflectedType.IsDefined(typeof(NonUnifyAttribute), true)
                     )
-                || method.DeclaringType.Assembly.GetName().Name.StartsWith("Microsoft.AspNetCore.OData")
-                || method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(IAsyncEnumerable<>);
+                || method.DeclaringType.Assembly.GetName().Name.StartsWith("Microsoft.AspNetCore.OData");
 
         unifyResult = isSkip ? null : App.RootServices.GetService(unityMetadata.ProviderType) as IUnifyResultProvider;
         return unifyResult == null || isSkip;
@@ -455,7 +452,7 @@ public static class UnifyContext
     {
         if (method == default) return default;
 
-        var unityProviderAttribute = method.GetFoundAttribute<UnifyProviderAttribute>(true, true);
+        var unityProviderAttribute = method.GetFoundAttribute<UnifyProviderAttribute>(true);
 
         // 获取元数据
         var isExists = UnifyProviders.TryGetValue(unityProviderAttribute?.Name ?? string.Empty, out var metadata);

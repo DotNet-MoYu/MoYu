@@ -28,12 +28,12 @@ using SqlSugar;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// SqlSugar 扩展类
+/// SqlSugar 拓展类
 /// </summary>
 public static class SqlSugarServiceCollectionExtensions
 {
     /// <summary>
-    /// 添加 SqlSugar 扩展
+    /// 添加 SqlSugar 拓展
     /// </summary>
     /// <param name="services"></param>
     /// <param name="config"></param>
@@ -45,7 +45,7 @@ public static class SqlSugarServiceCollectionExtensions
     }
 
     /// <summary>
-    /// 添加 SqlSugar 扩展
+    /// 添加 SqlSugar 拓展
     /// </summary>
     /// <param name="services"></param>
     /// <param name="configs"></param>

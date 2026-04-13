@@ -75,6 +75,11 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
     public TransactionScopeAsyncFlowOption TransactionScopeAsyncFlow { get; set; } = TransactionScopeAsyncFlowOption.Enabled;
 
     /// <summary>
+    ///  MiniProfiler 分类名
+    /// </summary>
+    private const string MiniProfilerCategory = "unitOfWork";
+
+    /// <summary>
     /// 过滤器排序
     /// </summary>
     private const int FilterOrder = 9999;
@@ -117,6 +122,9 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
 
         try
         {
+            // 打印工作单元开始消息
+            if (UseAmbientTransaction) App.PrintToMiniProfiler(MiniProfilerCategory, "Beginning (Ambient)");
+
             logger.LogWarning("[Database Transaction] Starting a new transaction.");
 
             // 开始事务
@@ -134,15 +142,25 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
                 transactionScope?.Complete();
 
                 logger.LogWarning("[Database Transaction] Transaction committed successfully.");
+
+                // 打印事务提交消息
+                if (UseAmbientTransaction) App.PrintToMiniProfiler(MiniProfilerCategory, "Completed (Ambient)");
             }
             else
             {
+                // 打印事务回滚消息
+                if (UseAmbientTransaction) App.PrintToMiniProfiler(MiniProfilerCategory, "Rollback (Ambient)", isError: true);
+
                 logger.LogError(resultContext.Exception, "[Database Transaction] Transaction rolled back due to an error.");
             }
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "[Database Transaction] Transaction rolled back due to an error.");
+
+            // 打印事务回滚消息
+            if (UseAmbientTransaction) App.PrintToMiniProfiler(MiniProfilerCategory, "Rollback (Ambient)", isError: true);
+
             throw;
         }
         finally
@@ -183,6 +201,9 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
 
         try
         {
+            // 打印工作单元开始消息
+            if (UseAmbientTransaction) App.PrintToMiniProfiler(MiniProfilerCategory, "Beginning (Ambient)");
+
             logger.LogWarning("[Database Transaction] Starting a new transaction.");
 
             // 开始事务
@@ -200,15 +221,25 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
                 transactionScope?.Complete();
 
                 logger.LogWarning("[Database Transaction] Transaction committed successfully.");
+
+                // 打印事务提交消息
+                if (UseAmbientTransaction) App.PrintToMiniProfiler(MiniProfilerCategory, "Completed (Ambient)");
             }
             else
             {
+                // 打印事务回滚消息
+                if (UseAmbientTransaction) App.PrintToMiniProfiler(MiniProfilerCategory, "Rollback (Ambient)", isError: true);
+
                 logger.LogError(resultContext.Exception, "[Database Transaction] Transaction rolled back due to an error.");
             }
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "[Database Transaction] Transaction rolled back due to an error.");
+
+            // 打印事务回滚消息
+            if (UseAmbientTransaction) App.PrintToMiniProfiler(MiniProfilerCategory, "Rollback (Ambient)", isError: true);
+
             throw;
         }
         finally
@@ -254,6 +285,9 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
 
         // 调用开启事务方法
         _unitOfWork.BeginTransaction(context, unitOfWorkAttribute);
+
+        // 打印工作单元开始消息
+        if (!unitOfWorkAttribute.UseAmbientTransaction) App.PrintToMiniProfiler(MiniProfilerCategory, "Beginning");
     }
 
     /// <summary>
@@ -281,5 +315,8 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
 
         // 调用执行完毕方法
         _unitOfWork.OnCompleted(context, resultContext);
+
+        // 打印工作单元结束消息
+        if (!unitOfWorkAttribute.UseAmbientTransaction) App.PrintToMiniProfiler(MiniProfilerCategory, "Ending");
     }
 }

@@ -24,36 +24,40 @@
       "datatype": "choice",
       "choices": [
         {
-          "choice": "net8.0",
-          "displayName": ".NET 8",
+          "choice": "net6",
+          "description": ".NET6 脚手架"
+        },
+        {
+          "choice": "net7",
+          "description": ".NET7 脚手架"
+        },
+        {
+          "choice": "net8",
           "description": ".NET8 脚手架"
         },
         {
-          "choice": "net9.0",
-          "displayName": ".NET 9",
+          "choice": "net9",
           "description": ".NET9 脚手架"
-        },
-        {
-          "choice": "net10.0",
-          "displayName": ".NET 10",
-          "description": ".NET10 脚手架"
         }
       ],
-      "replaces": "$(framework)",
-      "defaultValue": "net10.0",
-      "description": "选择要创建的 .NET8-10 脚手架"
+      "defaultValue": "net9",
+      "description": "选择要创建的 .NET6-9 脚手架"
+    },
+    "net6": {
+      "type": "computed",
+      "value": "(framework == \"net6\")"
+    },
+    "net7": {
+      "type": "computed",
+      "value": "(framework == \"net7\")"
     },
     "net8": {
       "type": "computed",
-      "value": "(framework == \"net8.0\")"
+      "value": "(framework == \"net8\")"
     },
     "net9": {
       "type": "computed",
-      "value": "(framework == \"net9.0\")"
-    },
-    "net10": {
-      "type": "computed",
-      "value": "(framework == \"net10.0\")"
+      "value": "(framework == \"net9\")"
     }
   }
 }

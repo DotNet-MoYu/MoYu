@@ -28,7 +28,7 @@ using System.Linq.Expressions;
 namespace MongoDB.Driver;
 
 /// <summary>
-/// MongoDB 扩展方法
+/// MongoDB 拓展方法
 /// </summary>
 public static partial class IAsyncCursorSourceExtensions
 {
@@ -85,7 +85,7 @@ public static partial class IAsyncCursorSourceExtensions
     }
 
     /// <summary>
-    /// 分页扩展
+    /// 分页拓展
     /// </summary>
     /// <typeparam name="TDocument"></typeparam>
     /// <param name="entities"></param>
@@ -98,7 +98,7 @@ public static partial class IAsyncCursorSourceExtensions
     }
 
     /// <summary>
-    /// 分页扩展
+    /// 分页拓展
     /// </summary>
     /// <typeparam name="TDocument"></typeparam>
     /// <typeparam name="TNewProjection"></typeparam>
@@ -128,7 +128,7 @@ public static partial class IAsyncCursorSourceExtensions
     }
 
     /// <summary>
-    /// 分页扩展
+    /// 分页拓展
     /// </summary>
     /// <typeparam name="TDocument"></typeparam>
     /// <param name="entities"></param>
@@ -142,7 +142,7 @@ public static partial class IAsyncCursorSourceExtensions
     }
 
     /// <summary>
-    /// 分页扩展
+    /// 分页拓展
     /// </summary>
     /// <typeparam name="TDocument"></typeparam>
     /// <typeparam name="TNewProjection"></typeparam>

@@ -30,7 +30,7 @@ using System.Reflection;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 对象映射扩展类
+/// 对象映射拓展类
 /// </summary>
 public static class ObjectMapperServiceCollectionExtensions
 {

@@ -28,7 +28,7 @@ using System.Linq.Expressions;
 namespace Microsoft.EntityFrameworkCore;
 
 /// <summary>
-/// EntityFramework Core 扩展
+/// EntityFramework Core 拓展
 /// </summary>
 [SuppressSniffer]
 public static class EFCoreExtensions

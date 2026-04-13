@@ -23,13 +23,12 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace MoYu.LinqBuilder;
 
 /// <summary>
-/// 表达式扩展类
+/// 表达式拓展类
 /// </summary>
 [SuppressSniffer]
 public static class ExpressionExtensions
@@ -182,7 +181,7 @@ public static class ExpressionExtensions
     /// <typeparam name="TSource">泛型类型</typeparam>
     /// <param name="sources">集合对象</param>
     /// <returns>是否为空集合</returns>
-    public static bool IsNullOrEmpty<TSource>([NotNullWhen(false)] this IEnumerable<TSource> sources)
+    public static bool IsNullOrEmpty<TSource>(this IEnumerable<TSource> sources)
     {
         return sources == null || !sources.Any();
     }

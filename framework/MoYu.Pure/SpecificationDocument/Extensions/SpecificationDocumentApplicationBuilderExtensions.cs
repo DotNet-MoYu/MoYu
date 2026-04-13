@@ -31,7 +31,7 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 namespace Microsoft.AspNetCore.Builder;
 
 /// <summary>
-/// 规范化文档中间件扩展
+/// 规范化文档中间件拓展
 /// </summary>
 [SuppressSniffer]
 public static class SpecificationDocumentApplicationBuilderExtensions
@@ -59,6 +59,9 @@ public static class SpecificationDocumentApplicationBuilderExtensions
 
         // 配置 Swagger UI 参数
         app.UseSwaggerUI(options => SpecificationDocumentBuilder.BuildUI(options, routePrefix, configureSwaggerUI, withProxy));
+
+        // 启用 MiniProfiler组件
+        if (App.Settings.InjectMiniProfiler == true) app.UseMiniProfiler();
 
         return app;
     }

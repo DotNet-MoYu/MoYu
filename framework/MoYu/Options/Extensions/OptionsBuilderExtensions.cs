@@ -34,7 +34,7 @@ using System.Reflection;
 namespace Microsoft.Extensions.Options;
 
 /// <summary>
-/// OptionsBuilder 扩展类
+/// OptionsBuilder 拓展类
 /// </summary>
 [SuppressSniffer]
 public static class OptionsBuilderExtensions

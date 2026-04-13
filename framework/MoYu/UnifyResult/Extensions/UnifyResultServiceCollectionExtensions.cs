@@ -31,7 +31,7 @@ using System.Reflection;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 规范化结果服务扩展
+/// 规范化结果服务拓展
 /// </summary>
 [SuppressSniffer]
 public static class UnifyResultServiceCollectionExtensions

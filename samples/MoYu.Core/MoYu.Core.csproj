@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<NoWarn>1701;1702;1591</NoWarn>
 		<DocumentationFile>MoYu.Core.xml</DocumentationFile>
 	</PropertyGroup>
@@ -11,8 +11,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MoYu.Extras.Authentication.JwtBearer" Version="4.9.8.9" />
-		<PackageReference Include="MoYu.Extras.ObjectMapper.Mapster" Version="4.9.8.9" />
+		<PackageReference Include="MoYu.Extras.Authentication.JwtBearer" Version="4.9.5.26" />
+		<PackageReference Include="MoYu.Extras.ObjectMapper.Mapster" Version="4.9.5.26" />
 	</ItemGroup>
 
 	<ItemGroup>

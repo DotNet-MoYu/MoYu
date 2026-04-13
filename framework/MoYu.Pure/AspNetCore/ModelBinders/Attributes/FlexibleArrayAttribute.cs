@@ -30,7 +30,7 @@ namespace MoYu.AspNetCore;
 /// <summary>
 /// 数组 URL 地址参数模型绑定特性
 /// </summary>
-[SuppressSniffer, AttributeUsage(AttributeTargets.Parameter)]
+[SuppressSniffer]
 public class FlexibleArrayAttribute<T> : ModelBinderAttribute
 {
     /// <summary>

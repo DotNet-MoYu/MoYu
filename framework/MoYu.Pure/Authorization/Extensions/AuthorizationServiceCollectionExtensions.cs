@@ -32,7 +32,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 策略授权服务扩展类
+/// 策略授权服务拓展类
 /// </summary>
 [SuppressSniffer]
 public static class AuthorizationServiceCollectionExtensions

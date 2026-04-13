@@ -82,7 +82,6 @@ internal sealed class DynamicApiControllerApplicationModelConvention : IApplicat
     public void Apply(ApplicationModel application)
     {
         var controllers = application.Controllers.Where(u => Penetrates.IsApiController(u.ControllerType));
-
         foreach (var controller in controllers)
         {
             var controllerType = controller.ControllerType;
@@ -153,7 +152,7 @@ internal sealed class DynamicApiControllerApplicationModelConvention : IApplicat
             {
                 action.ApiExplorer.IsVisible = false;
                 continue;
-            }
+            };
 
             var actionMethod = action.ActionMethod;
             var actionApiDescriptionSettings = actionMethod.IsDefined(typeof(ApiDescriptionSettingsAttribute), true) ? actionMethod.GetCustomAttribute<ApiDescriptionSettingsAttribute>(true) : default;
@@ -166,9 +165,6 @@ internal sealed class DynamicApiControllerApplicationModelConvention : IApplicat
             }
 
             ConfigureAction(action, actionApiDescriptionSettings, controllerApiDescriptionSettings, hasApiControllerAttribute);
-
-            // 添加 Action 自定义配置
-            Penetrates.ActionConfigure?.Invoke(action);
         }
     }
 
@@ -564,10 +560,10 @@ internal sealed class DynamicApiControllerApplicationModelConvention : IApplicat
             if (isLowerCamelCase) parameterModel.ParameterName = parameterModel.ParameterName.ToLowerCamelCase();
 
             // 判断是否贴有任何 [FromXXX] 特性了
-            var hasFromAttribute = parameterAttributes.Any(u => typeof(IBindingSourceMetadata).IsAssignableFrom(u.GetType()));
+            var hasFormAttribute = parameterAttributes.Any(u => typeof(IBindingSourceMetadata).IsAssignableFrom(u.GetType()));
 
             // 判断方法贴有 [QueryParameters] 特性且当前参数没有任何 [FromXXX] 特性，则添加 [FromQuery] 特性
-            if (isQueryParametersAction && !hasFromAttribute)
+            if (isQueryParametersAction && !hasFormAttribute)
             {
                 parameterModel.BindingInfo = BindingInfo.GetBindingInfo(new[] { new FromQueryAttribute() });
                 continue;
@@ -576,10 +572,10 @@ internal sealed class DynamicApiControllerApplicationModelConvention : IApplicat
             // 如果没有贴 [FromRoute] 特性且不是基元类型，则跳过
             // 如果没有贴 [FromRoute] 特性且有任何绑定特性，则跳过
             if (!parameterAttributes.Any(u => u is FromRouteAttribute)
-                && (!parameterType.IsRichPrimitive() || hasFromAttribute)) continue;
+                && (!parameterType.IsRichPrimitive() || hasFormAttribute)) continue;
 
             // 处理基元数组数组类型，还有全局配置参数问题
-            if (!hasFromAttribute && (_dynamicApiControllerSettings?.UrlParameterization == true || parameterType.IsArray))
+            if (_dynamicApiControllerSettings?.UrlParameterization == true || parameterType.IsArray)
             {
                 parameterModel.BindingInfo = BindingInfo.GetBindingInfo(new[] { new FromQueryAttribute() });
                 continue;
@@ -587,7 +583,7 @@ internal sealed class DynamicApiControllerApplicationModelConvention : IApplicat
 
             // 处理 [ApiController] 特性情况
             // https://docs.microsoft.com/en-US/aspnet/core/web-api/?view=aspnetcore-5.0#binding-source-parameter-inference
-            if (!hasFromAttribute && hasApiControllerAttribute) continue;
+            if (!hasFormAttribute && hasApiControllerAttribute) continue;
 
             // 处理默认基元参数绑定方式，若是 query（[FromQuery]）则跳过
             if (_dynamicApiControllerSettings?.DefaultBindingInfo?.ToLower() == "query")

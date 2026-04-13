@@ -26,9 +26,9 @@ public class TestSensitiveDetection : IDynamicApiController
     /// </summary>
     /// <param name="text"></param>
     /// <returns></returns>
-    public async Task<bool> IsValidAsync(string text)
+    public async Task<bool> VaildedAsync(string text)
     {
-        return await _sensitiveDetectionProvider.IsValidAsync(text);
+        return await _sensitiveDetectionProvider.VaildedAsync(text);
     }
 
     /// <summary>

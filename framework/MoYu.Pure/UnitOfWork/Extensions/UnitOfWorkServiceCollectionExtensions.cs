@@ -28,7 +28,7 @@ using MoYu.DatabaseAccessor;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 工作单元扩展类
+/// 工作单元拓展类
 /// </summary>
 [SuppressSniffer]
 public static class UnitOfWorkServiceCollectionExtensions

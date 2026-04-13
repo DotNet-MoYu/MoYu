@@ -33,7 +33,7 @@ using System.Reflection;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 依赖注入扩展类
+/// 依赖注入拓展类
 /// </summary>
 [SuppressSniffer]
 public static class DependencyInjectionServiceCollectionExtensions
@@ -48,7 +48,7 @@ public static class DependencyInjectionServiceCollectionExtensions
         // 添加外部程序集配置
         services.AddConfigurableOptions<DependencyInjectionSettingsOptions>();
 
-        // 添加内部依赖注入扫描扩展
+        // 添加内部依赖注入扫描拓展
         services.AddInnerDependencyInjection();
 
         // 注册命名服务

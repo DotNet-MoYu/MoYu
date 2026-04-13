@@ -73,26 +73,6 @@ public sealed partial class TriggerBuilder : Trigger
     }
 
     /// <summary>
-    /// 创建指定具体时间触发的一次性作业触发器
-    /// </summary>
-    /// <param name="triggerTime">触发时间</param>
-    /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder At(DateTime triggerTime)
-    {
-        return At(triggerTime.ToString());
-    }
-
-    /// <summary>
-    /// 创建指定具体时间触发的一次性作业触发器
-    /// </summary>
-    /// <param name="triggerTime">触发时间</param>
-    /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder At(string triggerTime)
-    {
-        return Create<AtTrigger>(triggerTime);
-    }
-
-    /// <summary>
     /// 创建作业触发器构建器
     /// </summary>
     /// <param name="triggerId">作业触发器 Id</param>
@@ -332,12 +312,6 @@ public sealed partial class TriggerBuilder : Trigger
         // 空检查
         if (string.IsNullOrWhiteSpace(args) || args == "[]") args = null;
 
-        // 解决修改了触发器参数没有更新下一次运行时间问题
-        if (args != Args)
-        {
-            SetNextRunTime(Penetrates.GetNowTime().AddSeconds(-1));
-        }
-
         Args = args;
         if (args == null) return this;
 
@@ -366,9 +340,6 @@ public sealed partial class TriggerBuilder : Trigger
             ? null
             : Penetrates.Serialize(args);
         RuntimeTriggerArgs = args;
-
-        // 解决修改了触发器参数没有更新下一次运行时间问题
-        SetNextRunTime(Penetrates.GetNowTime().AddSeconds(-1));
 
         return this;
     }

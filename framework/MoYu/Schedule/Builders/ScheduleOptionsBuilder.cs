@@ -166,16 +166,11 @@ public sealed class ScheduleOptionsBuilder
         // 设置当前作业组名称（理应不存在并发问题，若有添加 lock）
         _groupSet = groupSet;
 
-        try
-        {
-            // 调用设置
-            setAction();
-        }
-        finally
-        {
-            // 清空当前作业组名称
-            _groupSet = null;
-        }
+        // 调用设置
+        setAction();
+
+        // 清空当前作业组名称
+        _groupSet = null;
 
         return this;
     }
@@ -188,7 +183,7 @@ public sealed class ScheduleOptionsBuilder
     public ScheduleOptionsBuilder AddJob(params SchedulerBuilder[] schedulerBuilders)
     {
         // 空检查
-        if (schedulerBuilders == null) throw new ArgumentNullException(nameof(schedulerBuilders));
+        if (schedulerBuilders == null || schedulerBuilders.Length == 0) throw new ArgumentNullException(nameof(schedulerBuilders));
 
         // 逐条将作业计划构建器添加到集合中
         foreach (var schedulerBuilder in schedulerBuilders)
@@ -224,22 +219,6 @@ public sealed class ScheduleOptionsBuilder
          where TJob : class, IJob
     {
         return AddJob(SchedulerBuilder.Create<TJob>(triggerBuilders));
-    }
-
-    /// <summary>
-    /// 添加作业
-    /// </summary>
-    /// <typeparam name="TJob"><see cref="IJob"/> 实现类型</typeparam>
-    /// <param name="buildJob">作业构建器委托</param>
-    /// <param name="triggerBuilders">作业触发器构建器集合</param>
-    /// <returns><see cref="ScheduleOptionsBuilder"/></returns>
-    public ScheduleOptionsBuilder AddJob<TJob>(Action<JobBuilder> buildJob, params TriggerBuilder[] triggerBuilders)
-         where TJob : class, IJob
-    {
-        var jobBuilder = JobBuilder.Create<TJob>();
-        buildJob?.Invoke(jobBuilder);
-
-        return AddJob(jobBuilder, triggerBuilders);
     }
 
     /// <summary>

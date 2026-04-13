@@ -28,7 +28,7 @@ using MoYu.Extensions;
 namespace MoYu.Logging;
 
 /// <summary>
-/// LogContext 扩展
+/// LogContext 拓展
 /// </summary>
 [SuppressSniffer]
 public static class LogContextExtensions

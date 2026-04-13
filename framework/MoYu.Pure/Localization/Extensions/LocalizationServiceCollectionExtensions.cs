@@ -33,7 +33,7 @@ using System.Text.Unicode;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 多语言服务扩展类
+/// 多语言服务拓展类
 /// </summary>
 [SuppressSniffer]
 public static class LocalizationServiceCollectionExtensions

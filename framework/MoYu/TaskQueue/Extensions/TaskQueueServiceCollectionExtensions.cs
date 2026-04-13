@@ -29,7 +29,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// TaskQueue 模块服务扩展
+/// TaskQueue 模块服务拓展
 /// </summary>
 [SuppressSniffer]
 public static class TaskQueueServiceCollectionExtensions

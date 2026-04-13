@@ -73,7 +73,7 @@ public static class FS
     /// <summary>
     /// 根据文件名获取文件的 ContentType 或 MIME
     /// </summary>
-    /// <param name="fileName">文件名（带扩展）</param>
+    /// <param name="fileName">文件名（带拓展）</param>
     /// <param name="contentType">ContentType 或 MIME</param>
     /// <returns></returns>
     public static bool TryGetContentType(string fileName, out string contentType)
@@ -107,8 +107,6 @@ public static class FS
         fileExtensionProvider.Mappings[".bcmap"] = "application/octet-stream";
         fileExtensionProvider.Mappings[".properties"] = "application/octet-stream";
         fileExtensionProvider.Mappings[".m3u8"] = "application/x-mpegURL";
-        fileExtensionProvider.Mappings[".ofd"] = "application/ofd";
-        fileExtensionProvider.Mappings[".jsonl"] = "application/json-lines";
         return fileExtensionProvider;
     }
 }

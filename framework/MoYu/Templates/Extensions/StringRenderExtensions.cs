@@ -23,13 +23,14 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
+using MoYu.ClayObject.Extensions;
 using MoYu.Extensions;
 using System.Text.RegularExpressions;
 
 namespace MoYu.Templates.Extensions;
 
 /// <summary>
-/// 字符串渲染模板扩展类
+/// 字符串渲染模板拓展类
 /// </summary>
 [SuppressSniffer]
 public static class StringRenderExtensions
@@ -55,7 +56,7 @@ public static class StringRenderExtensions
     {
         if (template == null) return default;
 
-        return template.Render(templateData == null ? default : templateData.ObjectToDictionary().ToDictionary(u => u.Key.ToString(), u => u.Value), encode);
+        return template.Render(templateData == null ? default : templateData.ToDictionary(), encode);
     }
 
     /// <summary>

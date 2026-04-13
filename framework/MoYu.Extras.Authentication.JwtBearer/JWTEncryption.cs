@@ -76,22 +76,11 @@ public class JWTEncryption
     /// <returns></returns>
     public static string Encrypt(string issuerSigningKey, IDictionary<string, object> payload, string algorithm = SecurityAlgorithms.HmacSha256)
     {
-        string stringPayload;
-
         // 处理 JwtPayload 序列化不一致问题
-        if (payload is JwtPayload jwtPayload)
+        var stringPayload = payload is JwtPayload jwtPayload ? jwtPayload.SerializeToJson() : JsonSerializer.Serialize(payload, new JsonSerializerOptions
         {
-            stringPayload = jwtPayload.SerializeToJson();
-        }
-        else
-        {
-            var (Payload, _) = CombinePayload(payload);
-            stringPayload = JsonSerializer.Serialize(Payload, new JsonSerializerOptions
-            {
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            });
-        }
-
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
         return Encrypt(issuerSigningKey, stringPayload, algorithm);
     }
 
@@ -220,9 +209,8 @@ public class JWTEncryption
     /// <param name="refreshTokenExpiredTime">新刷新 Token 有效期（分钟）</param>
     /// <param name="tokenPrefix"></param>
     /// <param name="clockSkew"></param>
-    /// <param name="onRefreshing">当刷新时触发</param>
     /// <returns></returns>
-    public static bool AutoRefreshToken(AuthorizationHandlerContext context, DefaultHttpContext httpContext, long? expiredTime = null, int refreshTokenExpiredTime = 43200, string tokenPrefix = "Bearer ", long clockSkew = 5, Action<string, string> onRefreshing = null)
+    public static bool AutoRefreshToken(AuthorizationHandlerContext context, DefaultHttpContext httpContext, long? expiredTime = null, int refreshTokenExpiredTime = 43200, string tokenPrefix = "Bearer ", long clockSkew = 5)
     {
         // 如果验证有效，则跳过刷新
         if (context.User.Identity.IsAuthenticated)
@@ -268,11 +256,7 @@ public class JWTEncryption
         // 返回新的 Token
         httpContext.Response.Headers[accessTokenKey] = accessToken;
         // 返回新的 刷新Token
-        var refreshAccessToken = GenerateRefreshToken(accessToken, refreshTokenExpiredTime);
-        httpContext.Response.Headers[xAccessTokenKey] = refreshAccessToken;
-
-        // 调用刷新后回调函数
-        onRefreshing?.Invoke(accessToken, refreshAccessToken);
+        httpContext.Response.Headers[xAccessTokenKey] = GenerateRefreshToken(accessToken, refreshTokenExpiredTime);
 
         // 处理 axios 问题
         httpContext.Response.Headers.TryGetValue(accessControlExposeKey, out var acehs);

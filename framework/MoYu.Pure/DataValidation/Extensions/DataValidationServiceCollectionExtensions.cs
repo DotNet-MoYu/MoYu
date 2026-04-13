@@ -31,7 +31,7 @@ using Microsoft.Extensions.Options;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 友好异常服务扩展类
+/// 友好异常服务拓展类
 /// </summary>
 [SuppressSniffer]
 public static class DataValidationServiceCollectionExtensions

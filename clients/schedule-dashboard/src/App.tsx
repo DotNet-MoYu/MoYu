@@ -2,7 +2,6 @@ import {
   IconArrowUp,
   IconCalendarClock,
   IconClock,
-  IconExit,
   IconHelpCircle,
   IconMoon,
   IconSun,
@@ -10,16 +9,11 @@ import {
 import { BackTop, Button, Layout, Nav, Tag, Tooltip } from "@douyinfe/semi-ui";
 import { useState } from "react";
 import Jobs from "./components/jobs";
-import apiconfig from "./apiconfig";
-import { useAuth } from "./auth";
-import "@leenguyen/react-flip-clock-countdown/dist/index.css";
-import { useNavigate } from "react-router";
+import apiconfig from "./components/jobs/apiconfig";
 
 function App() {
   const { Header, Content } = Layout;
   const [mode, setMode] = useState("light");
-  let auth = useAuth();
-  let navigate = useNavigate();
 
   const switchMode = () => {
     const body = document.body;
@@ -46,7 +40,7 @@ function App() {
               mode="horizontal"
               defaultSelectedKeys={["Home"]}
               header={{
-                text: apiconfig.title,
+                text: "Schedule Dashboard",
                 logo: (
                   <IconCalendarClock
                     style={{
@@ -107,17 +101,6 @@ function App() {
                     onClick={() => window.open("https://MoYu.net/docs/job")}
                   />
                 </Tooltip>
-                <Tooltip content={"退出登录"}>
-                  <Button
-                    theme="borderless"
-                    icon={<IconExit size="large" />}
-                    style={{
-                      color: "var(--semi-color-text-2)",
-                      marginRight: "12px",
-                    }}
-                    onClick={() => auth.signout(() => navigate("/"))}
-                  />
-                </Tooltip>
               </Nav.Footer>
             </Nav>
           </div>
@@ -130,8 +113,13 @@ function App() {
           backgroundColor: "var(--semi-color-bg-0)",
         }}
       >
-        <div>
-          <Jobs mode={mode} />
+        <div
+          style={{
+            borderRadius: "10px",
+            border: "1px solid var(--semi-color-border)",
+          }}
+        >
+          <Jobs />
         </div>
         <BackTop />
         <BackTop

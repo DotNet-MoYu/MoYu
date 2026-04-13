@@ -28,12 +28,7 @@ namespace MoYu.FriendlyException;
 /// <summary>
 /// 错误代码类型特性
 /// </summary>
-[SuppressSniffer, AttributeUsage(AttributeTargets.Enum | AttributeTargets.Class)]
+[SuppressSniffer, AttributeUsage(AttributeTargets.Enum)]
 public sealed class ErrorCodeTypeAttribute : Attribute
 {
-    /// <summary>
-    /// 是否包含嵌套类型
-    /// </summary>
-    /// <remarks>仅限在类上标记有用</remarks>
-    public bool IncludeNestedTypes { get; set; }
 }

@@ -31,7 +31,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 规范化接口服务扩展类
+/// 规范化接口服务拓展类
 /// </summary>
 [SuppressSniffer]
 public static class SpecificationDocumentServiceCollectionExtensions
@@ -73,6 +73,33 @@ public static class SpecificationDocumentServiceCollectionExtensions
         // 添加Swagger生成器服务
         services.AddSwaggerGen(options => SpecificationDocumentBuilder.BuildGen(options, configure));
 
+        // 添加 MiniProfiler 服务
+        AddMiniProfiler(services);
+
         return services;
+    }
+
+    /// <summary>
+    /// 添加 MiniProfiler 配置
+    /// </summary>
+    /// <param name="services"></param>
+    private static void AddMiniProfiler(IServiceCollection services)
+    {
+        // 注册MiniProfiler 组件
+        if (App.Settings.InjectMiniProfiler != true) return;
+
+        services.AddMiniProfiler(options =>
+        {
+            // 减少非 Swagger 页面请求监听问题
+            options.ShouldProfile = (req) =>
+            {
+                if (!req.Headers.ContainsKey("request-from")) return false;
+                return true;
+            };
+
+            options.RouteBasePath = "/index-mini-profiler";
+            options.EnableMvcFilterProfiling = false;
+            options.EnableMvcViewProfiling = false;
+        }).AddRelationalDiagnosticListener();
     }
 }

@@ -1,4 +1,4 @@
-// ------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------
 // 版权信息
 // 版权归百小僧及百签科技（广东）有限公司所有。
 // 所有权利保留。
@@ -74,16 +74,8 @@ internal static class ValidatorContext
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                 WriteIndented = true
             });
-            
-            // 将验证结果集合转换为字典类型
-            var validationResultDictionary = validationResults as Dictionary<string, string[]>;
-            
-            // 检查字典是否为空
-            if (validationResultDictionary is { Count: > 0 })
-            {
-                firstErrorMessage = validationResultDictionary.FirstOrDefault().Value[0]; 
-                firstErrorProperty = validationResultDictionary.FirstOrDefault().Key;
-            }
+            firstErrorMessage = (validationResults as Dictionary<string, string[]>).First().Value[0];
+            firstErrorProperty = (validationResults as Dictionary<string, string[]>).First().Key;
         }
         // 其他类型
         else

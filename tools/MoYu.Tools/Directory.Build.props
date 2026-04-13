@@ -1,14 +1,12 @@
 ﻿<Project>
 	<PropertyGroup>
-		<LangVersion>preview</LangVersion>
-		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
-		<Version>4.9.8.9</Version>
+		<TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
+		<Version>4.9.5.26</Version>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<!--<Nullable>enable</Nullable>-->
 		<Authors>百小僧</Authors>
 		<Company>百签科技（广东）有限公司</Company>
 		<Product>MoYu</Product>
-		<Copyright>© 2020-2026 百小僧及百签科技（广东）有限公司</Copyright>
+		<Copyright>© 2020-2024 百小僧及百签科技（广东）有限公司</Copyright>
 		<RepositoryUrl>https://gitee.com/dotnetchina/MoYu</RepositoryUrl>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<EmbedUntrackedSource>true</EmbedUntrackedSource>
@@ -25,6 +23,10 @@
 		<SignAssembly>True</SignAssembly>
 		<DelaySign>False</DelaySign>
 		<AssemblyOriginatorKeyFile>..\..\..\snks\MoYu.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -29,7 +29,7 @@ using System.Linq.Expressions;
 namespace Microsoft.Extensions.Localization;
 
 /// <summary>
-/// <see cref="IStringLocalizer"/> 和 <see cref="IHtmlLocalizer"/> 扩展
+/// <see cref="IStringLocalizer"/> 和 <see cref="IHtmlLocalizer"/> 拓展
 /// </summary>
 [SuppressSniffer]
 public static class ILocalizerExtensions

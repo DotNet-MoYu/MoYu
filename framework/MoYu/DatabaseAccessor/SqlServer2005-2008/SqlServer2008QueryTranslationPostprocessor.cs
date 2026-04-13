@@ -32,7 +32,7 @@ namespace Microsoft.EntityFrameworkCore.Query;
 /// </summary>
 internal class SqlServer2008QueryTranslationPostprocessor : RelationalQueryTranslationPostprocessor
 {
-#if NET8_0
+#if !NET9_0
     /// <summary>
     /// 构造函数
     /// </summary>

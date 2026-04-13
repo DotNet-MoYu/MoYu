@@ -49,19 +49,5 @@ public sealed class SpecificationLoginInfo
     /// <summary>
     /// 生产环境自动开启
     /// </summary>
-    /// <remarks>
-    /// <para>当 <see cref="Enabled"/> 为 <c>false</c> 时且它为 <c>true</c> 时，那么生产环境将自动开启。</para>
-    /// <para>可实现开发环境不开启，生产环境中自动开启。</para>
-    /// </remarks>
     public bool EnableOnProduction { get; set; }
-
-    /// <summary>
-    /// 默认用户名
-    /// </summary>
-    public string DefaultUsername { get; set; }
-
-    /// <summary>
-    /// 默认登录密码
-    /// </summary>
-    public string DefaultPassword { get; set; }
 }

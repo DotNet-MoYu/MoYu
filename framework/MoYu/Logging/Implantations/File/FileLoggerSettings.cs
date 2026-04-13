@@ -34,7 +34,7 @@ namespace MoYu.Logging;
 public sealed class FileLoggerSettings
 {
     /// <summary>
-    /// 日志文件完整路径或文件名，推荐 .log 作为扩展名
+    /// 日志文件完整路径或文件名，推荐 .log 作为拓展名
     /// </summary>
     public string FileName { get; set; } = "application.log";
 

@@ -64,16 +64,6 @@ public static class SqlProvider
     public const string Firebird = "FirebirdSql.Data.FirebirdClient";
 
     /// <summary>
-    /// 达梦 提供器程序集
-    /// </summary>
-    public const string Dm = "DM.DmProvider";
-
-    /// <summary>
-    /// 人大金仓 提供器程序集
-    /// </summary>
-    public const string Kdbndp = "Kdbndp";
-
-    /// <summary>
     /// 数据库提供器连接对象类型集合
     /// </summary>
     internal static readonly ConcurrentDictionary<string, Type> SqlProviderDbConnectionTypeCollection;
@@ -110,8 +100,6 @@ public static class SqlProvider
                 Npgsql => "Npgsql.NpgsqlConnection",
                 Oracle => "Oracle.ManagedDataAccess.Client.OracleConnection",
                 Firebird => "FirebirdSql.Data.FirebirdClient.FbConnection",
-                Dm => "Dm.DmConnection",
-                Kdbndp => "Kdbndp.KdbndpConnection",
                 _ => null
             };
 

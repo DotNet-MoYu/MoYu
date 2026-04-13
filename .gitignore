@@ -348,5 +348,3 @@ handbook/build
 framework/**/*.xml
 framework/nupkgs
 tests/MoYu.TestProject/templates
-
-.git.bak

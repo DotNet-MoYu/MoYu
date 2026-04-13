@@ -63,7 +63,7 @@ public class StartupFilter : IStartupFilter
                 else
                 {
                     // 输出当前环境标识
-                    context.Response.Headers["Environment"] = envName;
+                    context.Response.Headers["environment"] = envName;
 
                     // 输出框架版本
                     context.Response.Headers[nameof(MoYu)] = version;
@@ -88,7 +88,7 @@ public class StartupFilter : IStartupFilter
             // 调用默认中间件
             app.UseApp();
 
-            // 配置所有 Startup Configure
+            // 配置所有 Starup Configure
             UseStartups(app);
 
             // 调用启动层的 Startup

@@ -33,7 +33,7 @@ using System.Text.RegularExpressions;
 namespace Microsoft.Extensions.Configuration;
 
 /// <summary>
-/// IConfigurationBuilder 接口扩展
+/// IConfigurationBuilder 接口拓展
 /// </summary>
 [SuppressSniffer]
 public static class IConfigurationBuilderExtensions
@@ -193,10 +193,10 @@ public static class IConfigurationBuilderExtensions
         , bool optional = true
         , bool reloadOnChange = false)
     {
-        // 获取文件扩展名
+        // 获取文件拓展名
         var fileExtension = Path.GetExtension(filePath).ToLower();
 
-        // 创建受支持的文件配置源实例，仅支持 .json/.xml/.ini 扩展名
+        // 创建受支持的文件配置源实例，仅支持 .json/.xml/.ini 拓展名
         FileConfigurationSource fileConfigurationSource = fileExtension switch
         {
             ".json" => new JsonConfigurationSource { Path = filePath, Optional = optional, ReloadOnChange = reloadOnChange },

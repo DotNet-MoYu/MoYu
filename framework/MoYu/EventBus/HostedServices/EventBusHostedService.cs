@@ -216,12 +216,6 @@ internal sealed class EventBusHostedService : BackgroundService
         // 从事件存储器中读取一条
         var eventSource = await _eventSourceStorer.ReadAsync(stoppingToken);
 
-        // 空检查
-        if (eventSource is null)
-        {
-            return;
-        }
-
         // 处理动态新增/删除事件订阅器
         if (eventSource is EventSubscribeOperateSource subscribeOperateSource)
         {
@@ -270,14 +264,11 @@ internal sealed class EventBusHostedService : BackgroundService
             // 创建新的线程执行
             taskFactory.StartNew(async () =>
             {
-                // 创建本次事件运行唯一标识
-                var runId = $"{Guid.NewGuid()}";
-
                 // 获取特性信息，可能为 null
                 var eventSubscribeAttribute = eventHandlerThatShouldRun.Attribute;
 
                 // 创建执行前上下文
-                var eventHandlerExecutingContext = new EventHandlerExecutingContext(eventSource, properties, eventHandlerThatShouldRun.HandlerMethod, eventSubscribeAttribute, runId)
+                var eventHandlerExecutingContext = new EventHandlerExecutingContext(eventSource, properties, eventHandlerThatShouldRun.HandlerMethod, eventSubscribeAttribute)
                 {
                     ExecutingTime = UseUtcTimestamp ? DateTime.UtcNow : DateTime.Now
                 };
@@ -325,10 +316,7 @@ internal sealed class EventBusHostedService : BackgroundService
                     }
 
                     // 触发事件处理程序事件
-                    _eventPublisher.InvokeEvents(new(eventSource, true, runId)
-                    {
-                        Result = eventHandlerExecutingContext.Result
-                    });
+                    _eventPublisher.InvokeEvents(new(eventSource, true));
                 }
                 catch (Exception ex)
                 {
@@ -348,10 +336,9 @@ internal sealed class EventBusHostedService : BackgroundService
                     }
 
                     // 触发事件处理程序事件
-                    _eventPublisher.InvokeEvents(new(eventSource, false, runId)
+                    _eventPublisher.InvokeEvents(new(eventSource, false)
                     {
-                        Exception = ex,
-                        Result = eventHandlerExecutingContext.Result
+                        Exception = ex
                     });
                 }
                 finally
@@ -360,7 +347,7 @@ internal sealed class EventBusHostedService : BackgroundService
                     if (Monitor != default)
                     {
                         // 创建执行后上下文
-                        var eventHandlerExecutedContext = new EventHandlerExecutedContext(eventSource, properties, eventHandlerThatShouldRun.HandlerMethod, eventSubscribeAttribute, runId)
+                        var eventHandlerExecutedContext = new EventHandlerExecutedContext(eventSource, properties, eventHandlerThatShouldRun.HandlerMethod, eventSubscribeAttribute)
                         {
                             ExecutedTime = UseUtcTimestamp ? DateTime.UtcNow : DateTime.Now,
                             Exception = executionException

@@ -31,7 +31,7 @@ using Microsoft.Extensions.Options;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 跨域访问服务扩展类
+/// 跨域访问服务拓展类
 /// </summary>
 [SuppressSniffer]
 public static class CorsAccessorServiceCollectionExtensions

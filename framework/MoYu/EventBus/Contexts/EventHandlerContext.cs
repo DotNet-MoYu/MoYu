@@ -23,9 +23,10 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
-using MoYu.Shapeless;
+using MoYu.ClayObject;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MoYu.EventBus;
 
@@ -41,18 +42,15 @@ public abstract class EventHandlerContext
     /// <param name="properties">共享上下文数据</param>
     /// <param name="handlerMethod">触发的方法</param>
     /// <param name="attribute">订阅特性</param>
-    /// <param name="runId">事件运行的唯一标识</param>
     internal EventHandlerContext(IEventSource eventSource
         , IDictionary<object, object> properties
         , MethodInfo handlerMethod
-        , EventSubscribeAttribute attribute
-        , string runId)
+        , EventSubscribeAttribute attribute)
     {
         Source = eventSource;
         Properties = properties;
         HandlerMethod = handlerMethod;
         Attribute = attribute;
-        RunId = runId;
     }
 
     /// <summary>
@@ -78,11 +76,6 @@ public abstract class EventHandlerContext
     public EventSubscribeAttribute Attribute { get; }
 
     /// <summary>
-    /// 事件运行的唯一标识
-    /// </summary>
-    public string RunId { get; }
-
-    /// <summary>
     /// 获取负载数据
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -97,15 +90,10 @@ public abstract class EventHandlerContext
         }
         else if (rawPayload is JsonElement jsonElement)
         {
-            return JsonSerializer.Deserialize<T>(jsonElement.GetRawText(), new JsonSerializerOptions(JsonSerializerOptions.Default)
+            return JsonSerializer.Deserialize<T>(jsonElement.GetRawText(), new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
-        }
-        // 临时解决方案（不应依赖 Clay）
-        else if (typeof(T) == typeof(Clay))
-        {
-            return (T)(object)Clay.Parse(Source.Payload);
         }
         else
         {

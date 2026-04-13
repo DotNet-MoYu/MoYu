@@ -11,10 +11,4 @@ window.apiconfig = {
   displayHead: "true",
   defaultExpandAllJobs: "false",
   useUtcTimestamp: "false",
-  title: "Schedule Dashboard",
-  loginConfig: {
-    sessionKey: "schedule_session_key",
-    defaultUsername: "",
-    defaultPassword: "",
-  },
 };

@@ -348,7 +348,7 @@ internal sealed partial class SchedulerFactory
     public void SaveJob(params SchedulerBuilder[] schedulerBuilders)
     {
         // 空检查
-        if (schedulerBuilders == null) throw new ArgumentNullException(nameof(schedulerBuilders));
+        if (schedulerBuilders == null || schedulerBuilders.Length == 0) throw new ArgumentNullException(nameof(schedulerBuilders));
 
         // 逐条将作业计划构建器保存到作业计划中
         foreach (var schedulerBuilder in schedulerBuilders)
@@ -371,16 +371,11 @@ internal sealed partial class SchedulerFactory
         // 设置当前作业组名称（理应不存在并发问题，若有添加 lock）
         _groupSet = groupSet;
 
-        try
-        {
-            // 调用设置
-            setAction();
-        }
-        finally
-        {
-            // 清空当前作业组名称
-            _groupSet = null;
-        }
+        // 调用设置
+        setAction();
+
+        // 清空当前作业组名称
+        _groupSet = null;
     }
 
     /// <summary>
@@ -406,7 +401,7 @@ internal sealed partial class SchedulerFactory
     public void AddJob(params SchedulerBuilder[] schedulerBuilders)
     {
         // 空检查
-        if (schedulerBuilders == null) throw new ArgumentNullException(nameof(schedulerBuilders));
+        if (schedulerBuilders == null || schedulerBuilders.Length == 0) throw new ArgumentNullException(nameof(schedulerBuilders));
 
         // 逐条将作业计划构建器保存到作业计划中
         foreach (var schedulerBuilder in schedulerBuilders)
@@ -455,24 +450,6 @@ internal sealed partial class SchedulerFactory
     /// <summary>
     /// 添加作业
     /// </summary>
-    /// <typeparam name="TJob"><see cref="IJob"/> 实现类型</typeparam>
-    /// <param name="buildJob">作业构建器委托</param>
-    /// <param name="triggerBuilders">作业触发器构建器集合</param>
-    /// <param name="scheduler">作业计划</param>
-    /// <param name="immediately">是否立即通知作业调度器重新载入</param>
-    /// <remarks><see cref="ScheduleResult"/></remarks>
-    public ScheduleResult TryAddJob<TJob>(Action<JobBuilder> buildJob, TriggerBuilder[] triggerBuilders, out IScheduler scheduler, bool immediately = true)
-         where TJob : class, IJob
-    {
-        var jobBuilder = JobBuilder.Create<TJob>();
-        buildJob?.Invoke(jobBuilder);
-
-        return TryAddJob(jobBuilder, triggerBuilders, out scheduler, immediately);
-    }
-
-    /// <summary>
-    /// 添加作业
-    /// </summary>
     /// <param name="jobType"><see cref="IJob"/> 实现类型</param>
     /// <param name="triggerBuilders">作业触发器构建器集合</param>
     /// <param name="scheduler">作业计划</param>
@@ -505,18 +482,6 @@ internal sealed partial class SchedulerFactory
          where TJob : class, IJob
     {
         _ = TryAddJob<TJob>(triggerBuilders, out _);
-    }
-
-    /// <summary>
-    /// 添加作业
-    /// </summary>
-    /// <typeparam name="TJob"><see cref="IJob"/> 实现类型</typeparam>
-    ///  <param name="buildJob">作业构建器委托</param>
-    /// <param name="triggerBuilders">作业触发器构建器集合</param>
-    public void AddJob<TJob>(Action<JobBuilder> buildJob, params TriggerBuilder[] triggerBuilders)
-         where TJob : class, IJob
-    {
-        _ = TryAddJob<TJob>(buildJob, triggerBuilders, out _);
     }
 
     /// <summary>
@@ -1045,7 +1010,7 @@ internal sealed partial class SchedulerFactory
     public void UpdateJob(params SchedulerBuilder[] schedulerBuilders)
     {
         // 空检查
-        if (schedulerBuilders == null) throw new ArgumentNullException(nameof(schedulerBuilders));
+        if (schedulerBuilders == null || schedulerBuilders.Length == 0) throw new ArgumentNullException(nameof(schedulerBuilders));
 
         // 逐条将作业计划构建器保存到作业计划中
         foreach (var schedulerBuilder in schedulerBuilders)
@@ -1197,7 +1162,7 @@ internal sealed partial class SchedulerFactory
     }
 
     /// <summary>
-    /// 手动执行作业
+    /// 立即执行作业
     /// </summary>
     /// <param name="jobId">作业 Id</param>
     /// <param name="scheduler">作业计划</param>
@@ -1224,7 +1189,7 @@ internal sealed partial class SchedulerFactory
     }
 
     /// <summary>
-    /// 手动执行作业
+    /// 立即执行作业
     /// </summary>
     /// <param name="jobIds">作业 Id 集合</param>
     public void RunJob(params string[] jobIds)
@@ -1239,7 +1204,7 @@ internal sealed partial class SchedulerFactory
     }
 
     /// <summary>
-    /// 手动执行作业
+    /// 立即执行作业
     /// </summary>
     /// <param name="scheduler">作业计划</param>
     /// <param name="triggerId">作业触发器 Id</param>
@@ -1250,7 +1215,7 @@ internal sealed partial class SchedulerFactory
     }
 
     /// <summary>
-    /// 手动执行作业
+    /// 立即执行作业
     /// </summary>
     /// <param name="schedulers">作业计划集合</param>
     public void RunJob(params IScheduler[] schedulers)

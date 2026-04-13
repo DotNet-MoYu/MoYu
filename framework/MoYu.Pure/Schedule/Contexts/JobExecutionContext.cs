@@ -23,8 +23,6 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
-using Microsoft.Extensions.DependencyInjection;
-
 namespace MoYu.Schedule;
 
 /// <summary>
@@ -98,80 +96,8 @@ public abstract class JobExecutionContext
     /// <summary>
     /// 触发模式
     /// </summary>
-    /// <remarks>默认为定时触发，0:定时，1:手动</remarks>
+    /// <remarks>默认为定时触发</remarks>
     public int Mode { get; internal set; }
-
-    /// <summary>
-    /// 存储作业执行过程中需要传递的数据
-    /// </summary>
-    public IDictionary<string, object> Items { get; internal set; }
-
-    /// <summary>
-    /// 获取作业执行过程中传递的数据
-    /// </summary>
-    /// <param name="key">键</param>
-    /// <returns><see cref="object"/></returns>
-    public object GetItem(string key)
-    {
-        return Items[key];
-    }
-
-    /// <summary>
-    /// 获取作业执行过程中传递的数据
-    /// </summary>
-    /// <typeparam name="T">目标类型</typeparam>
-    /// <param name="key">键</param>
-    /// <returns><typeparamref name="T"/></returns>
-    public T GetItem<T>(string key)
-    {
-        return Items.TryGetValue(key, out var value) ? (T)value : default;
-    }
-
-    /// <summary>
-    /// 获取作业执行过程中传递的数据
-    /// </summary>
-    /// <typeparam name="T">目标类型</typeparam>
-    /// <returns><see cref="IEnumerable{T}"/></returns>
-    public IEnumerable<T> GetItems<T>()
-    {
-        return Items.Values.OfType<T>();
-    }
-
-    /// <summary>
-    /// 获取作业执行过程中传递的数据
-    /// </summary>
-    /// <typeparam name="T">目标类型</typeparam>
-    /// <returns><typeparamref name="T"/></returns>
-    public T GetItem<T>()
-    {
-        return GetItems<T>().FirstOrDefault();
-    }
-
-    /// <summary>
-    /// 检查作业任务是否处于正常状态
-    /// </summary>
-    /// <param name="schedulerFactory"><see cref="ISchedulerFactory"/></param>
-    /// <returns><see cref="bool"/></returns>
-    public bool IsNormalStatus(ISchedulerFactory schedulerFactory = null)
-    {
-        // 解析作业计划工厂服务
-        schedulerFactory ??= ServiceProvider.GetRequiredService<ISchedulerFactory>();
-
-        // 情况 1：检查作业是否存在
-        if (schedulerFactory.TryGetJob(JobId, out var scheduler) != ScheduleResult.Succeed)
-        {
-            return false;
-        }
-
-        // 情况 2：检查作业触发器是否存在
-        if (scheduler.TryGetTrigger(TriggerId, out var trigger) != ScheduleResult.Succeed)
-        {
-            return false;
-        }
-
-        // 情况 3：检查作业触发器是否正常运行
-        return trigger.IsNormalStatus();
-    }
 
     /// <summary>
     /// 转换成 JSON 字符串

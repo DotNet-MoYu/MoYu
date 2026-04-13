@@ -26,7 +26,7 @@
 namespace MoYu.DependencyInjection;
 
 /// <summary>
-/// 范围服务注册依赖
+/// 作用域服务注册依赖
 /// </summary>
 public interface IScoped : IPrivateDependency
 {

@@ -1,9 +1,12 @@
-﻿using MoYu.AspNetCore;
+﻿using MoYu.Application.Persons;
+using MoYu.AspNetCore;
+using MoYu.ClayObject;
 using MoYu.DatabaseAccessor.Extensions;
 using MoYu.Extensions;
 using MoYu.Logging;
 using MoYu.Reflection;
-using MoYu.Shapeless;
+using MoYu.RemoteRequest;
+using MoYu.RemoteRequest.Extensions;
 using MoYu.UnifyResult;
 using MoYu.ViewEngine;
 using MoYu.ViewEngine.Extensions;
@@ -15,7 +18,6 @@ using Swashbuckle.AspNetCore.Swagger;
 using System.ComponentModel;
 using System.Data;
 using System.Reflection;
-using System.Text;
 using System.Text.Json;
 
 namespace MoYu.Application;
@@ -25,6 +27,13 @@ namespace MoYu.Application;
 /// </summary>
 public class TestModuleServices : IDynamicApiController
 {
+    private readonly IHttp _http;
+
+    public TestModuleServices(IHttp http)
+    {
+        _http = http;
+    }
+
     [HttpPost]
     public IActionResult UploadFileAsync(IFormFile file)
     {
@@ -35,6 +44,123 @@ public class TestModuleServices : IDynamicApiController
     public IActionResult UploadMulitiFileAsync(List<IFormFile> files)
     {
         return new ContentResult() { Content = string.Join(',', files.Select(u => u.FileName)) };
+    }
+
+    /// <summary>
+    /// 测试单文件上传
+    /// </summary>
+    /// <returns></returns>
+    public async Task<string> TestSingleFileProxy()
+    {
+        var bytes = File.ReadAllBytes("image.png");
+        var result = await _http.TestSingleFileProxyAsync(HttpFile.Create("file", bytes, "image.png"));
+        var fileName = await result.Content.ReadAsStringAsync();
+
+        return fileName;
+    }
+
+    /// <summary>
+    /// 测试多文件上传
+    /// </summary>
+    /// <returns></returns>
+    public async Task<string> TestMultiFileProxy()
+    {
+        var bytes = File.ReadAllBytes("image.png");
+        var result = await _http.TestMultiFileProxyAsync(HttpFile.CreateMultiple("files", (bytes, "image1.png"), (bytes, "image2.png")));
+        var fileName = await result.Content.ReadAsStringAsync();
+
+        return fileName;
+    }
+
+    /// <summary>
+    /// 测试单文件上传（字符串方式）
+    /// </summary>
+    /// <returns></returns>
+    public async Task<string> TestSingleFileProxyString()
+    {
+        var bytes = File.ReadAllBytes("image.png");
+
+        var result = await "https://localhost:44316/api/test-module/upload-file".SetContentType("multipart/form-data")
+                            .SetFiles(HttpFile.Create("file", bytes, "image.png")).PostAsync();
+
+        var fileName = await result.Content.ReadAsStringAsync();
+
+        return fileName;
+    }
+
+    /// <summary>
+    /// 测试多文件上传（字符串方式）
+    /// </summary>
+    /// <returns></returns>
+    public async Task<string> TestMultiFileProxyString()
+    {
+        var bytes = File.ReadAllBytes("image.png");
+        var result = await "https://localhost:44316/api/test-module/upload-muliti-file".SetContentType("multipart/form-data")
+                            .SetFiles(HttpFile.CreateMultiple("files", (bytes, "image1.png"), (bytes, "image2.png"))).PostAsync();
+        var fileName = await result.Content.ReadAsStringAsync();
+
+        return fileName;
+    }
+
+    public async Task<string> TestRequestEncode([FromQuery] string ip)
+    {
+        var url = $"http://whois.pconline.com.cn/ipJson.jsp?ip={ip}";
+        var resultStr = await url.GetAsStringAsync();
+        return resultStr;
+    }
+
+    public async Task<PersonDto> TestSerial()
+    {
+        var result = await "https://localhost:44316/api/person/1".GetAsAsync<RESTfulResult<PersonDto>>();
+
+        return result.Data;
+    }
+
+    public async Task<string> TestBaidu()
+    {
+        var url = $"https://www.baidu.com";
+        var resultStr = await url.GetAsStringAsync();
+        return resultStr;
+    }
+
+    public void 测试高频远程请求()
+    {
+        Parallel.For(0, 5000, (i) =>
+        {
+            "https://www.baidu.com".GetAsStringAsync();
+        });
+    }
+
+    /// <summary>
+    /// 测试文件流上传
+    /// </summary>
+    /// <returns></returns>
+    public async Task<string> TestSingleFileSteamProxyString()
+    {
+        var fileStream = new FileStream("image.png", FileMode.Open);
+
+        var result = await "https://localhost:44316/api/test-module/upload-file".SetContentType("multipart/form-data")
+                            .SetFiles(HttpFile.Create("file", fileStream, "image.png")).PostAsync();
+
+        var fileName = await result.Content.ReadAsStringAsync();
+
+        await fileStream.DisposeAsync();
+
+        return fileName;
+    }
+
+    /// <summary>
+    /// 测试单文件流上传
+    /// </summary>
+    /// <returns></returns>
+    public async Task<string> TestSingleFileStreamProxy()
+    {
+        var fileStream = new FileStream("image.png", FileMode.Open);
+        var result = await _http.TestSingleFileProxyAsync(HttpFile.Create("file", fileStream, "image.png"));
+        var fileName = await result.Content.ReadAsStringAsync();
+
+        await fileStream.DisposeAsync();
+        return fileName;
     }
 
     [NonUnify]
@@ -64,6 +190,19 @@ public class TestModuleServices : IDynamicApiController
         };
     }
 
+    public async Task 测试Url参数空值情况()
+    {
+        var obj = new
+        {
+            id = 1,
+            name = default(string),
+            age = 30
+        };
+
+        var res = await "https://MoYu.net".SetQueries(obj).GetAsync();
+        var res2 = await "https://MoYu.net".SetQueries(obj, true).GetAsync();
+    }
+
     [HttpGet, LoggingMonitor]
     public string WithCookies([FromServices] IHttpContextAccessor contextAccessor)
     {
@@ -71,6 +210,29 @@ public class TestModuleServices : IDynamicApiController
         contextAccessor.HttpContext.Response.Cookies.Append("age", "30");
 
         return "MoYu";
+    }
+
+    public async Task<Dictionary<string, string>> 测试远程请求Cookies()
+    {
+        var response = await "https://localhost:5001/api/test-module/with-cookies".GetAsync();
+        var cookies = response.GetCookies();
+
+        return cookies;
+    }
+
+    public async Task 测试中文编码问题()
+    {
+        var obj = new
+        {
+            id = 1,
+            name = "百小僧",
+            age = 30
+        };
+
+        var res = await "https://localhost:5001/test"
+            .SetBody(obj, "application/x-www-form-urlencoded")
+            .WithEncodeUrl(false)
+            .PostAsync();
     }
 
     public ServiceLifetime? 测试服务生命周期()
@@ -82,7 +244,6 @@ public class TestModuleServices : IDynamicApiController
     }
 
     [LoggingMonitor(ContractResolver = ContractResolverTypes.CamelCase)]
-    [NonAction]
     public DataTable 测试监听日志属性序列化规则()
     {
         var d = "select * from person".SqlQuery();
@@ -96,6 +257,11 @@ public class TestModuleServices : IDynamicApiController
         var c = "00000000-0000-0000-0000-000000000000".TryValidate(ValidationTypes.GUID_OR_UUID).IsValid;
 
         var d = true == a && a == b && a == c;
+    }
+
+    public async Task 测试远程请求下载文件()
+    {
+        await "https://MoYu.net/img/rm1.png".GetToSaveAsync("D:/rm3.png");
     }
 
     public void 测试创建新的数据库上下文()
@@ -181,6 +347,11 @@ public class TestModuleServices : IDynamicApiController
         return str;
     }
 
+    public async Task 测试下载互联网图片()
+    {
+        await "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BB1jrXtM.img?w=760&h=559&m=6&x=328&y=121&s=109&d=109".GetToSaveAsync(Path.Combine(Directory.GetCurrentDirectory(), "xxx.png"));
+    }
+
     public TestLong TestLong2(TestLong test)
     {
         return test;
@@ -188,17 +359,17 @@ public class TestModuleServices : IDynamicApiController
 
     public dynamic 测试嵌套Clay和序列化()
     {
-        dynamic a1 = Clay.Parse(new
+        dynamic a1 = Clay.Object(new
         {
             Name = "我是第一层"
         });
 
-        dynamic a2 = Clay.Parse(new
+        dynamic a2 = Clay.Object(new
         {
             Name = "我是第二层"
         });
 
-        dynamic a3 = Clay.Parse(new object[] { });
+        dynamic a3 = Clay.Object(new object[] { });
 
         a3[0] = new
         {
@@ -213,7 +384,7 @@ public class TestModuleServices : IDynamicApiController
         a1.Child = a2;
         a1.Entry = a3;
 
-        var str = a1.ToJsonString();
+        var str = a1.ToString();
 
         foreach (var item in a1)
         {
@@ -229,10 +400,10 @@ public class TestModuleServices : IDynamicApiController
 
                 if (clay.IsArray)
                 {
-                    var currentArr = Clay.Parse(new dynamic[] { });
+                    var currentArr = Clay.Object(new dynamic[] { });
                     for (int i = 0; i < value.Length; i++)
                     {
-                        var sss = a1[key][i].ToJsonString();
+                        var sss = a1[key][i].ToString();
                         var vs = $"我是 {key}{i} {sss}";
 
                         if (i == 0)
@@ -243,7 +414,7 @@ public class TestModuleServices : IDynamicApiController
                         else
                         {
                             // 这里是成功的
-                            currentArr[i] = Clay.Parse(new
+                            currentArr[i] = Clay.Object(new
                             {
                                 Name = vs
                             });
@@ -262,10 +433,10 @@ public class TestModuleServices : IDynamicApiController
     public dynamic 测试嵌套Clay和序列化2()
     {
         // 这里是另外一个Arr 子集
-        dynamic a3 = Clay.Parse(new object[] { });
+        dynamic a3 = Clay.Object(new object[] { });
 
         // 创建粘土
-        dynamic a1 = Clay.Parse(new
+        dynamic a1 = Clay.Object(new
         {
             Name = "我是第一层粘土"
         });
@@ -305,12 +476,12 @@ public class TestModuleServices : IDynamicApiController
 
         // 加密
         var originBytes = File.ReadAllBytes("image.png"); // 读取源文件内容
-        var encryptBytes = AESEncryption.Encrypt(originBytes, "1234567890abcdef");
+        var encryptBytes = AESEncryption.Encrypt(originBytes, "123456");
         encryptBytes.CopyToSave("image.加密.png");
 
         // 解密
         var encryptBytes2 = File.ReadAllBytes("image.加密.png"); // 读取加密文件内容
-        var originBytes2 = AESEncryption.Decrypt(encryptBytes2, "1234567890abcdef");
+        var originBytes2 = AESEncryption.Decrypt(encryptBytes2, "123456");
         originBytes2.CopyToSave("image.真实.png");
     }
 
@@ -321,7 +492,7 @@ public class TestModuleServices : IDynamicApiController
 
     public dynamic 测试匿名类嵌套Clay()
     {
-        var package = Clay.Parse(new
+        var package = Clay.Object(new
         {
             Name = "我是第一层",
             Age = 20,
@@ -331,7 +502,7 @@ public class TestModuleServices : IDynamicApiController
             }
         });
 
-        var a3 = Clay.Parse(new object[] { });
+        var a3 = Clay.Object(new object[] { });
 
         a3[0] = new
         {
@@ -350,7 +521,7 @@ public class TestModuleServices : IDynamicApiController
             package
         };
 
-        var policy = Clay.Parse(new
+        var policy = Clay.Object(new
         {
             search = new
             {
@@ -431,9 +602,10 @@ public class TestModuleServices : IDynamicApiController
             package = package,
         };
 
-        var clay = Clay.Parse(obj);
+        var clay = Clay.Object(obj);
         var str = clay.ToString();
-        Dictionary<string, object> dic = clay.AsEnumerateObject().ToDictionary(u => u.Key.ToString(), u => u.Value);
+        var res1 = clay.Solidify<dynamic>();
+        Dictionary<string, object> dic = clay.ToDictionary();
 
         return dic;
     }
@@ -472,11 +644,41 @@ public class TestModuleServices : IDynamicApiController
 
     }
 
+
+    /// <summary>
+    /// 测试单文件上传
+    /// </summary>
+    /// <returns></returns>
+    public async Task<string> TestHttpResponseModel()
+    {
+        var bytes = File.ReadAllBytes("image.png");
+
+        using var httpResponseModel1 = await "https://localhost:44316/api/test-module/upload-file"
+             .SetContentType("multipart/form-data")
+             .SetFiles(HttpFile.Create("file", bytes, "image.png"))
+             .PostAsAsync<HttpResponseModel<RESTfulResult<string>>>();
+
+
+        var stream = await httpResponseModel1.Response.Content.ReadAsStreamAsync();
+        using var streamReader = new StreamReader(stream, httpResponseModel1.Encoding);
+
+        var text2 = await streamReader.ReadToEndAsync();
+
+        var fileName0 = httpResponseModel1.Result;
+
+        using var httpResponseModel2 = await _http.TestHttpResponseModel(HttpFile.Create("file", bytes, "image.png"));
+        var fileName = await httpResponseModel2.Response.Content.ReadAsStringAsync();
+
+        return fileName;
+    }
+
+
     public async Task<string> 测试粘土对象和模板引擎()
     {
         var sql = @"
 @{
-    var names = ((IEnumerable<dynamic>)Model).Select(u=> u.name);
+    IEnumerable<dynamic> data = Model.AsEnumerable();
+    var names = data.Select(u=> u.name);
 
     foreach(var name in names)
     {
@@ -485,7 +687,8 @@ public class TestModuleServices : IDynamicApiController
 }
 
 @{
-    var nameStrings = string.Join(""', '"", ((IEnumerable<dynamic>)Model).Select(u=> u.name));
+    IEnumerable<dynamic> data2 = Model.AsEnumerable();
+    var nameStrings = string.Join(""', '"", data2.Select(u=> u.name));
 
     @:update table set isSync = 1 where name in ('@nameStrings');
 }
@@ -494,7 +697,7 @@ public class TestModuleServices : IDynamicApiController
 {
     @:insert into table(member_id, site_id) values(@item.member_id, @item.site_id);
 
-    @foreach(var subItem in item.goods_list.Values)
+    @foreach(var subItem in item.goods_list)
     {
         @:insert into table(order_id, goods_id) values(@subItem.order_id, @subItem.goods_id);
     }
@@ -561,12 +764,9 @@ public class TestModuleServices : IDynamicApiController
                             }
                         ]
                     }]
-                    """, new ClayOptions
-        {
-            AllowMissingProperty = true
-        });
+                    """);
 
-        IEnumerable<dynamic> query = clay.Values;
+        IEnumerable<dynamic> query = clay.AsEnumerable();
 
         var order_nos = query.Select(u => u.order_no).ToList();
 
@@ -588,6 +788,19 @@ public class TestModuleServices : IDynamicApiController
     public List<string> 测试URL数组参数([FromQuery][FlexibleArray<string>] List<string> status)
     {
         return status;
+    }
+
+    public async Task 测试远程请求Content_MD5()
+    {
+        var md5 = MD5Encryption.Encrypt("monksoul");
+
+        var response = await "https://MoYu.net".SetHeaders(new Dictionary<string, object>
+        {
+            {"Content-MD5", md5 }
+        }).SetBody(new
+        {
+            Name = "MoYu"
+        }).PostAsync();
     }
 
     public bool 测试PBKDF2加密比较()
@@ -655,80 +868,6 @@ public class TestModuleServices : IDynamicApiController
     public bool 比较签名数据2([FromBody] string body)
     {
         return KSortEncryption.Compare(body);
-    }
-
-    public void 测试Gzip解压压缩()
-    {
-        var bytes = GzipEncryption.Compress("MoYu");
-        var originText = GzipEncryption.Decompress(bytes);
-
-        var base64String = GzipEncryption.CompressToBase64("MoYu");
-        var originText2 = GzipEncryption.DecompressFromBase64(base64String);
-    }
-
-    [HttpGet]
-    public async IAsyncEnumerable<string> TrackProgress([FromQuery] string email, [FromQuery] int pdfmId)
-    {
-        var i = 0;
-        while (i < 10)
-        {
-            i++;
-
-            if (i == 5)
-            {
-                throw new Exception("出异常了");
-            }
-
-            yield return "abc";
-        }
-    }
-
-    [HttpGet]
-    public void 测试AES解密()
-    {
-        var result = AESEncryption.Decrypt("D/5Cb4n+1DOf3IjxvH705QEZ9ah9NWQm7v413EhTC1X1DFGuzE2oqvA+WAMICi8hQOxE11B5/X5jhP3dueu4ZSPetvgFhR1O6PJcoW5RlWSjYtqsX1xBVvMnkEZbZAaxzZ8qx5ml+uc1PGq33kHfYXO/lBoWwNLGrEea5mPo0pbUls9O4mKv7lck4596YHdPArys90oUarBIU15PlCZoU2GrcJ1orLlhGPNNfWG2T5tqYE3eLF8646+faz9SBAlosetxPdc6FyEw9YRfugp/XTnS+m14sdbgNFH77FMAvE2ZmKuXoV2uPUPVxHwTzoj/Zr80vJaScXdY41D8ITMKdJRvWMRwwJxlijuotXM0ZH4BoYbVj7T2xTm7tLZ8XHUoRsidxsf5+Kc45LTtDYQSDGC/v1PYuZ9wyhv4T0sNij+GM39dxf0/BrINxwx+jSOGInWPX29SCYQp7WtSO2UfhQ=="
-            , "VZBMmVDQtbpD7KE5cpk/dw==", Encoding.UTF8.GetBytes("CVRUkfJD6IcLG6F9"));
-    }
-
-    [HttpGet]
-    public string 测试AES解密256cbc()
-    {
-        var result = AESEncryption.Decrypt("UczSJXyfF4qSFGk0WOMkDQ=="
-            , "a+hBnkTwrIupbKa2QqhwkELR6oA4d5ZEmmSZeJG7uG4=", Convert.FromBase64String("VX43rWyrTkcGWJrpunYtFg=="), isBase64: true);
-
-        return result;
-    }
-
-    public IActionResult AesTest3(string plainText)
-    {
-        var encryptedText = AESEncryption.Encrypt(
-            plainText,
-            "a+hBnkTwrIupbKa2QqhwkELR6oA4d5ZEmmSZeJG7uG4=",
-            Convert.FromBase64String("VX43rWyrTkcGWJrpunYtFg=="),
-            isBase64: true
-        );
-
-        var result = AESEncryption.Decrypt(
-            encryptedText,
-            "a+hBnkTwrIupbKa2QqhwkELR6oA4d5ZEmmSZeJG7uG4=",
-            Convert.FromBase64String("VX43rWyrTkcGWJrpunYtFg=="),
-            isBase64: true
-        );
-        return new JsonResult(result);
-    }
-
-    public IActionResult 测试AES的ECB加密()
-    {
-        var hash = AESEncryption.Encrypt("{\"x\":155,\"y\":5}", "GSjMjXQkRHIDH3m0", mode: System.Security.Cryptography.CipherMode.ECB);
-        var data = AESEncryption.Decrypt("7wpip9V5Zxc0lK8fQJ82mA==", "GSjMjXQkRHIDH3m0", mode: System.Security.Cryptography.CipherMode.ECB);
-
-        return new JsonResult(hash + "------" + data);
-    }
-
-    [NonValidation]
-    public void 测试手动验证脱敏(SensitiveModel model, [FromServices] IServiceProvider services)
-    {
-        var val = model.TryValidate(services);
     }
 }
 
@@ -835,11 +974,4 @@ public class TestDefaultValue
 
     ///<example>"[]"</example>
     public List<string> List1 { get; set; }
-}
-
-
-public class SensitiveModel
-{
-    [SensitiveDetection]
-    public string Text { get; set; }
 }

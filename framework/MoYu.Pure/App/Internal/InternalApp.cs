@@ -147,35 +147,6 @@ internal static class InternalApp
     }
 
     /// <summary>
-    /// 配置 MoYu 框架（非 Web）
-    /// </summary>
-    /// <param name="hostApplicationBuilder"></param>
-    /// <param name="autoRegisterBackgroundService"></param>
-    internal static void ConfigureApplication(IHostApplicationBuilder hostApplicationBuilder, bool autoRegisterBackgroundService = true)
-    {
-        // 存储环境对象
-        HostEnvironment = hostApplicationBuilder.Environment;
-
-        // 加载配置
-        AddJsonFiles(hostApplicationBuilder.Configuration, hostApplicationBuilder.Environment);
-
-        // 存储配置对象
-        Configuration = hostApplicationBuilder.Configuration;
-
-        // 存储服务提供器
-        InternalServices = hostApplicationBuilder.Services;
-
-        // 存储根服务
-        hostApplicationBuilder.Services.AddHostedService<GenericHostLifetimeEventsHostedService>();
-
-        // 初始化应用服务
-        hostApplicationBuilder.Services.AddApp();
-
-        // 自动注册 BackgroundService
-        if (autoRegisterBackgroundService) hostApplicationBuilder.Services.AddAppHostedService();
-    }
-
-    /// <summary>
     /// 自动装载主机配置
     /// </summary>
     /// <param name="builder"></param>
@@ -224,10 +195,6 @@ internal static class InternalApp
         // 如果没有配置文件，中止执行
         if (!jsonFiles.Any()) return;
 
-        // 获取 JSON 文件扫描配置（2025.07.25），修复 docker 中挂载大文件数据卷导致启动缓慢的问题
-        var jsonFileScanner = configuration.GetSection("AppSettings:JsonFileScanner")
-            .Get<JsonFileScanner>() ?? new JsonFileScanner();
-
         // 获取环境变量名，如果没找到，则读取 NETCORE_ENVIRONMENT 环境变量信息识别（用于非 Web 环境）
         var envName = hostEnvironment?.EnvironmentName ?? Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT") ?? "Unknown";
 
@@ -256,7 +223,7 @@ internal static class InternalApp
             // 循环加载
             foreach (var jsonFile in files)
             {
-                configurationBuilder.AddJsonFile(jsonFile, optional: jsonFileScanner.Optional, reloadOnChange: jsonFileScanner.ReloadOnChange);
+                configurationBuilder.AddJsonFile(jsonFile, optional: true, reloadOnChange: true);
             }
         }
     }
@@ -275,10 +242,7 @@ internal static class InternalApp
             "runtimeconfig.dev.json",
             "runtimeconfig.prod.json",
             "runtimeconfig.json",
-            "staticwebassets.runtime.json",
-            "nuget.dgspec.json",
-            "project.assets.json",
-            "MvcTestingAppManifest.json"
+            "staticwebassets.runtime.json"
         };
 
     /// <summary>

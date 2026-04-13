@@ -78,12 +78,6 @@ internal class FileLoggingWriter
         // 解析当前写入日志的文件名
         GetCurrentFileName();
 
-        // 如果启用了滚动日志，重建滚动文件列表
-        if (_isEnabledRollingFiles)
-        {
-            RebuildRollingFileNames();
-        }
-
         // 打开文件并持续写入，调用 .Wait() 确保文件流创建完毕
         Task.Run(async () => await OpenFileAsync(_options.Append)).Wait();
     }
@@ -132,12 +126,11 @@ internal class FileLoggingWriter
             // 处理已有日志文件存在情况
             if (logFiles.Length > 0)
             {
-                // 根据最后更新时间获取最近操作的文件
+                // 根据文件名和最后更新时间获取最近操作的文件
                 var lastFileInfo = logFiles
-                    .Select(fName => new FileInfo(fName))
-                    .OrderByDescending(fInfo => fInfo.LastWriteTime)
-                    .ThenByDescending(fInfo => fInfo.Name)
-                    .First();
+                        .Select(fName => new FileInfo(fName))
+                        .OrderByDescending(fInfo => fInfo.Name)
+                        .OrderByDescending(fInfo => fInfo.LastWriteTime).First();
 
                 _fileName = lastFileInfo.FullName;
             }
@@ -145,33 +138,6 @@ internal class FileLoggingWriter
             else _fileName = baseFileName;
         }
         else _fileName = baseFileName;
-    }
-
-    /// <summary>
-    /// 重建滚动日志文件列表（从磁盘扫描）
-    /// </summary>
-    private void RebuildRollingFileNames()
-    {
-        var baseFileName = __LastBaseFileName;
-        var logFileMask = Path.GetFileNameWithoutExtension(baseFileName) + "*" + Path.GetExtension(baseFileName);
-        var logDirName = Path.GetDirectoryName(baseFileName);
-        if (string.IsNullOrEmpty(logDirName)) logDirName = Directory.GetCurrentDirectory();
-
-        if (!Directory.Exists(logDirName)) return;
-
-        var logFiles = Directory.GetFiles(logDirName, logFileMask, SearchOption.TopDirectoryOnly);
-
-        // 清空当前记录
-        _fileLoggerProvider._rollingFileNames.Clear();
-
-        // 将所有匹配的文件加入滚动列表
-        foreach (var file in logFiles)
-        {
-            var fileInfo = new FileInfo(file);
-            // 处理 Windows 和 Linux 路径分隔符不一致问题
-            var key = fileInfo.FullName.Replace('\\', '/');
-            _fileLoggerProvider._rollingFileNames.TryAdd(key, fileInfo);
-        }
     }
 
     /// <summary>
@@ -241,7 +207,6 @@ internal class FileLoggingWriter
 
                     // 递归操作，直到应用程序停止
                     GetCurrentFileName();
-                    RebuildRollingFileNames(); // 同步更新滚动列表
                     CreateFileStream();
                 }
             }
@@ -310,12 +275,6 @@ internal class FileLoggingWriter
                 if (baseFileName != __LastBaseFileName)
                 {
                     __LastBaseFileName = baseFileName;
-
-                    // 滚动日志文件名规则变更后重建列表
-                    if (_isEnabledRollingFiles)
-                    {
-                        RebuildRollingFileNames();
-                    }
                     return true;
                 }
 

@@ -29,7 +29,7 @@ using System.Linq.Expressions;
 namespace System.Linq;
 
 /// <summary>
-/// IEnumerable 扩展
+/// IEnumerable 拓展
 /// </summary>
 [SuppressSniffer]
 public static class IEnumerableExtensions

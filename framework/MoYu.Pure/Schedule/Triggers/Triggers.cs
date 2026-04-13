@@ -212,24 +212,13 @@ public static class Triggers
     }
 
     /// <summary>
-    /// 创建秒周期（间隔）作业触发器构建器
-    /// </summary>
-    /// <param name="interval">间隔（秒）</param>
-    /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder Secondly(int interval)
-    {
-        return PeriodSeconds(interval);
-    }
-
-    /// <summary>
     /// 创建指定特定秒开始作业触发器构建器
     /// </summary>
-    /// <param name="field">字段值</param>
     /// <param name="fields">字段值</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder SecondlyAt(object field, params object[] fields)
+    public static TriggerBuilder SecondlyAt(params object[] fields)
     {
-        return Cron("@secondly", new[] { field }.Concat(fields).ToArray());
+        return Cron("@secondly", fields);
     }
 
     /// <summary>
@@ -242,24 +231,13 @@ public static class Triggers
     }
 
     /// <summary>
-    /// 创建分钟周期（间隔）作业触发器构建器
-    /// </summary>
-    /// <param name="interval">间隔（分钟）</param>
-    /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder Minutely(int interval)
-    {
-        return PeriodMinutes(interval);
-    }
-
-    /// <summary>
     /// 创建每分钟特定秒开始作业触发器构建器
     /// </summary>
-    /// <param name="field">字段值</param>
     /// <param name="fields">字段值</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder MinutelyAt(object field, params object[] fields)
+    public static TriggerBuilder MinutelyAt(params object[] fields)
     {
-        return Cron("@minutely", new[] { field }.Concat(fields).ToArray());
+        return Cron("@minutely", fields);
     }
 
     /// <summary>
@@ -272,24 +250,13 @@ public static class Triggers
     }
 
     /// <summary>
-    /// 创建小时周期（间隔）作业触发器构建器
-    /// </summary>
-    /// <param name="interval">间隔（小时）</param>
-    /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder Hourly(int interval)
-    {
-        return PeriodHours(interval);
-    }
-
-    /// <summary>
     /// 创建每小时特定分钟开始作业触发器构建器
     /// </summary>
-    /// <param name="field">字段值</param>
     /// <param name="fields">字段值</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder HourlyAt(object field, params object[] fields)
+    public static TriggerBuilder HourlyAt(params object[] fields)
     {
-        return Cron("@hourly", new[] { field }.Concat(fields).ToArray());
+        return Cron("@hourly", fields);
     }
 
     /// <summary>
@@ -304,12 +271,11 @@ public static class Triggers
     /// <summary>
     /// 创建每天特定小时开始作业触发器构建器
     /// </summary>
-    /// <param name="field">字段值</param>
     /// <param name="fields">字段值</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder DailyAt(object field, params object[] fields)
+    public static TriggerBuilder DailyAt(params object[] fields)
     {
-        return Cron("@daily", new[] { field }.Concat(fields).ToArray());
+        return Cron("@daily", fields);
     }
 
     /// <summary>
@@ -324,12 +290,11 @@ public static class Triggers
     /// <summary>
     /// 创建每月特定天（午夜）开始作业触发器构建器
     /// </summary>
-    /// <param name="field">字段值</param>
     /// <param name="fields">字段值</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder MonthlyAt(object field, params object[] fields)
+    public static TriggerBuilder MonthlyAt(params object[] fields)
     {
-        return Cron("@monthly", new[] { field }.Concat(fields).ToArray());
+        return Cron("@monthly", fields);
     }
 
     /// <summary>
@@ -344,12 +309,11 @@ public static class Triggers
     /// <summary>
     /// 创建每周特定星期几（午夜）开始作业触发器构建器
     /// </summary>
-    /// <param name="field">字段值</param>
     /// <param name="fields">字段值</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder WeeklyAt(object field, params object[] fields)
+    public static TriggerBuilder WeeklyAt(params object[] fields)
     {
-        return Cron("@weekly", new[] { field }.Concat(fields).ToArray());
+        return Cron("@weekly", fields);
     }
 
     /// <summary>
@@ -364,12 +328,11 @@ public static class Triggers
     /// <summary>
     /// 创建每年特定月1号（午夜）开始作业触发器构建器
     /// </summary>
-    /// <param name="field">字段值</param>
     /// <param name="fields">字段值</param>
     /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder YearlyAt(object field, params object[] fields)
+    public static TriggerBuilder YearlyAt(params object[] fields)
     {
-        return Cron("@yearly", new[] { field }.Concat(fields).ToArray());
+        return Cron("@yearly", fields);
     }
 
     /// <summary>
@@ -379,25 +342,5 @@ public static class Triggers
     public static TriggerBuilder Workday()
     {
         return Cron("@workday");
-    }
-
-    /// <summary>
-    /// 创建指定具体时间触发的一次性作业触发器
-    /// </summary>
-    /// <param name="triggerTime">触发时间</param>
-    /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder At(DateTime triggerTime)
-    {
-        return TriggerBuilder.At(triggerTime);
-    }
-
-    /// <summary>
-    /// 创建指定具体时间触发的一次性作业触发器
-    /// </summary>
-    /// <param name="triggerTime">触发时间</param>
-    /// <returns><see cref="TriggerBuilder"/></returns>
-    public static TriggerBuilder At(string triggerTime)
-    {
-        return TriggerBuilder.At(triggerTime);
     }
 }

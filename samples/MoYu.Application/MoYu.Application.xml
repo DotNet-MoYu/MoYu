@@ -610,9 +610,51 @@
             测试模块
             </summary>
         </member>
+        <member name="M:MoYu.Application.TestModuleServices.TestSingleFileProxy">
+            <summary>
+            测试单文件上传
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.TestModuleServices.TestMultiFileProxy">
+            <summary>
+            测试多文件上传
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.TestModuleServices.TestSingleFileProxyString">
+            <summary>
+            测试单文件上传（字符串方式）
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.TestModuleServices.TestMultiFileProxyString">
+            <summary>
+            测试多文件上传（字符串方式）
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.TestModuleServices.TestSingleFileSteamProxyString">
+            <summary>
+            测试文件流上传
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.TestModuleServices.TestSingleFileStreamProxy">
+            <summary>
+            测试单文件流上传
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:MoYu.Application.TestModuleServices.TestClayMonitor">
             <summary>
             测试粘土对象日志监听
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MoYu.Application.TestModuleServices.TestHttpResponseModel">
+            <summary>
+            测试单文件上传
             </summary>
             <returns></returns>
         </member>
@@ -646,7 +688,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:MoYu.Application.TestSensitiveDetection.IsValidAsync(System.String)">
+        <member name="M:MoYu.Application.TestSensitiveDetection.VaildedAsync(System.String)">
             <summary>
             判断是否是正常的词汇
             </summary>

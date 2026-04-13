@@ -26,7 +26,7 @@
 using MoYu.ConfigurableOptions;
 using MoYu.Reflection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace MoYu.SpecificationDocument;
@@ -55,12 +55,6 @@ public sealed class SpecificationDocumentSettingsOptions : IConfigurableOptions<
     /// 格式化为V2版本
     /// </summary>
     public bool? FormatAsV2 { get; set; }
-
-    /// <summary>
-    /// 是否采用最新版本
-    /// </summary>
-    /// <remarks>优先级小于 <see cref="FormatAsV2"/></remarks>
-    public bool? LatestVersion { get; set; }
 
     /// <summary>
     /// 配置规范化文档地址
@@ -152,7 +146,6 @@ public sealed class SpecificationDocumentSettingsOptions : IConfigurableOptions<
         options.DocumentTitle ??= "Specification Api Document";
         options.DefaultGroupName ??= "Default";
         options.FormatAsV2 ??= false;
-        options.LatestVersion ??= false;
         //options.RoutePrefix ??= "api";    // 可以通过 UseInject() 配置，所以注释
         options.DocExpansionState ??= DocExpansion.List;
 
@@ -190,16 +183,15 @@ public sealed class SpecificationDocumentSettingsOptions : IConfigurableOptions<
                         In= ParameterLocation.Header,
                         Requirement=new SpecificationOpenApiSecurityRequirementItem
                         {
-                            // 2025.11.12 Swashbuckle.AspNetCore 10.0.0 版本后不再支持 Scheme.Reference 配置
-                            //Scheme=new OpenApiSecurityScheme
-                            //{
-                            //    Reference=new OpenApiReference
-                            //    {
-                            //        Id="Bearer",
-                            //        Type= ReferenceType.SecurityScheme
-                            //    }
-                            //},
-                            Accesses=[]
+                            Scheme=new OpenApiSecurityScheme
+                            {
+                                Reference=new OpenApiReference
+                                {
+                                    Id="Bearer",
+                                    Type= ReferenceType.SecurityScheme
+                                }
+                            },
+                            Accesses=Array.Empty<string>()
                         }
                     }
             };

@@ -29,7 +29,7 @@ using Microsoft.AspNetCore.Http;
 namespace Microsoft.AspNetCore.Builder;
 
 /// <summary>
-/// 应用中间件扩展类（由框架内部调用）
+/// 应用中间件拓展类（由框架内部调用）
 /// </summary>
 [SuppressSniffer]
 public static class AppApplicationBuilderExtensions

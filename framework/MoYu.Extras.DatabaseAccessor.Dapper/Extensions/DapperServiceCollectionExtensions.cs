@@ -29,12 +29,12 @@ using System.Data;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Dapper 扩展类
+/// Dapper 拓展类
 /// </summary>
 public static class DapperServiceCollectionExtensions
 {
     /// <summary>
-    /// 添加 Dapper 扩展
+    /// 添加 Dapper 拓展
     /// </summary>
     /// <param name="services"></param>
     /// <param name="connectionString">连接字符串</param>

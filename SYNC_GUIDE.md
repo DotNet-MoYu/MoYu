@@ -1,31 +1,31 @@
 ﻿# MoYu 同步/替换操作指南
 
-本文档说明如何把 Furion 的最新代码同步到 MoYu，并完成 **命名/链接/图标/README** 的统一替换。
+本文档说明如何把 MoYu 的最新代码同步到 MoYu，并完成 **命名/链接/图标/README** 的统一替换。
 
 ## 目标
-- 同步 Furion 的 `v5-transition` 分支到 MoYu
-- 命名空间/目录/文件/内容中所有 `Furion` 统一替换为 `MoYu`（含大小写）
-- 同时处理 `Fuion`/`fuion` 的误拼写
-- 替换 Furion 的 Gitee 链接为 `https://gitee.com/dotnetmoyu/MoYu`
+- 同步 MoYu 的 `v5-transition` 分支到 MoYu
+- 命名空间/目录/文件/内容中所有 `MoYu` 统一替换为 `MoYu`（含大小写）
+- 同时处理 `MoYu`/`MoYu` 的误拼写
+- 替换 MoYu 的 Gitee 链接为 `https://gitee.com/dotnetmoyu/MoYu`
 - 保留你自己的：`README.md`、`README.zh.md`、`icon.png`
-- `framework/Directory.Build.props` 与 `tools/MoYu.Tools/Directory.Build.props` 以你自己的模板为准，但 **TargetFrameworks** 和 **Version** 使用 Furion 的
+- `framework/Directory.Build.props` 与 `tools/MoYu.Tools/Directory.Build.props` 以你自己的模板为准，但 **TargetFrameworks** 和 **Version** 使用 MoYu 的
 - 不替换 `schemas` 和 `snks`（同时跳过 `bin/obj/.git/*.map/icon*.png`）
 
 ## 一键流程（推荐）
 在 `D:\MoYu\MoYu` 下执行：
 ```
-# 同步 Furion 最新分支 + 替换
+# 同步 MoYu 最新分支 + 替换
 powershell -ExecutionPolicy Bypass -File .\sync-upstream.ps1 \
   -Repo D:\MoYu\MoYu \
   -AllowDirty -AllowUnrelated -AutoStash -PreferUpstream -NormalizeLayout
 ```
 
 这一步会：
-- 拉取 Furion 的 `v5-transition`
+- 拉取 MoYu 的 `v5-transition`
 - 合并到 MoYu
 - 执行字符串替换和路径重命名
 - 保留你的 README/icon（脚本内会做备份与回填，并用 `D:\MoYu\icon.png` 统一覆盖所有 `icon.png`）
-- 用你的模板重写 `framework/Directory.Build.props` 和 `tools/MoYu.Tools/Directory.Build.props`（仅保留 Furion 的 `TargetFrameworks` 和 `Version`）
+- 用你的模板重写 `framework/Directory.Build.props` 和 `tools/MoYu.Tools/Directory.Build.props`（仅保留 MoYu 的 `TargetFrameworks` 和 `Version`）
 - 自动从 `framework\MoYu.sln` 移除 tests 项目
 
 ## 必要的后置修正（仅在异常时需要）
@@ -52,17 +52,17 @@ Get-ChildItem -Recurse -Filter icon.png -File | ForEach-Object {
 
 （此步骤由脚本自动处理，但如果你手动改过，也可以重复执行脚本或用现成命令重新生成）
 
-### 4) 统一目录结构（防止出现 Furion 与 MoYu 双份目录）
-同步后如果看到 `Furion*` 和 `MoYu*` 同时存在，必须保留新同步的 Furion 版本并改名：
+### 4) 统一目录结构（防止出现 MoYu 与 MoYu 双份目录）
+同步后如果看到 `MoYu*` 和 `MoYu*` 同时存在，必须保留新同步的 MoYu 版本并改名：
 - 删除旧的 `MoYu*`
-- 把 `Furion*` 改成 `MoYu*`
+- 把 `MoYu*` 改成 `MoYu*`
 
 示例（只做一次即可，之后不会再出现）：
 ```
 # framework
 Get-ChildItem .\framework -Directory -Filter 'MoYu*' | Remove-Item -Recurse -Force
-Get-ChildItem .\framework -Directory -Filter 'Furion*' | ForEach-Object {
-  Rename-Item $_.FullName ($_.Name -replace '^Furion','MoYu')
+Get-ChildItem .\framework -Directory -Filter 'MoYu*' | ForEach-Object {
+  Rename-Item $_.FullName ($_.Name -replace '^MoYu','MoYu')
 }
 ```
 
@@ -79,7 +79,7 @@ dotnet pack D:\MoYu\MoYu\framework\MoYu.sln -c Release -no-build
 ```
 
 ## 常见问题
-- **看到 Furion 目录**：说明同步后有旧 MoYu 目录未删除，按“统一目录结构”步骤处理。
+- **看到 MoYu 目录**：说明同步后有旧 MoYu 目录未删除，按“统一目录结构”步骤处理。
 - **README 被改**：说明同步前后置步骤没跑，直接按第 1 步修复。
 - **icon 不是你的**：按第 2 步替换。
 - **props 中文乱码**：用你的 `Directory.Build.props` 模板重新覆盖即可（第 3 步）。

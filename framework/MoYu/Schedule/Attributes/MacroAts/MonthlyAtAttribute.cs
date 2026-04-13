@@ -34,10 +34,9 @@ public sealed class MonthlyAtAttribute : CronAttribute
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="field">字段值</param>
     /// <param name="fields">字段值</param>
-    public MonthlyAtAttribute(object field, params object[] fields)
-        : base("@monthly", new[] { field }.Concat(fields).ToArray())
+    public MonthlyAtAttribute(params object[] fields)
+        : base("@monthly", fields)
     {
     }
 }

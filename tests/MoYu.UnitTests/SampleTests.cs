@@ -1,4 +1,4 @@
-using MoYu.HttpRemote;
+using MoYu.RemoteRequest.Extensions;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using Xunit;
@@ -15,17 +15,14 @@ public class SampleTests
 
     private readonly ISystemService _sysService;
     private readonly IConfiguration _configuration;
-    private readonly IHttpRemoteService _httpRemoteService;
 
     public SampleTests(ITestOutputHelper tempOutput
         , ISystemService sysService
-        , IConfiguration configuration
-        , IHttpRemoteService httpRemoteService)
+        , IConfiguration configuration)
     {
         Output = tempOutput;
         _sysService = sysService;
         _configuration = configuration;
-        _httpRemoteService = httpRemoteService;
     }
 
     [Fact]
@@ -64,7 +61,7 @@ public class SampleTests
     [Fact]
     public async Task TestBaidu()
     {
-        var res = await _httpRemoteService.GetAsync("https://www.baidu.com");
+        var res = await "https://www.baidu.com".GetAsync();
         Assert.True(res.IsSuccessStatusCode);
     }
 }

@@ -175,6 +175,9 @@ public sealed class DataValidationPageFilter : IAsyncPageFilter, IOrderedFilter
             Code = validationMetadata.Message
         };
 
+        // 打印验证失败信息
+        App.PrintToMiniProfiler("validation", "Failed", $"Validation Failed:\r\n\r\n{validationMetadata.Message}", true);
+
         return true;
     }
 }

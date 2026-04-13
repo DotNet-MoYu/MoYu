@@ -23,8 +23,8 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
+using MoYu.ClayObject;
 using MoYu.Extensions;
-using MoYu.Shapeless;
 using System.Dynamic;
 using System.Reflection;
 

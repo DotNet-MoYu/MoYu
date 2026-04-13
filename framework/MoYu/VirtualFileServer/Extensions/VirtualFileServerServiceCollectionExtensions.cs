@@ -30,13 +30,13 @@ using System.Reflection;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 虚拟文件服务服务扩展
+/// 虚拟文件服务服务拓展
 /// </summary>
 [SuppressSniffer]
 public static class VirtualFileServerServiceCollectionExtensions
 {
     /// <summary>
-    /// 文件提供器系统服务扩展
+    /// 文件提供器系统服务拓展
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>

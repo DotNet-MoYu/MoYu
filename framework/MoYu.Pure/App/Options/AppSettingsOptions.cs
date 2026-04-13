@@ -25,6 +25,7 @@
 
 using MoYu.ConfigurableOptions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace MoYu;
 
@@ -33,6 +34,11 @@ namespace MoYu;
 /// </summary>
 public sealed class AppSettingsOptions : IConfigurableOptions<AppSettingsOptions>
 {
+    /// <summary>
+    /// 集成 MiniProfiler 组件
+    /// </summary>
+    public bool? InjectMiniProfiler { get; set; }
+
     /// <summary>
     /// 是否启用规范化文档
     /// </summary>
@@ -55,6 +61,11 @@ public sealed class AppSettingsOptions : IConfigurableOptions<AppSettingsOptions
     public string[] ExcludeAssemblies { get; set; }
 
     /// <summary>
+    /// 是否打印数据库连接信息到 MiniProfiler 中
+    /// </summary>
+    public bool? PrintDbConnectionInfo { get; set; }
+
+    /// <summary>
     /// 是否输出原始 Sql 执行日志（ADO.NET）
     /// </summary>
     public bool? OutputOriginalSqlExecuteLog { get; set; }
@@ -70,46 +81,24 @@ public sealed class AppSettingsOptions : IConfigurableOptions<AppSettingsOptions
     public string VirtualPath { get; set; }
 
     /// <summary>
-    /// JSON 文件扫描配置
-    /// </summary>
-    public JsonFileScanner JsonFileScanner { get; set; }
-
-    /// <summary>
-    /// 是否禁用 AppStartup 自动扫描
-    /// </summary>
-    public bool? DisableAppStartupScan { get; set; }
-
-    /// <summary>
     /// 后期配置
     /// </summary>
     /// <param name="options"></param>
     /// <param name="configuration"></param>
     public void PostConfigure(AppSettingsOptions options, IConfiguration configuration)
     {
+        // 非 Web 环境总是 false，如果是生产环境且不配置 InjectMiniProfiler，默认总是false，MiniProfiler 生产环境耗内存
+        if (App.WebHostEnvironment == default
+            || (App.HostEnvironment.IsProduction() && options.InjectMiniProfiler == null)) options.InjectMiniProfiler = false;
+        else options.InjectMiniProfiler ??= true;
+
         options.InjectSpecificationDocument ??= true;
         options.EnabledReferenceAssemblyScan ??= false;
         options.ExternalAssemblies ??= Array.Empty<string>();
         options.ExcludeAssemblies ??= Array.Empty<string>();
+        options.PrintDbConnectionInfo ??= true;
         options.OutputOriginalSqlExecuteLog ??= true;
         options.SupportPackageNamePrefixs ??= Array.Empty<string>();
         options.VirtualPath ??= string.Empty;
-        options.DisableAppStartupScan ??= false;
     }
-}
-
-/// <summary>
-/// JSON 文件扫描配置
-/// </summary>
-/// <remarks>修复 docker 中挂载大文件数据卷导致启动缓慢的问题。</remarks>
-public class JsonFileScanner
-{
-    /// <summary>
-    /// 是否可选
-    /// </summary>
-    public bool Optional { get; set; } = true;
-
-    /// <summary>
-    /// 是否改变的时候重载
-    /// </summary>
-    public bool ReloadOnChange { get; set; } = true;
 }

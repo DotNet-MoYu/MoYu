@@ -85,19 +85,9 @@ public static class DbProvider
     public const string Firebird = "FirebirdSql.EntityFrameworkCore.Firebird";
 
     /// <summary>
-    /// 达梦数据库 提供器程序集
+    /// Dm 提供器程序集
     /// </summary>
-    public const string Dm = "DM.Microsoft.EntityFrameworkCore";
-
-    /// <summary>
-    /// 人大金仓 提供器程序集（Oralce 或 PostgreSQL 或 SqlServer 最新版包）
-    /// </summary>
-    public const string Kdbndp = "Kdbndp.EntityFrameworkCore.KingbaseES";
-
-    /// <summary>
-    /// 人大金仓 提供器程序集（SqlServer）
-    /// </summary>
-    public const string Kdbndp_SqlServer = "Kdbndp.EntityFrameworkCore.SqlServer";
+    public const string Dm = "Microsoft.EntityFrameworkCore.Dm";
 
     /// <summary>
     /// 不支持存储过程的数据库
@@ -204,7 +194,12 @@ public static class DbProvider
     /// </summary>
     public static List<IInterceptor> GetDefaultInterceptors()
     {
-        return new List<IInterceptor> { new DbContextSaveChangesInterceptor() };
+        return new List<IInterceptor>
+            {
+                new SqlConnectionProfilerInterceptor(),
+                new SqlCommandProfilerInterceptor(),
+                new DbContextSaveChangesInterceptor()
+            };
     }
 
     /// <summary>

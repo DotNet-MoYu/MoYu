@@ -28,7 +28,7 @@ using System.Reflection;
 namespace MoYu.Reflection.Extensions;
 
 /// <summary>
-/// Method Info 扩展
+/// Method Info 拓展
 /// </summary>
 [SuppressSniffer]
 public static class MethodInfoExtensions

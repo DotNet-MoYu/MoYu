@@ -30,7 +30,7 @@ using Microsoft.Extensions.Logging;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 日志服务扩展类
+/// 日志服务拓展类
 /// </summary>
 [SuppressSniffer]
 public static class LoggingServiceCollectionExtensions
@@ -69,7 +69,6 @@ public static class LoggingServiceCollectionExtensions
 
         // 配置日志过滤器
         LoggingMonitorSettings.InternalWriteFilter = settings.WriteFilter;
-        LoggingMonitorSettings.InternalItemFilter = settings.ItemFilter;
 
         // 如果配置 GlobalEnabled = false 且 IncludeOfMethods 和 ExcludeOfMethods 都为空，则不注册服务
         if (settings.GlobalEnabled == false
@@ -86,7 +85,7 @@ public static class LoggingServiceCollectionExtensions
     /// 添加文件日志服务
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="fileName">日志文件完整路径或文件名，推荐 .log 作为扩展名</param>
+    /// <param name="fileName">日志文件完整路径或文件名，推荐 .log 作为拓展名</param>
     /// <param name="append">追加到已存在日志文件或覆盖它们</param>
     /// <returns></returns>
     public static IServiceCollection AddFileLogging(this IServiceCollection services, string fileName, bool append = true)
@@ -98,7 +97,7 @@ public static class LoggingServiceCollectionExtensions
     /// 添加文件日志服务
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="fileName">日志文件完整路径或文件名，推荐 .log 作为扩展名</param>
+    /// <param name="fileName">日志文件完整路径或文件名，推荐 .log 作为拓展名</param>
     /// <param name="configure">文件日志记录器配置选项委托</param>
     /// <returns></returns>
     public static IServiceCollection AddFileLogging(this IServiceCollection services, string fileName, Action<FileLoggerOptions> configure)

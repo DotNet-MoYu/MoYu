@@ -30,7 +30,7 @@ using System.Reflection;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 对象映射扩展类
+/// 对象映射拓展类
 /// </summary>
 [SuppressSniffer]
 public static class ObjectMapperServiceCollectionExtensions
@@ -51,7 +51,7 @@ public static class ObjectMapperServiceCollectionExtensions
         var objectMapperAssembly = App.Assemblies.FirstOrDefault(u => u.GetName().Name.Equals(ASSEMBLY_NAME));
         if (objectMapperAssembly != null)
         {
-            // 加载 ObjectMapper 扩展类型和扩展方法
+            // 加载 ObjectMapper 拓展类型和拓展方法
             var objectMapperServiceCollectionExtensionsType = Reflect.GetType(objectMapperAssembly, $"Microsoft.Extensions.DependencyInjection.ObjectMapperServiceCollectionExtensions");
             var addObjectMapperMethod = objectMapperServiceCollectionExtensionsType
                 .GetMethods(BindingFlags.Public | BindingFlags.Static)

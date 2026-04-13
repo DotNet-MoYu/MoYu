@@ -33,13 +33,11 @@
       }
     ],
     "LoginInfo": {
-      "Enabled": true,
+      "Enabled": false,
       "CheckUrl": "/Home/CheckUrl", // 可以写任何自定义检查地址
       "SubmitUrl": "/Home/SubmitUrl", // 可以写任何 自定义检查地址
       "UserName": "admin",
-      "Password": "admin",
-      "DefaultUsername": "admin",
-      "DefaultPassword": "admin"
+      "Password": "admin"
     }
   },
   "LocalizationSettings": {

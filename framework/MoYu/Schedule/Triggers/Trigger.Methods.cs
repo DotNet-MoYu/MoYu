@@ -38,7 +38,7 @@ public partial class Trigger
     /// </summary>
     /// <param name="startAt">起始时间</param>
     /// <returns><see cref="DateTime"/></returns>
-    public virtual DateTime? GetNextOccurrence(DateTime startAt) => throw new NotImplementedException();
+    public virtual DateTime GetNextOccurrence(DateTime startAt) => throw new NotImplementedException();
 
     /// <summary>
     /// 执行条件检查
@@ -153,7 +153,7 @@ public partial class Trigger
             && Status != TriggerStatus.Running
             && Status != TriggerStatus.Blocked)) return null;
 
-        // 如果已经设置了 NextRunTime 且其值大于当前时间，则返回当前 NextRunTime（可能因为其他方式修改了该值导致触发时间不是精准计算的时间）
+        // 如果已经设置了 NextRunTime 且其值大于当前时间，则返回当前 NextRunTime（可能因为其他方式修改了改值导致触发时间不是精准计算的时间）
         if (NextRunTime != null && NextRunTime.Value > startAt) return NextRunTime;
 
         var baseTime = GetStartAt(startAt);
@@ -369,19 +369,9 @@ public partial class Trigger
         // 调用事件委托（记录作业触发器运行信息）
         if (schedulerFactory is SchedulerFactory schedulerFactoryInstance)
         {
-            // 获取作业计划
-            var scheduler = schedulerFactoryInstance.GetJob(jobId);
-            if (scheduler is null)
-            {
-                Timelines.Clear();
-                Timelines = null;
-
-                return;
-            }
-
             // 初始化作业执行记录持久上下文
             var context = new PersistenceExecutionRecordContext(
-                scheduler.GetJobDetail()
+                schedulerFactoryInstance.GetJob(jobId).GetJobDetail()
                 , this
                 , timeline.Mode
                 , timeline);

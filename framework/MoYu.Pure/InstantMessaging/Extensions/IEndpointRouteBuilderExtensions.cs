@@ -34,7 +34,7 @@ using System.Reflection;
 namespace Microsoft.AspNetCore.Builder;
 
 /// <summary>
-/// 终点路由构建器扩展
+/// 终点路由构建器拓展
 /// </summary>
 [SuppressSniffer]
 public static class IEndpointRouteBuilderExtensions
@@ -52,7 +52,7 @@ public static class IEndpointRouteBuilderExtensions
 
         if (!hubs.Any()) return;
 
-        // 反射获取 MapHub 扩展方法
+        // 反射获取 MapHub 拓展方法
         var mapHubMethod = typeof(HubEndpointRouteBuilderExtensions).GetMethods().Where(u => u.Name == "MapHub" && u.IsGenericMethod && u.GetParameters().Length == 3).FirstOrDefault();
         if (mapHubMethod == null) return;
 

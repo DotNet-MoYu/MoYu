@@ -3,7 +3,6 @@ using MoYu.Logging;
 using MoYu.Logging.Extensions;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel;
-using System.Text.Json.Nodes;
 
 namespace MoYu.Application;
 
@@ -93,18 +92,6 @@ public class TestLoggerServices : IDynamicApiController
     }
 
     [LoggingMonitor]
-    public JsonObjectAndArrayClass 测试监听日志JsonObject和JsonArray()
-    {
-        return new JsonObjectAndArrayClass
-        {
-            Id = 1,
-            Name = "MoYu",
-            JO = JsonNode.Parse("""{"id":1,"name":"MoYu"}""").AsObject(),
-            JA = JsonNode.Parse("""[1,true,"MoYu"]""").AsArray()
-        };
-    }
-
-    [LoggingMonitor]
     public IEnumerable<List<PersonDto>> GetPersons()
     {
         return Array.Empty<List<PersonDto>>();
@@ -138,7 +125,7 @@ public class TestLoggerServices : IDynamicApiController
         }).Start();
     }
 
-    public void 测试字符串扩展日志()
+    public void 测试字符串拓展日志()
     {
         "This is log".LogInformation<TestLoggerServices>();
     }
@@ -243,12 +230,4 @@ public class WithLong
 {
     public Int64 In { get; set; }
     public Int64 Out { get; set; }
-}
-
-public class JsonObjectAndArrayClass
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public JsonObject JO { get; set; }
-    public JsonArray JA { get; set; }
 }

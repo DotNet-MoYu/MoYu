@@ -32,7 +32,7 @@ using System.Reflection;
 namespace MoYu.DatabaseAccessor;
 
 /// <summary>
-/// 数据库数据转换扩展
+/// 数据库数据转换拓展
 /// </summary>
 [SuppressSniffer]
 public static class DbDataConvertExtensions

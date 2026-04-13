@@ -30,7 +30,7 @@ using System.Text.Json;
 namespace MoYu.Logging;
 
 /// <summary>
-/// <see cref="LogMessage"/> 扩展
+/// <see cref="LogMessage"/> 拓展
 /// </summary>
 [SuppressSniffer]
 public static class LogMessageExtensions

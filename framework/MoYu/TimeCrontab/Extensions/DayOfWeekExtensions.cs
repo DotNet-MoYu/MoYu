@@ -26,7 +26,7 @@
 namespace MoYu.TimeCrontab;
 
 /// <summary>
-/// <see cref="DayOfWeek"/> 扩展类
+/// <see cref="DayOfWeek"/> 拓展类
 /// </summary>
 internal static class DayOfWeekExtensions
 {

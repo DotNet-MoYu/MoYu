@@ -28,7 +28,7 @@ using MoYu.Logging;
 namespace Microsoft.Extensions.Logging;
 
 /// <summary>
-/// <see cref="ILogger"/> 扩展
+/// <see cref="ILogger"/> 拓展
 /// </summary>
 [SuppressSniffer]
 public static class ILoggerExtensions

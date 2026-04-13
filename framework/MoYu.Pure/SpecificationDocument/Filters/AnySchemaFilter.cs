@@ -23,7 +23,7 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
-using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace MoYu.SpecificationDocument;
@@ -38,18 +38,15 @@ public class AnySchemaFilter : ISchemaFilter
     /// <summary>
     /// 实现过滤器方法
     /// </summary>
-    /// <param name="schema"></param>
+    /// <param name="model"></param>
     /// <param name="context"></param>
-    public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
+    public void Apply(OpenApiSchema model, SchemaFilterContext context)
     {
-        if (schema is OpenApiSchema concrete)
-        {
-            var type = context.Type;
+        var type = context.Type;
 
-            if (type == typeof(object))
-            {
-                concrete.AdditionalPropertiesAllowed = false;
-            }
+        if (type == typeof(object))
+        {
+            model.AdditionalPropertiesAllowed = false;
         }
     }
 }

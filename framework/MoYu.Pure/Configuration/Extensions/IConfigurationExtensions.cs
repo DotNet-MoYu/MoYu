@@ -26,7 +26,7 @@
 namespace Microsoft.Extensions.Configuration;
 
 /// <summary>
-/// IConfiguration 接口扩展
+/// IConfiguration 接口拓展
 /// </summary>
 [SuppressSniffer]
 public static class IConfigurationExtensions

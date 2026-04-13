@@ -28,7 +28,7 @@ using MoYu;
 namespace Microsoft.Extensions.Configuration;
 
 /// <summary>
-/// <see cref="IConfiguration"/> 扩展
+/// <see cref="IConfiguration"/> 拓展
 /// </summary>
 public static class IConfigurationExtenstions
 {

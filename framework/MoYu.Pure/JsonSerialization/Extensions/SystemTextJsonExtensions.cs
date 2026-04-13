@@ -24,13 +24,12 @@
 // ------------------------------------------------------------------------
 
 using MoYu.JsonSerialization;
-using MoYu.Shapeless;
 using System.Text.Json.Serialization;
 
 namespace System.Text.Json;
 
 /// <summary>
-/// System.Text.Json 扩展
+/// System.Text.Json 拓展
 /// </summary>
 [SuppressSniffer]
 public static class SystemTextJsonExtensions
@@ -71,14 +70,11 @@ public static class SystemTextJsonExtensions
     /// 添加 Clay 类型序列化处理
     /// </summary>
     /// <param name="converters"></param>
-    /// <remarks>可通过 <c>JsonSerializerOptions</c> 的 <c>PropertyNamingPolicy = JsonNamingPolicy.CamelCase</c> 配置输出小写。</remarks>
+    /// <param name="toCamelCaseKey">输出键小写</param>
     /// <returns></returns>
-    public static IList<JsonConverter> AddClayConverters(this IList<JsonConverter> converters)
+    public static IList<JsonConverter> AddClayConverters(this IList<JsonConverter> converters, bool toCamelCaseKey = true)
     {
-        if (!converters.OfType<ClayJsonConverter>().Any())
-        {
-            converters.Add(new ClayJsonConverter());
-        }
+        converters.Add(new SystemTextJsonClayJsonConverter(toCamelCaseKey));
 
         return converters;
     }

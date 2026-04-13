@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------
 
 using MoYu.DynamicApiController;
-using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace MoYu.SpecificationDocument;
@@ -49,7 +49,7 @@ public class TagsOrderDocumentFilter : IDocumentFilter
             .Select(c => new OpenApiTag
             {
                 Name = c.Value.Item1,
-                Description = swaggerDoc.Tags?.FirstOrDefault(m => m.Name == c.Key)?.Description
-            }).ToHashSet();
+                Description = swaggerDoc.Tags.FirstOrDefault(m => m.Name == c.Key)?.Description
+            }).ToList();
     }
 }

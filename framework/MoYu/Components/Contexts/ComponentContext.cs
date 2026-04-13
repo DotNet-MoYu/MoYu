@@ -23,7 +23,7 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
-using MoYu.Components;
+using System.ComponentModel;
 
 namespace System;
 
@@ -110,16 +110,6 @@ public sealed class ComponentContext
         else properties[key] = value;
 
         return properties;
-    }
-
-    /// <summary>
-    /// 获取当前组件属性参数
-    /// </summary>
-    /// <typeparam name="TComponentOptions">组件参数类型</typeparam>
-    /// <returns></returns>
-    public TComponentOptions GetProperty<TComponentOptions>()
-    {
-        return GetProperty<TComponentOptions>(ComponentType);
     }
 
     /// <summary>

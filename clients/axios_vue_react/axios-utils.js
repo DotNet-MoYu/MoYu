@@ -168,7 +168,7 @@ export function checkAndStoreAuthentication(res) {
 /**
  * 包装 Promise 并返回 [Error, any]
  * @param promise Promise 方法
- * @param errorExt 自定义错误信息（扩展）
+ * @param errorExt 自定义错误信息（拓展）
  * @returns [Error, any]
  */
 export function feature(promise, errorExt) {

@@ -21,13 +21,6 @@ public class TestUnifyProvider : IDynamicApiController
     {
         return "特别";
     }
-
-    [NonUnify]
-    [UnifySerializerSetting("specially")]
-    public object 测试无规范化序列化()
-    {
-        return new { Id = 1, Name = "MoYu" };
-    }
 }
 
 [UnifyModel(typeof(MyResult<>))]

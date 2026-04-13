@@ -32,7 +32,7 @@ using Microsoft.Extensions.Hosting;
 namespace Microsoft.AspNetCore.Builder;
 
 /// <summary>
-/// Schedule 模块 UI 中间件扩展
+/// Schedule 模块 UI 中间件拓展
 /// </summary>
 [SuppressSniffer]
 public static class ScheduleUIExtensions

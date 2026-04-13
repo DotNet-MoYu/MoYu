@@ -268,33 +268,13 @@ public static class Oops
     /// <returns></returns>
     private static IEnumerable<Type> GetErrorCodeTypes()
     {
-        // 查找所有公开的枚举贴有 [ErrorCodeType] 特性的类型，包含嵌套类型
-        var initialTypes = App.EffectiveTypes
-            .Where(u => u.IsDefined(typeof(ErrorCodeTypeAttribute), true) && (u.IsEnum || u.IsClass))
-            .ToList();
+        // 查找所有公开的枚举贴有 [ErrorCodeType] 特性的类型
+        var errorCodeTypes = App.EffectiveTypes
+            .Where(u => u.IsDefined(typeof(ErrorCodeTypeAttribute), true) && u.IsEnum);
 
         // 获取错误代码提供器中定义的类型
         var errorCodeTypeProvider = App.GetService<IErrorCodeTypeProvider>(App.RootServices);
-        if (errorCodeTypeProvider is { Definitions: not null }) initialTypes.AddRange(errorCodeTypeProvider.Definitions);
-
-        // 构建最终错误代码类型
-        var errorCodeTypes = new List<Type>();
-
-        foreach (var type in initialTypes)
-        {
-            if (type.IsEnum)
-            {
-                errorCodeTypes.Add(type);
-            }
-            // 处理嵌套类型问题
-            else if (type.IsClass)
-            {
-                var nestedEnums = type.GetNestedTypes(BindingFlags.Public)
-                    .Where(u => u.IsDefined(typeof(ErrorCodeTypeAttribute), true) && u.IsEnum);
-
-                errorCodeTypes.AddRange(nestedEnums);
-            }
-        }
+        if (errorCodeTypeProvider is { Definitions: not null }) errorCodeTypes = errorCodeTypes.Concat(errorCodeTypeProvider.Definitions);
 
         return errorCodeTypes.Distinct();
     }

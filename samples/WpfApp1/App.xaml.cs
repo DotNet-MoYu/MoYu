@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using System.Windows;
+﻿using System.Windows;
 
 namespace WpfApp1;
 

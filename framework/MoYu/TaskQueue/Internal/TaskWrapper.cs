@@ -23,8 +23,6 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
-using MoYu.TimeCrontab;
-
 namespace MoYu.TaskQueue;
 
 /// <summary>
@@ -34,141 +32,22 @@ namespace MoYu.TaskQueue;
 public sealed class TaskWrapper
 {
     /// <summary>
-    /// 任务处理委托
-    /// </summary>
-    internal Func<IServiceProvider, CancellationToken, ValueTask> Handler
-    {
-        get;
-        set
-        {
-            field = async (serviceProvider, cancellationToken) =>
-            {
-                if (Delay > 0)
-                {
-                    // 配置是否设置了延迟执行后立即执行一次
-                    if (RunOnceIfDelaySet)
-                    {
-                        await value(serviceProvider, cancellationToken);
-                    }
-
-                    await Task.Delay(Delay, cancellationToken);
-                }
-
-                await value(serviceProvider, cancellationToken);
-            };
-        }
-    }
-
-    /// <summary>
     /// 任务通道
     /// </summary>
-    internal string Channel { get; set; } = string.Empty;
+    public string Channel { get; internal set; } = string.Empty;
 
     /// <summary>
     /// 任务 ID
     /// </summary>
-    internal object TaskId { get; set; } = Guid.NewGuid();
+    public object TaskId { get; internal set; }
+
+    /// <summary>
+    /// 任务处理委托
+    /// </summary>
+    public Func<IServiceProvider, CancellationToken, ValueTask> Handler { get; internal set; }
 
     /// <summary>
     /// 是否采用并行执行
     /// </summary>
-    internal bool? Concurrent { get; set; }
-
-    /// <summary>
-    /// 延迟时间（毫秒）
-    /// </summary>
-    internal int Delay { get; set; } = 0;
-
-    /// <summary>
-    /// 配置是否设置了延迟执行后立即执行一次
-    /// </summary>
-    internal bool RunOnceIfDelaySet { get; set; }
-
-    /// <summary>
-    /// 是否禁止重试
-    /// </summary>
-    internal bool DisableRetry { get; set; }
-
-    /// <summary>
-    /// 设置任务通道
-    /// </summary>
-    /// <param name="channel"></param>
-    /// <returns></returns>
-    public TaskWrapper WithChannel(string channel)
-    {
-        Channel = channel ?? string.Empty;
-
-        return this;
-    }
-
-    /// <summary>
-    /// 设置任务 ID
-    /// </summary>
-    /// <param name="taskId"></param>
-    /// <returns></returns>
-    public TaskWrapper WithTaskId(object taskId)
-    {
-        TaskId = taskId ?? Guid.NewGuid();
-
-        return this;
-    }
-
-    /// <summary>
-    /// 设置是否采用并行执行
-    /// </summary>
-    /// <param name="concurrent"></param>
-    /// <returns></returns>
-    public TaskWrapper WithConcurrent(bool? concurrent)
-    {
-        Concurrent = concurrent;
-
-        return this;
-    }
-
-    /// <summary>
-    /// 设置延迟时间（毫秒）
-    /// </summary>
-    /// <param name="delay"></param>
-    /// <returns></returns>
-    public TaskWrapper WithDelay(int delay)
-    {
-        Delay = delay;
-
-        return this;
-    }
-
-    /// <summary>
-    /// 设置延迟时间（毫秒）
-    /// </summary>
-    /// <param name="cronExpression">Cron 表达式</param>
-    /// <param name="format"><see cref="CronStringFormat"/></param>
-    /// <returns></returns>
-    public TaskWrapper WithDelay(string cronExpression, CronStringFormat format = CronStringFormat.Default)
-    {
-        return WithDelay((int)Crontab.Parse(cronExpression, format).GetSleepMilliseconds(DateTime.Now));
-    }
-
-    /// <summary>
-    /// 设置是否延迟执行后立即执行一次
-    /// </summary>
-    /// <param name="runOnceIfDelaySet"></param>
-    /// <returns></returns>
-    public TaskWrapper WithRunOnceIfDelaySet(bool runOnceIfDelaySet)
-    {
-        RunOnceIfDelaySet = runOnceIfDelaySet;
-
-        return this;
-    }
-
-    /// <summary>
-    /// 设置是否禁止重试
-    /// </summary>
-    /// <param name="disableRetry"></param>
-    /// <returns></returns>
-    public TaskWrapper WithDisableRetry(bool disableRetry)
-    {
-        DisableRetry = disableRetry;
-
-        return this;
-    }
+    public bool? Concurrent { get; internal set; }
 }

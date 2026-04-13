@@ -30,7 +30,7 @@ using System.Data.Common;
 namespace MoYu.DatabaseAccessor;
 
 /// <summary>
-/// ADONET 扩展类
+/// ADONET 拓展类
 /// </summary>
 [SuppressSniffer]
 public static class SqlAdoNetExtensions

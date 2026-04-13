@@ -30,7 +30,7 @@ using System.Text;
 namespace Microsoft.AspNetCore.Http;
 
 /// <summary>
-/// Http 扩展类
+/// Http 拓展类
 /// </summary>
 [SuppressSniffer]
 public static class HttpContextExtensions
@@ -120,23 +120,15 @@ public static class HttpContextExtensions
     /// <returns></returns>
     public static string GetRemoteIpAddressToIPv4(this HttpContext context, bool xff = false)
     {
+        var ipv4 = context.Connection.RemoteIpAddress?.MapToIPv4()?.ToString();
+
         if (xff)
         {
-            var xForwardedFor = context.Request.Headers["X-Forwarded-For"].ToString();
-
-            if (!string.IsNullOrWhiteSpace(xForwardedFor))
-            {
-                // 获取首个客户端 IP 地址
-                var firstIp = xForwardedFor.Split(',')[0].Trim();
-
-                if (System.Net.IPAddress.TryParse(firstIp, out var ip) && ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
-            }
+            var xForwardedFor = context.Request.Headers["X-Forwarded-For"];
+            return !string.IsNullOrWhiteSpace(xForwardedFor) ? xForwardedFor : ipv4;
         }
 
-        return context.Connection.RemoteIpAddress?.MapToIPv4()?.ToString();
+        return ipv4;
     }
 
     /// <summary>

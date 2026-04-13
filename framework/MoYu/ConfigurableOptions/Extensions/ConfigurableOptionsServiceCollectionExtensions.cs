@@ -35,7 +35,7 @@ using System.Reflection;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 可变选项服务扩展类
+/// 可变选项服务拓展类
 /// </summary>
 [SuppressSniffer]
 public static class ConfigurableOptionsServiceCollectionExtensions

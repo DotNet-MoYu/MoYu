@@ -1,4 +1,4 @@
-// ------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------
 // 版权信息
 // 版权归百小僧及百签科技（广东）有限公司所有。
 // 所有权利保留。
@@ -33,7 +33,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -124,9 +124,8 @@ public static class SpecificationDocumentBuilder
         }
 
         // 处理贴有 [ApiExplorerSettings(IgnoreApi = true)] 或者 [ApiDescriptionSettings(false)] 特性的接口
-        var apiExplorerSettings = method.GetFoundAttribute<ApiExplorerSettingsAttribute>(true, true);
-        var apiDescriptionSettings = method.GetFoundAttribute<ApiDescriptionSettingsAttribute>(true, true);
-        if (apiExplorerSettings?.IgnoreApi == true || apiDescriptionSettings?.IgnoreApi == true) return false;
+        var apiExplorerSettings = method.GetFoundAttribute<ApiExplorerSettingsAttribute>(true);
+        if (apiExplorerSettings?.IgnoreApi == true) return false;
 
         if (currentGroup == AllGroupsKey)
         {
@@ -233,11 +232,7 @@ public static class SpecificationDocumentBuilder
     internal static void Build(SwaggerOptions swaggerOptions, Action<SwaggerOptions> configure = null)
     {
         // 生成V2版本
-        swaggerOptions.OpenApiVersion = _specificationDocumentSettings.FormatAsV2 == true
-            ? OpenApiSpecVersion.OpenApi2_0
-            : _specificationDocumentSettings.LatestVersion == true
-                ? OpenApiSpecVersion.OpenApi3_1
-                : OpenApiSpecVersion.OpenApi3_0;
+        swaggerOptions.SerializeAsV2 = _specificationDocumentSettings.FormatAsV2 == true;
 
         // 判断是否启用 Server
         if (_specificationDocumentSettings.HideServers != true)
@@ -575,6 +570,8 @@ public static class SpecificationDocumentBuilder
         // 判断是否启用了授权
         if (_specificationDocumentSettings.EnableAuthorized != true || _specificationDocumentSettings.SecurityDefinitions.Length == 0) return;
 
+        var openApiSecurityRequirement = new OpenApiSecurityRequirement();
+
         // 生成安全定义
         foreach (var securityDefinition in _specificationDocumentSettings.SecurityDefinitions)
         {
@@ -585,23 +582,23 @@ public static class SpecificationDocumentBuilder
             // 添加安全定义
             var openApiSecurityScheme = securityDefinition as OpenApiSecurityScheme;
             swaggerGenOptions.AddSecurityDefinition(securityDefinition.Id, openApiSecurityScheme);
+
+            // 添加安全需求
+            var securityRequirement = securityDefinition.Requirement;
+
+            // C# 9.0 模式匹配新语法
+            if (securityRequirement is { Scheme.Reference: not null })
+            {
+                securityRequirement.Scheme.Reference.Id ??= securityDefinition.Id;
+                openApiSecurityRequirement.Add(securityRequirement.Scheme, securityRequirement.Accesses);
+            }
         }
 
         // 添加安全需求
-        swaggerGenOptions.AddSecurityRequirement(document =>
+        if (openApiSecurityRequirement.Count > 0)
         {
-            var openApiSecurityRequirement = new OpenApiSecurityRequirement();
-
-            foreach (var securityDefinition in _specificationDocumentSettings.SecurityDefinitions)
-            {
-                // Id 必须定义
-                if (string.IsNullOrWhiteSpace(securityDefinition.Id)) continue;
-
-                openApiSecurityRequirement.Add(new OpenApiSecuritySchemeReference(securityDefinition.Id, document), securityDefinition.Requirement?.Accesses ?? []);
-            }
-
-            return openApiSecurityRequirement;
-        });
+            swaggerGenOptions.AddSecurityRequirement(openApiSecurityRequirement);
+        }
     }
 
     /// <summary>
@@ -632,15 +629,15 @@ public static class SpecificationDocumentBuilder
         var thisType = typeof(SpecificationDocumentBuilder);
         var thisAssembly = thisType.Assembly;
 
-        // 获取自定义 Swagger 页面
-        var customIndex = $"{Reflect.GetAssemblyName(thisAssembly)}{thisType.Namespace.Replace(nameof(MoYu), string.Empty)}.Assets.index.html";
+        // 判断是否启用 MiniProfile
+        var customIndex = $"{Reflect.GetAssemblyName(thisAssembly)}{thisType.Namespace.Replace(nameof(MoYu), string.Empty)}.Assets.{(_appSettings.InjectMiniProfiler != true ? "index" : "index-mini-profiler")}.html";
         swaggerUIOptions.IndexStream = () =>
         {
             StringBuilder htmlBuilder;
             // 自定义首页模板参数
             var indexArguments = new Dictionary<string, string>
             {
-                {"%(VirtualPath)", _appSettings.VirtualPath }
+                {"%(VirtualPath)", _appSettings.VirtualPath }    // 解决二级虚拟目录 MiniProfiler 丢失问题
             };
 
             // 读取文件内容
@@ -669,9 +666,7 @@ public static class SpecificationDocumentBuilder
             {
                 [nameof(SpecificationLoginInfo.Enabled)] = additionals.Enabled || (App.HostEnvironment.IsProduction() && additionals.EnableOnProduction),
                 [nameof(SpecificationLoginInfo.CheckUrl)] = additionals.CheckUrl,
-                [nameof(SpecificationLoginInfo.SubmitUrl)] = additionals.SubmitUrl,
-                [nameof(SpecificationLoginInfo.DefaultUsername)] = additionals.DefaultUsername,
-                [nameof(SpecificationLoginInfo.DefaultPassword)] = additionals.DefaultPassword
+                [nameof(SpecificationLoginInfo.SubmitUrl)] = additionals.SubmitUrl
             });
         }
     }

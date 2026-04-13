@@ -30,7 +30,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Microsoft.Extensions.Hosting;
 
 /// <summary>
-/// IHost 主机扩展类
+/// IHost 主机拓展类
 /// </summary>
 public static class IHostExtensions
 {

@@ -55,7 +55,7 @@ public sealed partial class ViewEnginePart
     public (Type Type, object Model) TemplateModel { get; private set; } = (typeof(object), default);
 
     /// <summary>
-    /// 模板缓存名称（不含扩展名）
+    /// 模板缓存名称（不含拓展名）
     /// </summary>
     public string TemplateCachedFileName { get; private set; }
 

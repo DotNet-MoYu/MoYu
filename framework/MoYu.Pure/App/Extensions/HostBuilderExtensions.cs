@@ -24,6 +24,7 @@
 // ------------------------------------------------------------------------
 
 using MoYu;
+using MoYu.Components;
 using MoYu.Extensions;
 using MoYu.Reflection;
 using Microsoft.AspNetCore.Hosting;
@@ -31,7 +32,7 @@ using Microsoft.AspNetCore.Hosting;
 namespace Microsoft.Extensions.Hosting;
 
 /// <summary>
-/// 主机构建器扩展类
+/// 主机构建器拓展类
 /// </summary>
 [SuppressSniffer]
 public static class HostBuilderExtensions
@@ -57,23 +58,9 @@ public static class HostBuilderExtensions
 
         hostBuilder.UseSetting(WebHostDefaults.HostingStartupAssembliesKey, combineAssembliesName);
 
-        // 实现假的 Startup，解决泛型主机启动问题
+        // 实现假的 Starup，解决泛型主机启动问题
         hostBuilder.UseStartup<FakeStartup>();
         return hostBuilder;
-    }
-
-    /// <summary>
-    /// Web 主机注入
-    /// </summary>
-    /// <param name="hostBuilder">Web主机构建器</param>
-    /// <param name="autoRegisterBackgroundService"></param>
-    /// <returns>IWebHostBuilder</returns>
-    public static IWebHostBuilder Inject(this IWebHostBuilder hostBuilder, bool autoRegisterBackgroundService)
-    {
-        return hostBuilder.Inject((_, options) =>
-        {
-            options.AutoRegisterBackgroundService = autoRegisterBackgroundService;
-        });
     }
 
     /// <summary>
@@ -91,20 +78,6 @@ public static class HostBuilderExtensions
         InternalApp.ConfigureApplication(hostBuilder, configureOptions.AutoRegisterBackgroundService);
 
         return hostBuilder;
-    }
-
-    /// <summary>
-    /// 泛型主机注入
-    /// </summary>
-    /// <param name="hostBuilder">泛型主机注入构建器</param>
-    /// <param name="autoRegisterBackgroundService"></param>
-    /// <returns>IHostBuilder</returns>
-    public static IHostBuilder Inject(this IHostBuilder hostBuilder, bool autoRegisterBackgroundService)
-    {
-        return hostBuilder.Inject((_, options) =>
-        {
-            options.AutoRegisterBackgroundService = autoRegisterBackgroundService;
-        });
     }
 
     /// <summary>

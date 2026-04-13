@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Description>MoYu Xunit 单元测试扩展插件。</Description>
+		<Description>MoYu Xunit 单元测试拓展插件。</Description>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="xunit.extensibility.execution" Version="2.9.3" />
+		<PackageReference Include="xunit.extensibility.execution" Version="2.9.2" />
 	</ItemGroup>
 
 	<ItemGroup>

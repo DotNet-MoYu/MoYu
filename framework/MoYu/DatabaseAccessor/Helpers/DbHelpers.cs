@@ -23,8 +23,8 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
+using MoYu.ClayObject;
 using MoYu.Extensions;
-using MoYu.Shapeless;
 using System.Data;
 using System.Data.Common;
 using System.Reflection;
@@ -58,7 +58,7 @@ internal static class DbHelpers
         if (model is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Object) return ConvertToDbParameters((Dictionary<string, object>)jsonElement.ToObject(), dbCommand);
 
         // 处理 Clay 类型
-        if (model is Clay clay) return ConvertToDbParameters(clay.AsEnumerateObject().ToDictionary(u => u.Key, u => u.Value), dbCommand);
+        if (model is Clay clay) return ConvertToDbParameters((Dictionary<string, object>)clay.ToDictionary(), dbCommand);
 
         // 处理字典类型参数
         if (modelType == typeof(Dictionary<string, object>)) return ConvertToDbParameters((Dictionary<string, object>)model, dbCommand);

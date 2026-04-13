@@ -32,7 +32,7 @@ using System.Text;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 应用服务集合扩展类（由框架内部调用）
+/// 应用服务集合拓展类（由框架内部调用）
 /// </summary>
 [SuppressSniffer]
 public static class AppServiceCollectionExtensions
@@ -187,10 +187,7 @@ public static class AppServiceCollectionExtensions
     public static IServiceCollection AddAppHostedService(this IServiceCollection services)
     {
         // 获取所有 BackgroundService 类型，排除泛型主机
-        var backgroundServiceTypes = App.EffectiveTypes.Where(u => !u.IsAbstract && !u.IsInterface && !u.IsGenericType
-                    && typeof(IHostedService).IsAssignableFrom(u) && u.Name != "GenericWebHostService"
-                    && !services.Any(c => c.ServiceType == typeof(IHostedService) && c.ImplementationType == u));
-
+        var backgroundServiceTypes = App.EffectiveTypes.Where(u => typeof(IHostedService).IsAssignableFrom(u) && u.Name != "GenericWebHostService");
         var addHostServiceMethod = typeof(ServiceCollectionHostedServiceExtensions).GetMethods(BindingFlags.Static | BindingFlags.Public)
                             .Where(u => u.Name.Equals("AddHostedService") && u.IsGenericMethod && u.GetParameters().Length == 1)
                             .FirstOrDefault();
@@ -221,12 +218,8 @@ public static class AppServiceCollectionExtensions
         // 注册全局依赖注入
         services.AddDependencyInjection();
 
-        // 检查是否禁用了 AppStartup 扫描（满足某些特殊场景，早期未考虑到，折中处理）
-        if (!(App.Settings.DisableAppStartupScan == true || (AppContext.TryGetSwitch(nameof(AppSettingsOptions.DisableAppStartupScan), out var isEnabled) && isEnabled)))
-        {
-            // 注册全局 Startup 扫描
-            services.AddStartups();
-        }
+        // 注册全局 Startup 扫描
+        services.AddStartups();
 
         // 添加对象映射
         services.AddObjectMapper();

@@ -96,7 +96,7 @@ function AddXmlCommentsToProperties($content, $commentsDictionary) {
     return $modifiedContent
 }
 
-$FurTools = "MoYu Tools v4.9.8.9";
+$FurTools = "MoYu Tools v4.9.5.26";
 
 # 输出信息
 $copyright = @"

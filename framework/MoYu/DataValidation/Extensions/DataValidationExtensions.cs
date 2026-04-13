@@ -31,59 +31,35 @@ using System.Text.RegularExpressions;
 namespace MoYu.DataValidation;
 
 /// <summary>
-/// 数据验证扩展类
+/// 数据验证拓展类
 /// </summary>
 [SuppressSniffer]
 public static class DataValidationExtensions
 {
     /// <summary>
-    /// 扩展方法，验证类类型对象
+    /// 拓展方法，验证类类型对象
     /// </summary>
     /// <param name="obj">对象实例</param>
     /// <param name="validateAllProperties">是否验证所有属性</param>
-    /// <param name="serviceProvider">服务提供器</param>
     /// <returns>验证结果</returns>
-    public static DataValidationResult TryValidate(this object obj, bool validateAllProperties = true, IServiceProvider serviceProvider = null)
+    public static DataValidationResult TryValidate(this object obj, bool validateAllProperties = true)
     {
-        return DataValidator.TryValidateObject(obj, validateAllProperties, serviceProvider);
+        return DataValidator.TryValidateObject(obj, validateAllProperties);
     }
 
     /// <summary>
-    /// 扩展方法，验证类类型对象
-    /// </summary>
-    /// <param name="obj">对象实例</param>
-    /// <param name="serviceProvider">服务提供器</param>
-    /// <returns>验证结果</returns>
-    public static DataValidationResult TryValidate(this object obj, IServiceProvider serviceProvider)
-    {
-        return DataValidator.TryValidateObject(obj, true, serviceProvider);
-    }
-
-    /// <summary>
-    /// 扩展方法，验证单个值
+    /// 拓展方法，验证单个值
     /// </summary>
     /// <param name="value">单个值</param>
     /// <param name="validationAttributes">验证特性</param>
     /// <returns></returns>
     public static DataValidationResult TryValidate(this object value, params ValidationAttribute[] validationAttributes)
     {
-        return DataValidator.TryValidateValue(value, null, validationAttributes);
+        return DataValidator.TryValidateValue(value, validationAttributes);
     }
 
     /// <summary>
-    /// 扩展方法，验证单个值
-    /// </summary>
-    /// <param name="value">单个值</param>
-    /// <param name="validationAttributes">验证特性</param>
-    /// <param name="serviceProvider">服务提供器</param>
-    /// <returns></returns>
-    public static DataValidationResult TryValidate(this object value, IServiceProvider serviceProvider, params ValidationAttribute[] validationAttributes)
-    {
-        return DataValidator.TryValidateValue(value, serviceProvider, validationAttributes);
-    }
-
-    /// <summary>
-    /// 扩展方法，验证单个值
+    /// 拓展方法，验证单个值
     /// </summary>
     /// <param name="value">单个值</param>
     /// <param name="validationTypes">验证类型</param>
@@ -94,7 +70,7 @@ public static class DataValidationExtensions
     }
 
     /// <summary>
-    /// 扩展方法，验证单个值
+    /// 拓展方法，验证单个值
     /// </summary>
     /// <param name="value">单个值</param>
     /// <param name="validationOptionss">验证逻辑</param>
@@ -106,39 +82,27 @@ public static class DataValidationExtensions
     }
 
     /// <summary>
-    /// 扩展方法，验证类类型对象
+    /// 拓展方法，验证类类型对象
     /// </summary>
     /// <param name="obj">对象实例</param>
     /// <param name="validateAllProperties">是否验证所有属性</param>
-    /// <param name="serviceProvider">服务提供器</param>
-    public static void Validate(this object obj, bool validateAllProperties = true, IServiceProvider serviceProvider = null)
+    public static void Validate(this object obj, bool validateAllProperties = true)
     {
-        DataValidator.TryValidateObject(obj, validateAllProperties, serviceProvider).ThrowValidateFailedModel();
+        DataValidator.TryValidateObject(obj, validateAllProperties).ThrowValidateFailedModel();
     }
 
     /// <summary>
-    /// 扩展方法，验证单个值
+    /// 拓展方法，验证单个值
     /// </summary>
     /// <param name="value">单个值</param>
     /// <param name="validationAttributes">验证特性</param>
     public static void Validate(this object value, params ValidationAttribute[] validationAttributes)
     {
-        DataValidator.TryValidateValue(value, null, validationAttributes).ThrowValidateFailedModel();
+        DataValidator.TryValidateValue(value, validationAttributes).ThrowValidateFailedModel();
     }
 
     /// <summary>
-    /// 扩展方法，验证单个值
-    /// </summary>
-    /// <param name="value">单个值</param>
-    /// <param name="validationAttributes">验证特性</param>
-    /// <param name="serviceProvider">服务提供器</param>
-    public static void Validate(this object value, IServiceProvider serviceProvider, params ValidationAttribute[] validationAttributes)
-    {
-        DataValidator.TryValidateValue(value, serviceProvider, validationAttributes).ThrowValidateFailedModel();
-    }
-
-    /// <summary>
-    /// 扩展方法，验证单个值
+    /// 拓展方法，验证单个值
     /// </summary>
     /// <param name="value">单个值</param>
     /// <param name="validationTypes">验证类型</param>
@@ -148,7 +112,7 @@ public static class DataValidationExtensions
     }
 
     /// <summary>
-    /// 扩展方法，验证单个值
+    /// 拓展方法，验证单个值
     /// </summary>
     /// <param name="value">单个值</param>
     /// <param name="validationOptionss">验证逻辑</param>
@@ -159,7 +123,7 @@ public static class DataValidationExtensions
     }
 
     /// <summary>
-    /// 扩展方法，验证单个值
+    /// 拓展方法，验证单个值
     /// </summary>
     /// <param name="value">单个值</param>
     /// <param name="regexPattern">正则表达式</param>

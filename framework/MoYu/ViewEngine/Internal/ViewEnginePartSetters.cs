@@ -77,7 +77,7 @@ public sealed partial class ViewEnginePart
     }
 
     /// <summary>
-    /// 设置模板缓存文件名（不含扩展名）
+    /// 设置模板缓存文件名（不含拓展名）
     /// </summary>
     /// <param name="cachedFileName"></param>
     /// <returns></returns>

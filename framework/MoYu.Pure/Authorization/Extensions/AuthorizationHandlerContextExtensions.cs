@@ -29,7 +29,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace Microsoft.AspNetCore.Authorization;
 
 /// <summary>
-/// 授权处理上下文扩展类
+/// 授权处理上下文拓展类
 /// </summary>
 [SuppressSniffer]
 public static class AuthorizationHandlerContextExtensions

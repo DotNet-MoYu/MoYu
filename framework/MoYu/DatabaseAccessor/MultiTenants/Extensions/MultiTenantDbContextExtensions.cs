@@ -30,7 +30,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace MoYu.DatabaseAccessor.Extensions;
 
 /// <summary>
-/// 多租户数据库上下文扩展
+/// 多租户数据库上下文拓展
 /// </summary>
 [SuppressSniffer]
 public static class MultiTenantDbContextExtensions

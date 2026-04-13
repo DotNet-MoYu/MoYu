@@ -35,7 +35,7 @@ using System.Reflection;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Sqlite 数据库服务扩展
+/// Sqlite 数据库服务拓展
 /// </summary>
 [SuppressSniffer]
 public static class DatabaseProviderServiceCollectionExtensions
@@ -347,7 +347,7 @@ public static class DatabaseProviderServiceCollectionExtensions
             // 加载对应的数据库提供器程序集
             var databaseProviderAssembly = Reflect.GetAssembly(providerName);
 
-            // 数据库提供器服务扩展类型名
+            // 数据库提供器服务拓展类型名
             var databaseProviderServiceExtensionTypeName = providerName switch
             {
                 DbProvider.SqlServer => "SqlServerDbContextOptionsExtensions",
@@ -360,11 +360,10 @@ public static class DatabaseProviderServiceCollectionExtensions
                 DbProvider.Oracle => "OracleDbContextOptionsExtensions",
                 DbProvider.Firebird => "FbDbContextOptionsBuilderExtensions",
                 DbProvider.Dm => "DmDbContextOptionsExtensions",
-                DbProvider.Kdbndp or DbProvider.Kdbndp_SqlServer => "KdbndpDbContextOptionsBuilderExtensions",
                 _ => null
             };
 
-            // 加载扩展类型
+            // 加载拓展类型
             var databaseProviderServiceExtensionType = Reflect.GetType(databaseProviderAssembly, $"Microsoft.EntityFrameworkCore.{databaseProviderServiceExtensionTypeName}");
 
             // useXXX方法名
@@ -380,7 +379,6 @@ public static class DatabaseProviderServiceCollectionExtensions
                 DbProvider.Oracle => $"Use{nameof(DbProvider.Oracle)}",
                 DbProvider.Firebird => $"Use{nameof(DbProvider.Firebird)}",
                 DbProvider.Dm => $"Use{nameof(DbProvider.Dm)}",
-                DbProvider.Kdbndp or DbProvider.Kdbndp_SqlServer => $"Use{nameof(DbProvider.Kdbndp)}",
                 _ => null
             };
 

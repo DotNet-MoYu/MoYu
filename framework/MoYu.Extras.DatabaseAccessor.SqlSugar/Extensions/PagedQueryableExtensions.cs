@@ -26,12 +26,12 @@
 namespace SqlSugar;
 
 /// <summary>
-/// 分页扩展类
+/// 分页拓展类
 /// </summary>
 public static class PagedQueryableExtensions
 {
     /// <summary>
-    /// 分页扩展
+    /// 分页拓展
     /// </summary>
     /// <param name="entity"></param>
     /// <param name="pageIndex"></param>
@@ -56,7 +56,7 @@ public static class PagedQueryableExtensions
     }
 
     /// <summary>
-    /// 分页扩展
+    /// 分页拓展
     /// </summary>
     /// <param name="entity"></param>
     /// <param name="pageIndex"></param>

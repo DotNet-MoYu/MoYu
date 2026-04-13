@@ -70,15 +70,15 @@ public class SensitiveDetectionAttribute : ValidationAttribute
         // 获取脱敏提供器（如果未注册，直接跳过，而不是抛异常）
         if (validationContext.GetService(typeof(ISensitiveDetectionProvider)) is not ISensitiveDetectionProvider sensitiveWordsProvider) return ValidationResult.Success;
 
-        var strValue = value.ToString()!;
+        var strValue = value.ToString();
 
         // 如果没有传入替换字符，则直接校验
         if (Transfer == default)
         {
             // 判断符合
-            var isValid = sensitiveWordsProvider.IsValidAsync(strValue).GetAwaiter().GetResult();
+            var isVaild = sensitiveWordsProvider.VaildedAsync(strValue).GetAwaiter().GetResult();
 
-            if (!isValid)
+            if (!isVaild)
             {
                 // 进行多语言处理
                 var errorMessage = !string.IsNullOrWhiteSpace(ErrorMessage) ? ErrorMessage : "Characters contain sensitive words.";

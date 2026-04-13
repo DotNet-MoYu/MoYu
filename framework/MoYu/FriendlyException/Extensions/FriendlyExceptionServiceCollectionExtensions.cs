@@ -31,13 +31,13 @@ using Microsoft.Extensions.Options;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 友好异常服务扩展类
+/// 友好异常服务拓展类
 /// </summary>
 [SuppressSniffer]
 public static class FriendlyExceptionServiceCollectionExtensions
 {
     /// <summary>
-    /// 添加友好异常服务扩展服务
+    /// 添加友好异常服务拓展服务
     /// </summary>
     /// <typeparam name="TErrorCodeTypeProvider">异常错误码提供器</typeparam>
     /// <param name="mvcBuilder">Mvc构建器</param>
@@ -52,7 +52,7 @@ public static class FriendlyExceptionServiceCollectionExtensions
     }
 
     /// <summary>
-    /// 添加友好异常服务扩展服务
+    /// 添加友好异常服务拓展服务
     /// </summary>
     /// <typeparam name="TErrorCodeTypeProvider">异常错误码提供器</typeparam>
     /// <param name="services"></param>
@@ -71,7 +71,7 @@ public static class FriendlyExceptionServiceCollectionExtensions
     }
 
     /// <summary>
-    /// 添加友好异常服务扩展服务
+    /// 添加友好异常服务拓展服务
     /// </summary>
     /// <param name="mvcBuilder">Mvc构建器</param>
     /// <param name="configure"></param>
@@ -84,7 +84,7 @@ public static class FriendlyExceptionServiceCollectionExtensions
     }
 
     /// <summary>
-    /// 添加友好异常服务扩展服务
+    /// 添加友好异常服务拓展服务
     /// </summary>
     /// <param name="services"></param>
     /// <param name="configure"></param>

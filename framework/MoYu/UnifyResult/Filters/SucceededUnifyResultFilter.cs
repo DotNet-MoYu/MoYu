@@ -117,23 +117,7 @@ public class SucceededUnifyResultFilter : IAsyncActionFilter, IOrderedFilter
             || UnifyContext.CheckHttpContextNonUnify(context.HttpContext)) return;
 
         // 判断是否跳过规范化处理
-        if (UnifyContext.CheckSucceededNonUnify(actionDescriptor.MethodInfo, out var unifyResult))
-        {
-            // 处理禁用规范化处理但配置了 JSON 序列化情况
-            var (extractedValue, serializerSettings, isTargetType) = actionExecutedContext.Result switch
-            {
-                ObjectResult objectResult => (objectResult.Value, UnifyContext.GetSerializerSettings(context), true),
-                JsonResult jsonResult => (jsonResult.Value, jsonResult.SerializerSettings ?? UnifyContext.GetSerializerSettings(context), true),
-                _ => (null, null, false)
-            };
-
-            if (isTargetType && serializerSettings is not null)
-            {
-                actionExecutedContext.Result = new JsonResult(extractedValue, serializerSettings);
-            }
-
-            return;
-        }
+        if (UnifyContext.CheckSucceededNonUnify(actionDescriptor.MethodInfo, out var unifyResult)) return;
 
         // 处理 BadRequestObjectResult 类型规范化处理
         if (actionExecutedContext.Result is BadRequestObjectResult badRequestObjectResult)
@@ -145,6 +129,9 @@ public class SucceededUnifyResultFilter : IAsyncActionFilter, IOrderedFilter
 
             var result = unifyResult.OnValidateFailed(context, validationMetadata);
             if (result != null) actionExecutedContext.Result = result;
+
+            // 打印验证失败信息
+            App.PrintToMiniProfiler("validation", "Failed", $"Validation Failed:\r\n\r\n{validationMetadata.Message}", true);
         }
         else
         {

@@ -149,12 +149,6 @@ internal sealed class TaskQueueHostedService : BackgroundService
         // 出队
         var taskWrapper = await _taskQueue.DequeueAsync(stoppingToken);
 
-        // 空检查
-        if (taskWrapper is null)
-        {
-            return;
-        }
-
         // 获取任务执行策略
         var concurrent = taskWrapper.Concurrent == null
             ? _concurrent
@@ -214,28 +208,19 @@ internal sealed class TaskQueueHostedService : BackgroundService
     {
         try
         {
-            // 判断是否禁用重试（解决全局配置问题）
-            if (!taskWrapper.DisableRetry)
-            {
-                // 调用任务处理程序并配置出错执行重试
-                await Retry.InvokeAsync(async () =>
-                {
-                    // 调用任务处理委托
-                    await taskWrapper.Handler(_serviceProvider, stoppingToken);
-                }
-                , _numRetries
-                , _retryTimeout
-                , retryAction: (total, times) =>
-                {
-                    // 输出重试日志
-                    _logger.LogWarning("Retrying {times}/{total} times for {TaskHandler}", times, total, taskWrapper.Handler?.ToString());
-                });
-            }
-            else
+            // 调用任务处理程序并配置出错执行重试
+            await Retry.InvokeAsync(async () =>
             {
                 // 调用任务处理委托
                 await taskWrapper.Handler(_serviceProvider, stoppingToken);
             }
+            , _numRetries
+            , _retryTimeout
+            , retryAction: (total, times) =>
+            {
+                // 输出重试日志
+                _logger.LogWarning("Retrying {times}/{total} times for {TaskHandler}", times, total, taskWrapper.Handler?.ToString());
+            });
 
             // 触发任务队列事件
             _taskQueue.InvokeEvents(new(taskWrapper.TaskId, taskWrapper.Channel, true));

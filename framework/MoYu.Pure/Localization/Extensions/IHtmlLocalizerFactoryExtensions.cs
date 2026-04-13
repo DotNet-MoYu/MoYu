@@ -29,7 +29,7 @@ using MoYu.Localization;
 namespace Microsoft.AspNetCore.Mvc.Localization;
 
 /// <summary>
-/// IHtmlLocalizerFactory 扩展类
+/// IHtmlLocalizerFactory 拓展类
 /// </summary>
 [SuppressSniffer]
 public static class IHtmlLocalizerFactoryExtensions

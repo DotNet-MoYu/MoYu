@@ -28,7 +28,7 @@ using MoYu.JsonSerialization;
 namespace Newtonsoft.Json;
 
 /// <summary>
-/// Newtonsoft.Json 扩展
+/// Newtonsoft.Json 拓展
 /// </summary>
 [SuppressSniffer]
 public static class NewtonsoftJsonExtensions
@@ -73,10 +73,7 @@ public static class NewtonsoftJsonExtensions
     /// <returns></returns>
     public static IList<JsonConverter> AddClayConverters(this IList<JsonConverter> converters, bool toCamelCaseKey = true)
     {
-        if (!converters.OfType<NewtonsoftJsonClayJsonConverter>().Any())
-        {
-            converters.Add(new NewtonsoftJsonClayJsonConverter(toCamelCaseKey));
-        }
+        converters.Add(new NewtonsoftJsonClayJsonConverter(toCamelCaseKey));
 
         return converters;
     }

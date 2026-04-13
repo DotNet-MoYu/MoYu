@@ -23,6 +23,8 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
+using MoYu.TimeCrontab;
+
 namespace MoYu.TaskQueue;
 
 /// <summary>
@@ -35,23 +37,65 @@ public static class TaskQueued
     /// 任务项入队
     /// </summary>
     /// <param name="taskHandler">任务处理委托</param>
-    /// <param name="configure">任务配置委托</param>
+    /// <param name="delay">延迟时间（毫秒）</param>
+    /// <param name="channel">任务通道</param>
+    /// <param name="taskId">任务 Id</param>
+    /// <param name="concurrent">是否采用并行执行</param>
+    /// <param name="runOnceIfDelaySet">配置是否设置了延迟执行后立即执行一次</param>
     /// <returns><see cref="object"/></returns>
-    public static object Enqueue(Action<IServiceProvider> taskHandler, Action<TaskWrapper> configure = null)
+    public static object Enqueue(Action<IServiceProvider> taskHandler, int delay = 0, string channel = null, object taskId = null, bool? concurrent = null, bool runOnceIfDelaySet = false)
     {
         var taskQueue = App.GetRequiredService<ITaskQueue>(App.RootServices);
-        return taskQueue.Enqueue(taskHandler, configure);
+        return taskQueue.Enqueue(taskHandler, delay, channel, taskId, concurrent, runOnceIfDelaySet);
     }
 
     /// <summary>
     /// 任务项入队
     /// </summary>
     /// <param name="taskHandler">任务处理委托</param>
-    /// <param name="configure">任务配置委托</param>
+    /// <param name="delay">延迟时间（毫秒）</param>
+    /// <param name="channel">任务通道</param>
+    /// <param name="taskId">任务 Id</param>
+    /// <param name="concurrent">是否采用并行执行</param>
+    /// <param name="runOnceIfDelaySet">配置是否设置了延迟执行后立即执行一次</param>
     /// <returns><see cref="ValueTask"/></returns>
-    public static async ValueTask<object> EnqueueAsync(Func<IServiceProvider, CancellationToken, ValueTask> taskHandler, Action<TaskWrapper> configure = null)
+    public static async ValueTask<object> EnqueueAsync(Func<IServiceProvider, CancellationToken, ValueTask> taskHandler, int delay = 0, string channel = null, object taskId = null, bool? concurrent = null, bool runOnceIfDelaySet = false)
     {
         var taskQueue = App.GetRequiredService<ITaskQueue>(App.RootServices);
-        return await taskQueue.EnqueueAsync(taskHandler, configure);
+        return await taskQueue.EnqueueAsync(taskHandler, delay, channel, taskId, concurrent, runOnceIfDelaySet);
+    }
+
+    /// <summary>
+    /// 任务项入队
+    /// </summary>
+    /// <param name="taskHandler">任务处理委托</param>
+    /// <param name="cronExpression">Cron 表达式</param>
+    /// <param name="format"><see cref="CronStringFormat"/></param>
+    /// <param name="channel">任务通道</param>
+    /// <param name="taskId">任务 Id</param>
+    /// <param name="concurrent">是否采用并行执行</param>
+    /// <param name="runOnceIfDelaySet">配置是否设置了延迟执行后立即执行一次</param>
+    /// <returns><see cref="object"/></returns>
+    public static object Enqueue(Action<IServiceProvider> taskHandler, string cronExpression, CronStringFormat format = CronStringFormat.Default, string channel = null, object taskId = null, bool? concurrent = null, bool runOnceIfDelaySet = false)
+    {
+        var taskQueue = App.GetRequiredService<ITaskQueue>(App.RootServices);
+        return taskQueue.Enqueue(taskHandler, cronExpression, format, channel, taskId, concurrent, runOnceIfDelaySet);
+    }
+
+    /// <summary>
+    /// 任务项入队
+    /// </summary>
+    /// <param name="taskHandler">任务处理委托</param>
+    /// <param name="cronExpression">Cron 表达式</param>
+    /// <param name="format"><see cref="CronStringFormat"/></param>
+    /// <param name="channel">任务通道</param>
+    /// <param name="taskId">任务 Id</param>
+    /// <param name="concurrent">是否采用并行执行</param>
+    /// <param name="runOnceIfDelaySet">配置是否设置了延迟执行后立即执行一次</param>
+    /// <returns><see cref="ValueTask"/></returns>
+    public static async ValueTask<object> EnqueueAsync(Func<IServiceProvider, CancellationToken, ValueTask> taskHandler, string cronExpression, CronStringFormat format = CronStringFormat.Default, string channel = null, object taskId = null, bool? concurrent = null, bool runOnceIfDelaySet = false)
+    {
+        var taskQueue = App.GetRequiredService<ITaskQueue>(App.RootServices);
+        return await taskQueue.EnqueueAsync(taskHandler, cronExpression, format, channel, taskId, concurrent, runOnceIfDelaySet);
     }
 }

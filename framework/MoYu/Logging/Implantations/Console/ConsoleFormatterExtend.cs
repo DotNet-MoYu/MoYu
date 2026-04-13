@@ -31,7 +31,7 @@ using Microsoft.Extensions.Options;
 namespace MoYu.Logging;
 
 /// <summary>
-/// 控制台默认格式化程序扩展
+/// 控制台默认格式化程序拓展
 /// </summary>
 [SuppressSniffer]
 public sealed class ConsoleFormatterExtend : ConsoleFormatter, IDisposable
@@ -104,8 +104,7 @@ public sealed class ConsoleFormatterExtend : ConsoleFormatter, IDisposable
                , true
                , _disableColors
                , _formatterOptions.WithTraceId
-               , _formatterOptions.WithStackFrame
-               , _formatterOptions.FormatProvider);
+               , _formatterOptions.WithStackFrame);
         }
 
         // 判断是否自定义了日志筛选器，如果是则检查是否符合条件

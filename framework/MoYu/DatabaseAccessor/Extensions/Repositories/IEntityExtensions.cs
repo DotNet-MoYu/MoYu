@@ -30,7 +30,7 @@ using System.Linq.Expressions;
 namespace MoYu.DatabaseAccessor.Extensions;
 
 /// <summary>
-/// 实体扩展类
+/// 实体拓展类
 /// </summary>
 [SuppressSniffer]
 public static class IEntityExtensions

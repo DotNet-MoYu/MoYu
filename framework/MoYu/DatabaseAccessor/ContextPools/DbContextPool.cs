@@ -41,6 +41,21 @@ namespace MoYu.DatabaseAccessor;
 public class DbContextPool : IDbContextPool, IDisposable
 {
     /// <summary>
+    ///  MiniProfiler 分类名
+    /// </summary>
+    private const string MiniProfilerCategory = "Transaction";
+
+    /// <summary>
+    /// MiniProfiler 组件状态
+    /// </summary>
+    private readonly bool InjectMiniProfiler;
+
+    /// <summary>
+    /// 是否打印数据库连接信息
+    /// </summary>
+    private readonly bool IsPrintDbConnectionInfo;
+
+    /// <summary>
     /// 线程安全的数据库上下文集合
     /// </summary>
     private readonly ConcurrentDictionary<Guid, DbContext> _dbContexts;
@@ -62,6 +77,10 @@ public class DbContextPool : IDbContextPool, IDisposable
     public DbContextPool(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+
+        InjectMiniProfiler = App.Settings.InjectMiniProfiler.Value;
+        IsPrintDbConnectionInfo = App.Settings.PrintDbConnectionInfo.Value;
+
         _dbContexts = new ConcurrentDictionary<Guid, DbContext>();
         _failedDbContexts = new ConcurrentDictionary<Guid, DbContext>();
     }
@@ -111,6 +130,9 @@ public class DbContextPool : IDbContextPool, IDisposable
 
             // 回滚事务
             currentTransaction.Rollback();
+
+            // 打印事务回滚消息
+            App.PrintToMiniProfiler("transaction", "Rollback", $"[Connection Id: {context.ContextId}] / [Database: {connection.Database}]{(IsPrintDbConnectionInfo ? $" / [Connection String: {connection.ConnectionString}]" : string.Empty)}", isError: true);
         };
     }
 
@@ -210,6 +232,9 @@ public class DbContextPool : IDbContextPool, IDisposable
 
         // 共享事务
         ShareTransaction: ShareTransaction(DbContextTransaction.GetDbTransaction());
+
+            // 打印事务实际开启信息
+            App.PrintToMiniProfiler(MiniProfilerCategory, "Began");
         }
         else
         {
@@ -249,11 +274,18 @@ public class DbContextPool : IDbContextPool, IDisposable
 
             // 提交共享事务
             DbContextTransaction?.Commit();
+
+            // 打印事务提交消息
+            App.PrintToMiniProfiler(MiniProfilerCategory, "Completed", $"Transaction Completed! Has {hasChangesCount} DbContext Changes.");
         }
         catch
         {
             // 回滚事务
             if (DbContextTransaction?.GetDbTransaction()?.Connection != null) DbContextTransaction?.Rollback();
+
+            // 打印事务回滚消息
+            App.PrintToMiniProfiler(MiniProfilerCategory, "Rollback", isError: true);
+
             throw;
         }
         finally
@@ -283,6 +315,9 @@ public class DbContextPool : IDbContextPool, IDisposable
         DbContextTransaction?.Dispose();
         DbContextTransaction = null;
 
+        // 打印事务回滚消息
+        App.PrintToMiniProfiler(MiniProfilerCategory, "Rollback", isError: true);
+
         // 关闭所有连接
         if (withCloseAll) CloseAll();
     }
@@ -302,6 +337,8 @@ public class DbContextPool : IDbContextPool, IDisposable
             if (conn.State != ConnectionState.Open) continue;
 
             conn.Close();
+            // 打印数据库关闭信息
+            App.PrintToMiniProfiler("sql", $"Close", $"Connection Close()");
         }
     }
 

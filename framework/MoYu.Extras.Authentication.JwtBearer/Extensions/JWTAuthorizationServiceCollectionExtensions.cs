@@ -36,7 +36,7 @@ using System.Reflection;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// JWT 授权服务扩展类
+/// JWT 授权服务拓展类
 /// </summary>
 public static class JWTAuthorizationServiceCollectionExtensions
 {

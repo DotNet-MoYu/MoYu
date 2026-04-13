@@ -33,7 +33,7 @@ using System.Collections.Concurrent;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// ASP.NET Core 服务扩展类
+/// ASP.NET Core 服务拓展类
 /// </summary>
 [SuppressSniffer]
 public static class AspNetCoreBuilderServiceCollectionExtensions

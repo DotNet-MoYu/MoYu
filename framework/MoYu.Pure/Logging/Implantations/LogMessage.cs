@@ -24,7 +24,6 @@
 // ------------------------------------------------------------------------
 
 using Microsoft.Extensions.Logging;
-using System.Globalization;
 
 namespace MoYu.Logging;
 
@@ -135,6 +134,6 @@ public struct LogMessage
     /// <returns><see cref="string"/></returns>
     public override readonly string ToString()
     {
-        return Penetrates.OutputStandardMessage(this, provider: CultureInfo.InvariantCulture);
+        return Penetrates.OutputStandardMessage(this);
     }
 }

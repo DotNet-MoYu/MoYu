@@ -27,7 +27,6 @@ using MoYu;
 using MoYu.DataValidation;
 using MoYu.Extensions;
 using MoYu.FriendlyException;
-using MoYu.JsonSerialization;
 using MoYu.Logging;
 using MoYu.Templates;
 using MoYu.UnifyResult;
@@ -231,7 +230,7 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IAs
                 var succeed = long.TryParse(value, out var seconds);
                 if (succeed)
                 {
-                    value = $"{value} ({DateTimeOffset.FromUnixTimeSeconds(seconds).ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss:ffff(zzz) dddd", Settings.FormatProvider)} L)";
+                    value = $"{value} ({DateTimeOffset.FromUnixTimeSeconds(seconds).ToLocalTime():yyyy-MM-dd HH:mm:ss:ffff(zzz) dddd} L)";
                 }
             }
 
@@ -662,10 +661,6 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IAs
 
             // 解决粘土对象 序列化问题
             jsonSerializerSettings.Converters.AddClayConverters();
-
-            // 解决 JsonObject 和 JsonArray 序列化问题
-            jsonSerializerSettings.Converters.Add(new NewtonsoftJsonJsonObjectJsonConverter());
-            jsonSerializerSettings.Converters.Add(new NewtonsoftJsonJsonArrayJsonConverter());
 
             // 解决 DateTimeOffset 序列化/反序列化问题
             if (obj is DateTimeOffset)
@@ -1126,7 +1121,7 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IAs
         monitorItems.AddRange(GenerateExcetpionInfomationTemplate(writer, exception, isValidationException));
 
         // 生成最终模板
-        var monitorMessage = TP.Wrapper(Title, displayName, monitorItems.ToArray(), LoggingMonitorSettings.InternalItemFilter);
+        var monitorMessage = TP.Wrapper(Title, displayName, monitorItems.ToArray());
 
         // 创建日志记录器
         var logger = httpContext.RequestServices.GetRequiredService<ILogger<LoggingMonitor>>();

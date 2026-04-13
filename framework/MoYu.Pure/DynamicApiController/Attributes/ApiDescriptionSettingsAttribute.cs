@@ -31,7 +31,7 @@ namespace Microsoft.AspNetCore.Mvc;
 /// 接口描述设置
 /// </summary>
 [SuppressSniffer, AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
-public sealed class ApiDescriptionSettingsAttribute : Attribute/* : ApiExplorerSettingsAttribute*/
+public sealed class ApiDescriptionSettingsAttribute : ApiExplorerSettingsAttribute
 {
     /// <summary>
     /// 构造函数
@@ -136,14 +136,4 @@ public sealed class ApiDescriptionSettingsAttribute : Attribute/* : ApiExplorerS
     /// 禁止子类继承
     /// </summary>
     public bool DisableInherite { get; set; } = false;
-
-    /// <summary>
-    /// 分组名
-    /// </summary>
-    public string GroupName { get; set; }
-
-    /// <summary>
-    /// 是否忽略 API
-    /// </summary>
-    public bool IgnoreApi { get; set; }
 }

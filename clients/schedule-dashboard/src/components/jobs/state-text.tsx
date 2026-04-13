@@ -2,7 +2,7 @@ import { IconUploadError } from "@douyinfe/semi-icons";
 import { Popover, Space, Tag, Tooltip } from "@douyinfe/semi-ui";
 import { ReactNode } from "react";
 
-export const status = {
+const status = {
   "0": "积压",
   "1": "就绪",
   "2": "运行",

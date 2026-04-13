@@ -107,14 +107,9 @@ internal sealed class JobCancellationToken : IJobCancellationToken
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                // 输出非任务取消异常日志
-                if (!(ex is OperationCanceledException || (ex is AggregateException aggEx && aggEx.InnerExceptions.Count == 1 && aggEx.InnerExceptions[0] is TaskCanceledException)))
-                {
-                    // 待输出
-                }
-            }
+            catch (TaskCanceledException) { }
+            catch (AggregateException ex) when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException) { }
+            catch { }
         }
     }
 

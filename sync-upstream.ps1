@@ -2,6 +2,7 @@
     [string]$Repo = (Get-Location).Path,
     [string]$UpstreamRemote = 'upstream',
     [string]$UpstreamBranch = 'v5-transition',
+    [string]$TargetBranch,
     [switch]$Rebase,
     [switch]$AllowDirty,
     [switch]$Commit,
@@ -88,11 +89,12 @@ function Get-ReplaceFiles {
             '--no-messages','--text'
         )
         foreach ($g in $include) { $args += @('-g', $g) }
-        $args += @('-g','!schemas/**','-g','!snks/**','-g','!**/bin/**','-g','!**/obj/**','-g','!**/.git/**','-g','!icon*.png','-g','!**/*.map')
+        $args += @('-g','!schemas/**','-g','!snks/**','-g','!**/bin/**','-g','!**/obj/**','-g','!**/.git/**','-g','!icon*.png','-g','!**/*.map','-g','!sync-upstream.ps1')
         $files = & $rg @args $RepoPath
         $rootReadme = Join-Path $RepoPath 'README.md'
         $rootReadmeZh = Join-Path $RepoPath 'README.zh.md'
-        return $files | Where-Object { $_ -ne $rootReadme -and $_ -ne $rootReadmeZh }
+        $selfScript = Join-Path $RepoPath 'sync-upstream.ps1'
+        return $files | Where-Object { $_ -ne $rootReadme -and $_ -ne $rootReadmeZh -and $_ -ne $selfScript }
     }
 
     return Get-ChildItem -Path $RepoPath -Recurse -File |
@@ -105,7 +107,7 @@ function Get-ReplaceFiles {
             try { (Get-Content -Raw -Path $_ -ErrorAction Stop) -match 'Furion|furion|FURION|Fuion|fuion|FUION' } catch { $false }
         } |
         Where-Object {
-            $_ -ne (Join-Path $RepoPath 'README.md') -and $_ -ne (Join-Path $RepoPath 'README.zh.md')
+            $_ -ne (Join-Path $RepoPath 'README.md') -and $_ -ne (Join-Path $RepoPath 'README.zh.md') -and $_ -ne (Join-Path $RepoPath 'sync-upstream.ps1')
         }
 }
 
@@ -236,9 +238,21 @@ if (-not $ReplaceOnly) {
 }
 
 if (-not $ReplaceOnly -and -not $SkipSync) {
+    if ([string]::IsNullOrWhiteSpace($TargetBranch)) {
+        $TargetBranch = (& git -C $Repo branch --show-current).Trim()
+        if (-not $TargetBranch) {
+            throw 'Cannot detect current branch (detached HEAD). Please pass -TargetBranch explicitly.'
+        }
+    }
+
+    $null = & git -C $Repo show-ref --verify --quiet ("refs/heads/" + $TargetBranch)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Target branch '$TargetBranch' does not exist in local repository."
+    }
+
     Write-Host "Fetching $UpstreamRemote/$UpstreamBranch..."
     Invoke-Git -GitArgs @('-C', $Repo, 'fetch', $UpstreamRemote, $UpstreamBranch)
-    Invoke-Git -GitArgs @('-C', $Repo, 'checkout', 'master')
+    Invoke-Git -GitArgs @('-C', $Repo, 'checkout', $TargetBranch)
 
     if ($Rebase) {
         if ($AllowUnrelated) { throw 'AllowUnrelated is only supported with merge (no rebase).' }
@@ -247,12 +261,18 @@ if (-not $ReplaceOnly -and -not $SkipSync) {
         Invoke-Git -GitArgs @('-C', $Repo, 'rebase', "$UpstreamRemote/$UpstreamBranch")
     } else {
         Write-Host "Merging $UpstreamRemote/$UpstreamBranch..."
-        if ($AutoStash) { Invoke-Git -GitArgs @('-C', $Repo, 'stash', 'push', '-u', '-m', 'moyu sync auto-stash') }
+        $stashCreated = $false
+        if ($AutoStash) {
+            $stashBefore = (& git -C $Repo stash list | Measure-Object).Count
+            Invoke-Git -GitArgs @('-C', $Repo, 'stash', 'push', '-u', '-m', 'moyu sync auto-stash')
+            $stashAfter = (& git -C $Repo stash list | Measure-Object).Count
+            $stashCreated = ($stashAfter -gt $stashBefore)
+        }
         $mergeArgs = @('-C', $Repo, 'merge', "$UpstreamRemote/$UpstreamBranch")
         if ($AllowUnrelated) { $mergeArgs += '--allow-unrelated-histories' }
         if ($PreferUpstream) { $mergeArgs += @('-X', 'theirs') }
         Invoke-Git -GitArgs $mergeArgs
-        if ($AutoStash) { Invoke-Git -GitArgs @('-C', $Repo, 'stash', 'pop') }
+        if ($AutoStash -and $stashCreated) { Invoke-Git -GitArgs @('-C', $Repo, 'stash', 'pop') }
     }
 }
 

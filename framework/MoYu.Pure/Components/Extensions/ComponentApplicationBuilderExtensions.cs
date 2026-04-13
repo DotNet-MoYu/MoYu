@@ -29,7 +29,7 @@ using Microsoft.AspNetCore.Hosting;
 namespace Microsoft.AspNetCore.Builder;
 
 /// <summary>
-/// 组件应用中间件扩展类
+/// 组件应用中间件拓展类
 /// </summary>
 [SuppressSniffer]
 public static class ComponentApplicationBuilderExtensions

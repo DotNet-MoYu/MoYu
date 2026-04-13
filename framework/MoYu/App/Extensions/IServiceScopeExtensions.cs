@@ -30,7 +30,7 @@ using System.Security.Claims;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// <see cref="IServiceScope"/> 扩展类
+/// <see cref="IServiceScope"/> 拓展类
 /// </summary>
 public static class IServiceScopeExtensions
 {

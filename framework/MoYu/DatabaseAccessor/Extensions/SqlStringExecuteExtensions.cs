@@ -29,7 +29,7 @@ using System.Data.Common;
 namespace MoYu.DatabaseAccessor.Extensions;
 
 /// <summary>
-/// Sql 字符串执行扩展类
+/// Sql 字符串执行拓展类
 /// </summary>
 [SuppressSniffer]
 public static class SqlStringExecuteExtensions

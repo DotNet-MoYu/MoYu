@@ -45,12 +45,9 @@ public static class TP
     /// <param name="title">标题</param>
     /// <param name="description">描述</param>
     /// <param name="items">列表项，如果以 ##xxx## 开头，自动生成 xxx: 属性</param>
-    /// <param name="filter">日志条目过滤器，返回 false 隐藏该日志条目</param>
     /// <returns><see cref="string"/></returns>
-    public static string Wrapper(string title, string description, string[] items, Func<string, bool>? filter)
+    public static string Wrapper(string title, string description, params string[] items)
     {
-        var itemFilter = filter ?? (u => true);
-
         // 处理不同编码问题
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -83,11 +80,8 @@ public static class TP
                 {
                     var match = _lazyRegex.Value.Match(item);
                     var prop = match.Groups["prop"].Value;
-
-                    // 过滤不需要的项
-                    if (!itemFilter(prop)) continue;
-
                     var content = match.Groups["content"].Value;
+
                     var propTitle = $"{prop}：";
                     stringBuilder.Append($"┣ {PadRight(propTitle, propMaxLength)}{content}").AppendLine();
                 }
@@ -100,18 +94,6 @@ public static class TP
 
         stringBuilder.Append($"┗━━━━━━━━━━━  {title} ━━━━━━━━━━━");
         return stringBuilder.ToString();
-    }
-
-    /// <summary>
-    /// 生成规范日志模板
-    /// </summary>
-    /// <param name="title">标题</param>
-    /// <param name="description">描述</param>
-    /// <param name="items">列表项，如果以 ##xxx## 开头，自动生成 xxx: 属性</param>
-    /// <returns><see cref="string"/></returns>
-    public static string Wrapper(string title, string description, params string[] items)
-    {
-        return Wrapper(title, description, items, null);
     }
 
     /// <summary>

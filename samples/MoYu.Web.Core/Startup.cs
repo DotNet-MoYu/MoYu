@@ -1,7 +1,6 @@
 ﻿using MoYu.Application;
 using MoYu.Localization;
 using MoYu.Schedule;
-using MoYu.Shapeless;
 using MoYu.VirtualFileServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,9 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace MoYu.Web.Core;
 
@@ -27,37 +24,16 @@ public sealed class Startup : AppStartup
 
         services.AddCorsAccessor();
 
-        //services.ConfigureDynamicApiController(builder =>
-        //{
-        //    builder.ControllerFilter = (controllerModel) =>
-        //    {
-        //        return controllerModel.ControllerType != typeof(PersonService);
-        //    };
-
-        //    builder.ActionConfigure = (actionModel) =>
-        //    {
-        //        if (actionModel.ActionMethod.Name == "Insert")
-        //        {
-        //            actionModel.ApiExplorer.IsVisible = false;
-        //        }
-        //    };
-        //});
-
         services.AddControllersWithViews()
                 // 配置多语言
                 .AddAppLocalization()
                 .AddJsonOptions(options =>
                 {
-                    options.JsonSerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
                     options.JsonSerializerOptions.Converters.AddDateTimeTypeConverters(localized: true);
                     options.JsonSerializerOptions.Converters.AddClayConverters();
 
                     options.JsonSerializerOptions.Converters.AddDateOnlyConverters("yyyy-MM-dd");
                     options.JsonSerializerOptions.Converters.AddTimeOnlyConverters("HH:mm:ss");
-                })
-                .AddClayOptions(options =>
-                {
-                    options.KeyValueJsonToObject = true;
                 })
                 .AddInjectWithUnifyResult()
                 .AddUnifyJsonOptions("special", new JsonSerializerOptions
@@ -67,12 +43,7 @@ public sealed class Startup : AppStartup
 
         services.AddUnifyProvider<SpeciallyResultProvider>("specially");
 
-        services.AddUnifyJsonOptions("specially", new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = null
-        });
-
-        services.AddHttpRemote();
+        services.AddRemoteRequest();
 
         services.AddEventBus(options =>
         {
@@ -137,11 +108,6 @@ public sealed class Startup : AppStartup
             options.AddJob<TestCancelJob>();
 
             options.AddJob<TestCancelJob>();
-            options.AddJob(JobBuilder.Create<TestJob>().SetDescription("测试描述"), Triggers.PeriodHours(2));
-
-            options.AddJob<TestJob>(builder => builder.SetTemporary(), Triggers.PeriodMinutes(1));
-
-            options.AddJob<TestJob>(u => u.SetIncludeAnnotations(true), Triggers.At("2025-11-26 14:58:20"));
         });
 
         // 新版本任务队列
@@ -183,15 +149,6 @@ public sealed class Startup : AppStartup
 
         app.UseScheduleUI(options =>
         {
-            options.Title = "定时任务看板";
-
-            options.LoginConfig.DefaultUsername = "MoYu";
-            options.LoginConfig.DefaultPassword = "";
-
-            options.LoginConfig.OnLoging = async (username, password, httpContext) =>
-            {
-                return await Task.FromResult(username == "MoYu" && string.IsNullOrWhiteSpace(password));
-            };
         });
 
         app.UseRouting();

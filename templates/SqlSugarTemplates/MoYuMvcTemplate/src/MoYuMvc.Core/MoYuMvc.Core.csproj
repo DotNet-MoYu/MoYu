@@ -1,15 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<LangVersion>preview</LangVersion>
-		<TargetFramework>$(framework)</TargetFramework>
+	<PropertyGroup Condition="'$(net6)' == 'True' ">
+		<TargetFramework>net6.0</TargetFramework>
+		<NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(net7)' == 'True' ">
+		<TargetFramework>net7.0</TargetFramework>
+		<NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(net8)' == 'True' ">
+		<TargetFramework>net8.0</TargetFramework>
+		<NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(net9)' == 'True' ">
+		<TargetFramework>net9.0</TargetFramework>
 		<NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MoYu.Extras.ObjectMapper.Mapster" Version="4.9.8.9" />
-		<PackageReference Include="MoYu.Pure" Version="4.9.8.9" />
-		<PackageReference Include="SqlSugarCore" Version="5.1.4.211" />
+		<PackageReference Include="MoYu.Extras.ObjectMapper.Mapster" Version="4.9.5.26" />
+		<PackageReference Include="MoYu.Pure" Version="4.9.5.26" />
+		<PackageReference Include="SqlSugarCore" Version="5.1.4.170" />
 	</ItemGroup>
 
 </Project>

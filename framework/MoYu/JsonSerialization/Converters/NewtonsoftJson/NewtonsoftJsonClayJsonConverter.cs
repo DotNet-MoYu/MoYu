@@ -23,7 +23,7 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
-using MoYu.Shapeless;
+using MoYu.ClayObject;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

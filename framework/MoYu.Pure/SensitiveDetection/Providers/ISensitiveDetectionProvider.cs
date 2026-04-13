@@ -41,7 +41,7 @@ public interface ISensitiveDetectionProvider
     /// </summary>
     /// <param name="text"></param>
     /// <returns></returns>
-    Task<bool> IsValidAsync(string text);
+    Task<bool> VaildedAsync(string text);
 
     /// <summary>
     /// 替换敏感词汇

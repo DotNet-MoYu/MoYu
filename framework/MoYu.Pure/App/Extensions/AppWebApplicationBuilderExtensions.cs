@@ -30,7 +30,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Microsoft.AspNetCore.Builder;
 
 /// <summary>
-/// WebApplication 扩展
+/// WebApplication 拓展
 /// </summary>
 public static class AppWebApplicationBuilderExtensions
 {

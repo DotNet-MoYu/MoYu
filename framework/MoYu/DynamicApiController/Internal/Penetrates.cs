@@ -24,7 +24,6 @@
 // ------------------------------------------------------------------------
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using System.Collections.Concurrent;
 
 namespace MoYu.DynamicApiController;
@@ -96,7 +95,7 @@ internal static class Penetrates
     /// <returns></returns>
     internal static bool IsApiController(Type type)
     {
-        return IsApiControllerCached.GetOrAdd(type, Function) && (ControllerFilter == null || ControllerFilter.Invoke(type));
+        return IsApiControllerCached.GetOrAdd(type, Function);
 
         // 本地静态方法
         static bool Function(Type type)
@@ -106,9 +105,6 @@ internal static class Penetrates
 
             // 不能是非公开、基元类型、值类型、抽象类、接口、泛型类
             if (!type.IsPublic || type.IsPrimitive || type.IsValueType || type.IsAbstract || type.IsInterface || type.IsGenericType) return false;
-
-            // 如果控制器贴有 [NonController] 特性则忽略
-            if (type.IsDefined(typeof(NonControllerAttribute), false)) return false;
 
             // 继承 ControllerBase 或 实现 IDynamicApiController 的类型 或 贴了 [DynamicApiController] 特性
             if ((!typeof(Controller).IsAssignableFrom(type) && typeof(ControllerBase).IsAssignableFrom(type))
@@ -129,16 +125,4 @@ internal static class Penetrates
             return false;
         }
     }
-
-    /// <summary>
-    /// 提供生成控制器过滤器
-    /// </summary>
-    /// <remarks>返回 <c>true</c> 将生成控制器，否则跳过。</remarks>
-    internal static Func<Type, bool> ControllerFilter { get; set; }
-
-    /// <summary>
-    /// 添加 Action 自定义配置
-    /// </summary>
-    /// <remarks>返回 <c>true</c> 将生成 Action，否则跳过。</remarks>
-    internal static Action<ActionModel> ActionConfigure { get; set; }
 }

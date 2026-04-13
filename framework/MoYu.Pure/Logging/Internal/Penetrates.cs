@@ -25,7 +25,6 @@
 
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using System.Globalization;
 using System.Text;
 
 namespace MoYu.Logging;
@@ -121,15 +120,13 @@ internal static class Penetrates
     /// <param name="isConsole"></param>
     /// <param name="withTraceId"></param>
     /// <param name="withStackFrame"></param>
-    /// <param name="provider"></param>
     /// <returns></returns>
     internal static string OutputStandardMessage(LogMessage logMsg
         , string dateFormat = "yyyy-MM-dd HH:mm:ss.fffffff zzz dddd"
         , bool isConsole = false
         , bool disableColors = true
         , bool withTraceId = false
-        , bool withStackFrame = false
-        , IFormatProvider? provider = null)
+        , bool withStackFrame = false)
     {
         // 空检查
         if (logMsg.Message is null) return null;
@@ -143,7 +140,7 @@ internal static class Penetrates
 
         _ = AppendWithColor(formatString, GetLogLevelString(logMsg.LogLevel), logLevelColors);
         formatString.Append(": ");
-        formatString.Append(logMsg.LogDateTime.ToString(dateFormat, provider));
+        formatString.Append(logMsg.LogDateTime.ToString(dateFormat));
         formatString.Append(' ');
         formatString.Append(logMsg.UseUtcTimestamp ? "U" : "L");
         formatString.Append(' ');
@@ -269,7 +266,7 @@ internal static class Penetrates
     }
 
     /// <summary>
-    /// 扩展 StringBuilder 增加带颜色写入
+    /// 拓展 StringBuilder 增加带颜色写入
     /// </summary>
     /// <param name="message"></param>
     /// <param name="colors"></param>

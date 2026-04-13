@@ -28,7 +28,7 @@ using System.Linq.Expressions;
 namespace MoYu.LinqBuilder;
 
 /// <summary>
-/// EF Core Linq 扩展
+/// EF Core Linq 拓展
 /// </summary>
 [SuppressSniffer]
 public static class LinqExpression

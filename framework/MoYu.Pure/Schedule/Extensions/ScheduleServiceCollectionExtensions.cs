@@ -24,12 +24,11 @@
 // ------------------------------------------------------------------------
 
 using MoYu.Schedule;
-using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Schedule 模块服务扩展
+/// Schedule 模块服务拓展
 /// </summary>
 [SuppressSniffer]
 public static class ScheduleServiceCollectionExtensions
@@ -96,14 +95,11 @@ public static class ScheduleServiceCollectionExtensions
         // 注册空日志服务
         services.AddLogging();
 
-        // 检查是否配置（注册）了日志程序
-        var isLoggingRegistered = services.Any(u => u.ServiceType == typeof(ILoggerProvider));
-
         // 注册作业调度器日志服务
         services.AddSingleton<IScheduleLogger>(serviceProvider =>
         {
             var scheduleLogger = ActivatorUtilities.CreateInstance<ScheduleLogger>(serviceProvider
-                , scheduleOptionsBuilder.LogEnabled, isLoggingRegistered);
+                , scheduleOptionsBuilder.LogEnabled);
 
             return scheduleLogger;
         });

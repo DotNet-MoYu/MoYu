@@ -34,10 +34,10 @@ using System.Text.RegularExpressions;
 namespace MoYu.Extensions;
 
 /// <summary>
-/// 对象扩展类
+/// 对象拓展类
 /// </summary>
 [SuppressSniffer]
-public static class ObsoleteObjectExtensions
+public static class ObjectExtensions
 {
     /// <summary>
     /// 将 DateTimeOffset 转换成本地 DateTime
@@ -487,13 +487,12 @@ public static class ObsoleteObjectExtensions
     /// <typeparam name="TAttribute"></typeparam>
     /// <param name="method"></param>
     /// <param name="inherit"></param>
-    /// <param name="searchFromReflectedType">searchFromRuntimeType</param>
     /// <returns></returns>
-    internal static TAttribute GetFoundAttribute<TAttribute>(this MethodInfo method, bool inherit, bool searchFromReflectedType = false)
+    internal static TAttribute GetFoundAttribute<TAttribute>(this MethodInfo method, bool inherit)
         where TAttribute : Attribute
     {
         // 获取方法所在类型
-        var declaringType = !searchFromReflectedType ? method.DeclaringType : method.ReflectedType;   // 解决嵌套继承问题
+        var declaringType = method.DeclaringType;
 
         var attributeType = typeof(TAttribute);
 

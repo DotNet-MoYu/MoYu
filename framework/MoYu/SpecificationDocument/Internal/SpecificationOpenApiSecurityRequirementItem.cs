@@ -23,7 +23,7 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
-using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 
 namespace MoYu.SpecificationDocument;
 
@@ -38,7 +38,7 @@ public sealed class SpecificationOpenApiSecurityRequirementItem
     /// </summary>
     public SpecificationOpenApiSecurityRequirementItem()
     {
-        Accesses = [];
+        Accesses = System.Array.Empty<string>();
     }
 
     /// <summary>
@@ -49,5 +49,5 @@ public sealed class SpecificationOpenApiSecurityRequirementItem
     /// <summary>
     /// 权限
     /// </summary>
-    public List<string> Accesses { get; set; }
+    public string[] Accesses { get; set; }
 }

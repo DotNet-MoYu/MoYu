@@ -23,8 +23,6 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
-using Microsoft.AspNetCore.Http;
-
 namespace MoYu.Schedule;
 
 /// <summary>
@@ -43,11 +41,6 @@ public sealed class ScheduleUIOptions
     /// 启用目录浏览
     /// </summary>
     public bool EnableDirectoryBrowsing { get; set; } = false;
-
-    /// <summary>
-    /// 看板标题
-    /// </summary>
-    public string Title { get; set; } = "Schedule Dashboard";
 
     /// <summary>
     /// 生产环境关闭
@@ -75,38 +68,4 @@ public sealed class ScheduleUIOptions
     /// 是否默认展开所有作业
     /// </summary>
     public bool DefaultExpandAllJobs { get; set; } = false;
-
-    /// <summary>
-    /// 登录配置
-    /// </summary>
-    public LoginConfig LoginConfig = new();
-}
-
-/// <summary>
-/// Schedule UI 登录配置
-/// </summary>
-public sealed class LoginConfig
-{
-    /// <summary>
-    /// 客户端存储的 SessionKey
-    /// </summary>
-    public string SessionKey { get; set; } = "schedule_session_key";
-
-    /// <summary>
-    /// 默认登录名
-    /// </summary>
-    public string DefaultUsername { get; set; }
-
-    /// <summary>
-    /// 默认登录密码
-    /// </summary>
-    public string DefaultPassword { get; set; }
-
-    /// <summary>
-    /// 登录逻辑
-    /// </summary>
-    public Func<string, string, HttpContext, Task<bool>> OnLoging { get; set; } = (username, password, httpContext) =>
-    {
-        return Task.FromResult(username == "schedule" && string.IsNullOrWhiteSpace(password));
-    };
 }

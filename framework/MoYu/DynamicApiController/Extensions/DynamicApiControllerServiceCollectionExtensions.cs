@@ -29,7 +29,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
@@ -37,7 +36,7 @@ using System.Reflection;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 动态接口控制器扩展类
+/// 动态接口控制器拓展类
 /// </summary>
 [SuppressSniffer]
 public static class DynamicApiControllerServiceCollectionExtensions
@@ -52,22 +51,6 @@ public static class DynamicApiControllerServiceCollectionExtensions
         mvcBuilder.Services.AddDynamicApiControllers();
 
         return mvcBuilder;
-    }
-
-    /// <summary>
-    /// 配置动态 WebAPI
-    /// </summary>
-    /// <remarks>请确保在 <c>AddDynamicApiControllers()</c> 或 <c>Inject()</c> 之前注册。</remarks>
-    /// <param name="services"></param>
-    /// <param name="configure"></param>
-    public static void ConfigureDynamicApiController(this IServiceCollection services, Action<DynamicApiControllerBuilder> configure)
-    {
-        var dynamicApiControllerBuilder = new DynamicApiControllerBuilder();
-        configure?.Invoke(dynamicApiControllerBuilder);
-
-        // 解决特定需求
-        Penetrates.ControllerFilter = dynamicApiControllerBuilder.ControllerFilter;
-        Penetrates.ActionConfigure = dynamicApiControllerBuilder.ActionConfigure;
     }
 
     /// <summary>

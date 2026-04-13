@@ -6,14 +6,7 @@ export declare interface TriggerTimeline {
    * 支持索引获取
    */
   [index: string]: any;
-  /**
-   * 作业触发器 Id
-   */
-  triggerId?: string | null;
-  /**
-   * 作业 Id
-   */
-  jobId?: string | null;
+
   /**
    * 最近运行时间
    */

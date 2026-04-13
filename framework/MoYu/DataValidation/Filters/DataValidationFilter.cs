@@ -190,8 +190,7 @@ public sealed class DataValidationFilter : IAsyncActionFilter, IOrderedFilter
                     // 返回 JsonResult
                     finalContext.Result = new JsonResult(validationMetadata.ValidationResult)
                     {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        SerializerSettings = UnifyContext.GetSerializerSettings(context)
+                        StatusCode = StatusCodes.Status400BadRequest
                     };
                 }
             }
@@ -212,6 +211,9 @@ public sealed class DataValidationFilter : IAsyncActionFilter, IOrderedFilter
 
             finalContext.Result = unifyResult.OnValidateFailed(context, validationMetadata);
         }
+
+        // 打印验证失败信息
+        App.PrintToMiniProfiler("validation", "Failed", $"Validation Failed:\r\n\r\n{validationMetadata.Message}", true);
 
         return true;
     }

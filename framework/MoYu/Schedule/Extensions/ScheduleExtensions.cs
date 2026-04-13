@@ -31,7 +31,7 @@ using System.Reflection;
 namespace MoYu.Schedule;
 
 /// <summary>
-/// Schedule 模块扩展类
+/// Schedule 模块拓展类
 /// </summary>
 [SuppressSniffer]
 public static class ScheduleExtensions

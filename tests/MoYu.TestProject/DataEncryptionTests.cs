@@ -19,7 +19,7 @@ public class DataEncryptionTests : IDynamicApiController
         var data2 = text.ToMD5Encrypt(uppercase);
 
         var isEqual = data1 == data2;
-        if (!isEqual) throw new Exception("静态加密和字符串扩展加密不相等");
+        if (!isEqual) throw new Exception("静态加密和字符串拓展加密不相等");
 
         return data1;
     }

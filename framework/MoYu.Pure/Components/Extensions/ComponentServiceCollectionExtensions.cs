@@ -28,7 +28,7 @@ using MoYu.Components;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 组件应用服务集合扩展类
+/// 组件应用服务集合拓展类
 /// </summary>
 [SuppressSniffer]
 public static class ComponentServiceCollectionExtensions

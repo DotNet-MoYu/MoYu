@@ -23,7 +23,7 @@
 // 请访问 https://gitee.com/dotnetchina/MoYu 获取更多关于 MoYu 项目的许可证和版权信息。
 // ------------------------------------------------------------------------
 
-using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 
 namespace MoYu.SpecificationDocument;
 

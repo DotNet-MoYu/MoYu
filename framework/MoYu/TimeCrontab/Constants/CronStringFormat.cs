@@ -28,6 +28,7 @@ namespace MoYu.TimeCrontab;
 /// <summary>
 /// Cron 表达式格式化类型
 /// </summary>
+[SuppressSniffer]
 public enum CronStringFormat
 {
     /// <summary>

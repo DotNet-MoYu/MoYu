@@ -26,7 +26,7 @@
 namespace MoYu.ViewEngine.Extensions;
 
 /// <summary>
-/// 字符串视图引擎扩展
+/// 字符串视图引擎拓展
 /// </summary>
 [SuppressSniffer]
 public static class ViewEngineStringExtensions
@@ -67,7 +67,7 @@ public static class ViewEngineStringExtensions
     }
 
     /// <summary>
-    /// 设置模板缓存文件名（不含扩展名）
+    /// 设置模板缓存文件名（不含拓展名）
     /// </summary>
     /// <param name="template"></param>
     /// <param name="cachedFileName"></param>
